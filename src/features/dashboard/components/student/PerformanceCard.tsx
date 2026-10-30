@@ -1,7 +1,8 @@
 import { useMemo } from "react";
-import type { Assignment } from "../../features/assignments/services/assignmentService";
 import { DashboardCard, EmptyState, SeeAllLink } from "./DashboardCard";
-import { byDue } from "../../features/assignments/utils/assignments";
+import type { Assignment } from "@/features/assignments/services/assignmentService";
+import { byDue } from "@/features/assignments/utils/assignments";
+
 
 export function PerformanceCard({ assignments }: { assignments: Assignment[] }) {
   const { bars, earned, total, maxXp } = useMemo(() => {

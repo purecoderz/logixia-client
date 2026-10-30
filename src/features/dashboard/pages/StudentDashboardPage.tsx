@@ -1,14 +1,15 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../features/auth/context/AuthContext";
-import { useAssignments } from "../../features/assignments/hooks/useAssignments";
-import { useDashboardStats } from "../../hooks/useDashboardStats";
-import { DashboardHero } from "../../components/StudentDashboard/DashboardHero";
-import { PerformanceCard } from "../../components/StudentDashboard/PerformanceCard";
-import { ProgressCard } from "../../components/StudentDashboard/ProgressCard";
-import { DueSoonCard } from "../../components/StudentDashboard/DueSoonCard";
-import { TodayCard } from "../../components/StudentDashboard/TodayCard";
-import { UpcomingCard } from "../../components/StudentDashboard/UpcomingCard";
-import { PastDueCard } from "../../components/StudentDashboard/PastDueCard";
+import { useAuth } from "../../auth/context/AuthContext";
+import { useAssignments } from "../../assignments/hooks/useAssignments";
+import { useDashboardStats } from "../../../hooks/useDashboardStats";
+import { DashboardHero } from "../components/student/DashboardHero";
+import { PerformanceCard } from "../components/student/PerformanceCard";
+import { DueSoonCard } from "../components/student/DueSoonCard";
+import { ProgressCard } from "../components/student/ProgressCard";
+import { TodayCard } from "../components/student/TodayCard";
+import { UpcomingCard } from "../components/student/UpcomingCard";
+import { PastDueCard } from "../components/student/PastDueCard";
+
 
 export function StudentDashboardPage() {
   const { profile } = useAuth();

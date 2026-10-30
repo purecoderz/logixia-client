@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import type { Assignment } from "../../features/assignments/services/assignmentService";
-import { formatTime } from "../../features/assignments/utils/assignments";
 import { DashboardCard, EmptyState } from "./DashboardCard";
+import type { Assignment } from "@/features/assignments/services/assignmentService";
+import { formatTime } from "@/features/assignments/utils/assignments";
 
 export function TodayCard({ assignments }: { assignments: Assignment[] }) {
   return (

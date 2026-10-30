@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Calendar, Users, Video } from "lucide-react";
-import { SearchBar } from "../../features/cohorts/components/students/SearchBar";
-import { GlobalHero as CohortsHero } from "../../features/cohorts/components/students/CohortsHero";
-import { FilterTabs } from "../../features/cohorts/components/students/FilterTabs";
-import { CohortCard, type Cohort, type CohortStatus } from "../../features/cohorts/components/students/CohortCard";
-import { HostCohortBanner } from "../../features/cohorts/components/students/HostCohortBanner";
-import { CohortService } from "../../features/cohorts/Services/cohortService";
-import { CardGridSkeleton } from "../../components/ui/CardGridSkeleton";
+import { CohortService, type CohortStatus } from "../Services/cohortService";
+import { CohortCard, type Cohort } from "../components/students/CohortCard";
+import { CardGridSkeleton } from "@/components/ui/CardGridSkeleton";
+import { SearchBar } from "../components/students/SearchBar";
+import { GlobalHero } from "../components/students/CohortsHero";
+import { FilterTabs } from "../components/students/FilterTabs";
+import { HostCohortBanner } from "../components/students/HostCohortBanner";
+
 
 type Filter = "all" | CohortStatus;
 
@@ -76,7 +77,7 @@ export function CohortsPage() {
         <p className="text-red-500">{errMessage}</p>
       )}
       <SearchBar value={query} onChange={setQuery} placeholder="Search cohorts" />
-      <CohortsHero {...hero} />
+      <GlobalHero {...hero} />
       <FilterTabs options={FILTERS} value={filter} onChange={setFilter} />
 
       {isLoading ? (

@@ -2,8 +2,8 @@ import { AuthPage } from "./features/auth/AuthenticationPage"
 import { Route, Routes } from "react-router-dom"
 import StudentLayout from "./layouts/StudentLayout/StudentLayouts"
 import { Home } from "./pages/Home/HomePage"
-import { CohortsPage } from "./pages/Cohorts/CohortsPage"
-import { CohortDetails } from "./pages/Cohorts/CohortDetailsPage"
+
+import { CohortDetails } from "./features/cohorts/Pages/CohortDetailsPage"
 import { LecturePage } from "./pages/Lectures/LecturePage"
 import { AssignmentsPage } from "./pages/student/AssignmentsPage"
 import { LiveSessionsPage } from "./pages/student/LiveSessionPage"
@@ -15,6 +15,7 @@ import { StudentDashboardPage } from "./pages/student/StudentDashboardPage"
 import { UserProtectedRoute } from "./components/routes/UserProtectedRoute"
 import { InstructorLayout } from "./layouts/InstructorLayout/InstructorLayout"
 import { InstructorCohortsPage } from "./features/cohorts/Pages/InsrtuctorCohortPage"
+import { CohortsPage } from "./features/cohorts/Pages/CohortsPage"
 
 
 

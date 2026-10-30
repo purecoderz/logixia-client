@@ -2,15 +2,14 @@ import { useEffect, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { Calendar, Check, Users, Video } from "lucide-react";
 
-import { STATUS_STYLES } from "../../features/cohorts/components/students/CohortCard";
-import { EnrolCard, MobileEnrolBar } from "../../components/CohortsDetails/EnrolCard";
-import { CohortService, type CohortStatus } from "../../features/cohorts/Services/cohortService";
+import { STATUS_STYLES } from "../components/students/CohortCard";
+import { EnrolCard, MobileEnrolBar } from "../components/students/EnrolCard";
+import { CohortService, type CohortStatus } from "../Services/cohortService";
 
-import { SectionRow } from "../../components/CoursesUi/SectionRow";
-import { LessonRow } from "../../components/CoursesUi/LessonRow";
-import { toCohortView } from "../../components/CohortsDetails/toCohorotView";
-import { InstructorProfile } from "../../components/CohortsDetails/InstructorProfile";
-import { RoadmapRow } from "../../components/CoursesUi/RoadmapRow";
+import { SectionRow } from "../../../components/CoursesUi/SectionRow";
+import { toCohortView } from "../utils/toCohotView";
+import { InstructorProfile } from "../components/students/InstructorProfile";
+import { RoadmapRow } from "../../../components/CoursesUi/RoadmapRow";
 
 const card = "rounded-xl border border-[#30363d] bg-[#161b22] p-4";
 const h2 = "text-xl font-medium text-white";

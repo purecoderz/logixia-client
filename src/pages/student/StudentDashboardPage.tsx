@@ -9,7 +9,6 @@ import { DueSoonCard } from "../../components/StudentDashboard/DueSoonCard";
 import { TodayCard } from "../../components/StudentDashboard/TodayCard";
 import { UpcomingCard } from "../../components/StudentDashboard/UpcomingCard";
 import { PastDueCard } from "../../components/StudentDashboard/PastDueCard";
-import { DashboardSkeleton } from "../../components/StudentDashboard/DashboardSkeleton";
 
 export function StudentDashboardPage() {
   const { profile } = useAuth();
@@ -17,7 +16,7 @@ export function StudentDashboardPage() {
 
   const { data: assignments = [], isLoading, error } = useAssignments();
   const { active, today, upcoming, pastDue } = useDashboardStats(assignments);
-  if (isLoading) return <DashboardSkeleton />;
+
 
   return (
     <div className="mx-auto w-full max-w-[1500px] p-4 md:p-6">

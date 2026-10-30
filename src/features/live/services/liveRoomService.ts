@@ -1,4 +1,4 @@
-import type { TerminalLine } from "../components/SmartTerminal/TerminalView";
+import type { TerminalLine } from "../../../components/SmartTerminal/TerminalView";
 
 // services/liveRoomService.ts
 let socket: WebSocket | null = null;

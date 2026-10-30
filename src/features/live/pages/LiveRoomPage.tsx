@@ -3,19 +3,20 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import { Hand, MessageSquare, Mic, MicOff, Power, Terminal } from "lucide-react";
-import { useMediaQuery } from "../../hooks/useMediaQuery";
-import { useLiveRoom } from "../../hooks/useLiveRoom";
-import { ParticipantsList } from "../../components/LiveClassroom/ParticipantsList";
-import { ChatPanel } from "../../components/LiveClassroom/ChatPanel";
-import { CodeWorkspace } from "../../components/Workspace/workspace";
-import { Drawer } from "../../components/Workspace/components/ui/Drawer";
-import { AlertModal } from "../../components/ui/AlertModal";
-import { ConfirmModal } from "../../components/ui/ConfirmModal";
-import { useAccessVoice } from "../../hooks/useAccessVoice";
-import { useRoomAudio } from "../../hooks/useRoomAudio";
-import { AudioStatusButton } from "../../components/LiveClassroom/AudioStatusButton";
-import { FloatingTerminal } from "../../components/LiveClassroom/FloatingTerminal";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { useMediaQuery } from "../../../hooks/useMediaQuery";
+import { useLiveRoom } from "../hooks/useLiveRoom";
+import { CodeWorkspace } from "../../../components/Workspace/workspace";
+import { Drawer } from "../../../components/Workspace/components/ui/Drawer";
+import { AlertModal } from "../../../components/ui/AlertModal";
+import { ConfirmModal } from "../../../components/ui/ConfirmModal";
+import { useAccessVoice } from "../hooks/useAccessVoice";
+import { useRoomAudio } from "../hooks/useRoomAudio";
+
+import { useLocalStorage } from "../../../hooks/useLocalStorage";
+import { ParticipantsList } from "../components/classroom/ParticipantsList";
+import { ChatPanel } from "../components/classroom/ChatPanel";
+import { AudioStatusButton } from "../components/classroom/AudioStatusButton";
+import { FloatingTerminal } from "../components/classroom/FloatingTerminal";
 
 
 function explainClose(code: string | null, reason: string): string {

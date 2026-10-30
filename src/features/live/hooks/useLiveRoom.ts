@@ -1,8 +1,8 @@
 // hooks/useLiveRoom.ts
 import { useCallback, useEffect, useRef, useState } from "react";
 import RoomServices from "../services/liveRoomService";
-import { useAuth } from "../features/auth/context/AuthContext";
-import type { TerminalLine } from "../components/SmartTerminal/TerminalView";
+import { useAuth } from "../../auth/context/AuthContext";
+import type { TerminalLine } from "../../../components/SmartTerminal/TerminalView";
 
 export interface Participant {
   id: string;

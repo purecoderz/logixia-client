@@ -3,9 +3,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Radio, CalendarClock, Video } from "lucide-react";
 
 
-import { SearchBar } from "../../components/ui/SearchBar";
-import { GlobalHero } from "../../features/cohorts/components/students/CohortsHero";
-import { SessionService, type Session } from "../../services/liveSessionServices";
+import { SearchBar } from "../../../components/ui/SearchBar";
+import { GlobalHero } from "../../cohorts/components/students/CohortsHero";
+import { SessionService, type Session } from "../services/liveSessionServices";
 import { LiveSessionsView } from "../../components/liveSession/LiveSessionsView";
 
 const hero = {

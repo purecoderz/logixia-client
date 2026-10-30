@@ -1,4 +1,4 @@
-import type { InstructorCohort } from "../../../types/cohort";
+import type { InstructorCohort } from "../../types/types";
 import { InstructorCohortCard } from "./InstructorCohortCard";
 
 

@@ -1,4 +1,4 @@
-import type { InstructorCohort } from "../../types/cohort";
+import type { InstructorCohort } from "../../features/cohorts/types/types";
 
 
 export const mockCohorts: InstructorCohort[] = [

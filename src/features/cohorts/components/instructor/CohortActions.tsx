@@ -1,5 +1,5 @@
-import type { InstructorCohort } from "../../../types/cohort";
-import { Button } from "../../ui/Button";
+import type { InstructorCohort } from "../../types/types";
+import { Button } from "../../../../components/ui/Button";
 
 
 interface CohortActionsProps {

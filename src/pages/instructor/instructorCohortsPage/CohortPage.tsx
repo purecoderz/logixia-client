@@ -1,12 +1,12 @@
 "use client"; // needed in Next.js App Router; harmless elsewhere
 
 import { useMemo, useState } from "react";
-import type { InstructorCohort, InstructorCohortStatus } from "../../../types/cohort";
+import type { InstructorCohort, InstructorCohortStatus } from "../../../features/cohorts/types/types";
 import { Button } from "../../../components/ui/Button";
-import { StatCard } from "../../../components/InstructorsDesign/StatCard";
+import { StatCard } from "../../../features/cohorts/components/instructor/StatCard";
 import { formatNaira } from "../../../utils/format";
-import { CohortTable } from "../../../components/InstructorsDesign/cohorts/CohortTable";
-import { CohortGrid } from "../../../components/InstructorsDesign/cohorts/CohortGrid";
+import { CohortTable } from "../../../features/cohorts/components/instructor/CohortTable";
+import { CohortGrid } from "../../../features/cohorts/components/instructor/CohortGrid";
 import { mockCohorts } from "../mock";
 
 

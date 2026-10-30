@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
-import { CohortService } from "../../services/cohortService";
+import { CohortService } from "../../features/cohorts/Services/cohortService";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useEffect } from "react";
 

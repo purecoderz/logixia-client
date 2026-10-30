@@ -1,6 +1,6 @@
-import type { InstructorCohort } from "../../../types/cohort";
-import { formatDateRange } from "../../../utils/format";
-import { ProgressBar } from "../../ui/ProgressBar";
+import type { InstructorCohort } from "../../types/types";
+import { formatDateRange } from "../../../../utils/format";
+import { ProgressBar } from "../../../../components/ui/ProgressBar";
 
 
 export function ScheduleSummary({ cohort: c }: { cohort: InstructorCohort }) {

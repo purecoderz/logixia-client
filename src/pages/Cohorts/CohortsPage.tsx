@@ -5,7 +5,7 @@ import { GlobalHero as CohortsHero } from "../../components/Cohorts/CohortsHero"
 import { FilterTabs } from "../../components/Cohorts/FilterTabs";
 import { CohortCard, type Cohort, type CohortStatus } from "../../components/Cohorts/CohortCard";
 import { HostCohortBanner } from "../../components/Cohorts/HostCohortBanner";
-import { CohortService } from "../../services/cohortService";
+import { CohortService } from "../../features/cohorts/Services/cohortService";
 import { CardGridSkeleton } from "../../components/ui/CardGridSkeleton";
 
 type Filter = "all" | CohortStatus;

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { CohortService } from "../services/cohortService";
+import { CohortService } from "../Services/cohortService";
 
 // One place for query keys, so invalidation later is `invalidateQueries({ queryKey: cohortKeys.all })`
 export const cohortKeys = {

@@ -1,5 +1,5 @@
 import type { ApiCohortDetails, CohortView } from "../../pages/Cohorts/CohortDetailsPage";
-import { CohortUtils } from "../../utils/Cohorts";
+import { CohortUtils } from "../../features/cohorts/utils/Cohorts";
 
 export function toCohortView(data: ApiCohortDetails): CohortView {
   // "2026-11-03T09:00:00" -> "2026-11-03", the format CohortUtils expects

@@ -1,7 +1,7 @@
-import type { InstructorCohort } from "../../../types/cohort";
-import { formatNaira } from "../../../utils/format";
-import { DataTable, type Column } from "../../ui/DataTable";
-import { StatusChip } from "../StatusChip";
+import type { InstructorCohort } from "../../types/types";
+import { formatNaira } from "../../../../utils/format";
+import { DataTable, type Column } from "../../../../components/ui/DataTable";
+import { StatusChip } from "./StatusChip";
 import { CohortActions } from "./CohortActions";
 import { ScheduleSummary } from "./ScheduleSummary";
 import { SeatsSummary } from "./SeatsSummary";

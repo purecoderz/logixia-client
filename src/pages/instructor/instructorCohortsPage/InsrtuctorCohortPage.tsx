@@ -1,5 +1,5 @@
 import { Button } from "../../../components/ui/Button";
-import { useInstructorCohorts } from "../../../hooks/useCohorts";
+import { useInstructorCohorts } from "../../../features/cohorts/hooks/useCohorts";
 import { CohortsPage } from "./CohortPage";
 
 

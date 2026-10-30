@@ -1,6 +1,6 @@
-import type { Cohort } from "../components/Cohorts/CohortCard";
-import type { InstructorCohort } from "../types/cohort";
-import type { CohortStatus, RawCohort, RawInstructorCohort } from "../services/cohortService";
+import type { Cohort } from "../../../components/Cohorts/CohortCard";
+import type { InstructorCohort } from "../types/types";
+import type { CohortStatus, RawCohort, RawInstructorCohort } from "../Services/cohortService";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 

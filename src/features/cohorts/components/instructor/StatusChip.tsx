@@ -1,4 +1,4 @@
-import type { InstructorCohortStatus } from "../../types/cohort";
+import type { InstructorCohortStatus } from "../../types/types";
 
 
 const config: Record<InstructorCohortStatus, { label: string; style: string }> = {

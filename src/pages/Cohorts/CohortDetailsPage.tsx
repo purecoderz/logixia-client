@@ -4,7 +4,7 @@ import { Calendar, Check, Users, Video } from "lucide-react";
 
 import { STATUS_STYLES } from "../../components/Cohorts/CohortCard";
 import { EnrolCard, MobileEnrolBar } from "../../components/CohortsDetails/EnrolCard";
-import { CohortService, type CohortStatus } from "../../services/cohortService";
+import { CohortService, type CohortStatus } from "../../features/cohorts/Services/cohortService";
 
 import { SectionRow } from "../../components/CoursesUi/SectionRow";
 import { LessonRow } from "../../components/CoursesUi/LessonRow";

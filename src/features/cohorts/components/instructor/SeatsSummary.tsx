@@ -1,5 +1,5 @@
-import type { InstructorCohort } from "../../../types/cohort";
-import { ProgressBar } from "../../ui/ProgressBar";
+import type { InstructorCohort } from "../../types/types";
+import { ProgressBar } from "../../../../components/ui/ProgressBar";
 
 export function SeatsSummary({ cohort: c }: { cohort: InstructorCohort }) {
   const full = c.seatsTaken >= c.seatsTotal;

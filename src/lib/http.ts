@@ -9,7 +9,7 @@ const NO_REFRESH = ["/auth/login", "/auth/refresh"];
 // one shared refresh for all requests that fail at the same time
 let refreshPromise: Promise<boolean> | null = null;
 
-function refreshSession(): Promise<boolean> {
+export function refreshSession(): Promise<boolean> {
   if (!refreshPromise) {
     refreshPromise = fetch(`${BASE_URL}/auth/refresh`, {
       method: "POST",
@@ -24,7 +24,7 @@ function refreshSession(): Promise<boolean> {
   return refreshPromise;
 }
 
-function expire() {
+export function expire() {
   window.dispatchEvent(new Event(AUTH_EXPIRED_EVENT));
 }
 

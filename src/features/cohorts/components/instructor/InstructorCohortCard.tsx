@@ -1,6 +1,6 @@
 import type { InstructorCohort } from "../../types/types";
 import { formatNaira } from "@/utils/format";
-import { StatusChip } from "./StatusChip"
+import { StatusChip } from "../../../../components/ui/StatusChip"
 import { CohortActions } from "./CohortActions";
 import { ScheduleSummary } from "./ScheduleSummary";
 import { SeatsSummary } from "./SeatsSummary";

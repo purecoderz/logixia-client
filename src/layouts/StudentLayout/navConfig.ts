@@ -101,13 +101,20 @@ export const STUDENT_NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
-    title: "Registration",
+    title: "Cohort Management",
     items: [
       {
         id: "reg-cohort",
         label: "Register Cohort",
         icon: "📝",
         path: "/cohorts",
+      },
+
+      {
+        id: "my-cohort",
+        label: "My Cohort",
+        icon: "💻",
+        path: "/user/cohorts",
       },
     ],
   },
@@ -142,5 +149,3 @@ export const STUDENT_NAV_SECTIONS: NavSection[] = [
     ],
   },
 ];
-
-

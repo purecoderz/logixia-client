@@ -7,6 +7,9 @@ import { SearchBar } from "../../../components/ui/SearchBar";
 import { GlobalHero } from "../../cohorts/components/students/CohortsHero";
 import { CardGridSkeleton } from "../../../components/ui/CardGridSkeleton";
 import { AssignmentsView } from "../components/AssignmentView";
+import { AlertModal } from "@/components/ui/AlertModal";
+import { useNavigate } from "react-router-dom";
+import { NoCohortError } from "../services/assignmentService";
 
 const hero = {
   eyebrow: "Assignments",
@@ -23,6 +26,11 @@ export function AssignmentsPage() {
   const [query, setQuery] = useState("");
   const { data: assignments = [], isLoading, error } = useAssignments();
 
+  const navigate = useNavigate();
+  const [dismissed, setDismissed] = useState(false);
+
+  const noCohort = error instanceof NoCohortError;
+
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return assignments;
@@ -31,7 +39,7 @@ export function AssignmentsPage() {
 
   return (
     <div className="space-y-4">
-      {error && <p className="text-red-500">{error.message}</p>}
+      {error && !noCohort && <p className="text-red-500">{error.message}</p>}
       <SearchBar value={query} onChange={setQuery} placeholder="Search assignments" />
       <GlobalHero {...hero} />
 
@@ -40,6 +48,18 @@ export function AssignmentsPage() {
       ) : (
         !error && <AssignmentsView assignments={matches} />
       )}
+
+      <AlertModal
+        isOpen={noCohort && !dismissed}
+        title="No active cohort"
+        message="Join a cohort to see your assignments."
+        buttonText="Browse cohorts"
+        variant="warning"
+        onClose={() => {
+          setDismissed(true);
+          navigate("/cohorts"); // your real route
+        }}
+      />
     </div>
   );
 }

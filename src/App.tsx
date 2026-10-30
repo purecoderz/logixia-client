@@ -12,15 +12,10 @@ import { PlaygroundPage } from "./features/workspace/pages/Playground"
 import { AssignmentGroundPage } from "./features/assignments/pages/AssignmentGroundPage"
 import { useAuth } from "./features/auth/context/AuthContext"
 import { StudentDashboardPage } from "./features/dashboard/pages/StudentDashboardPage"
-import { UserProtectedRoute } from "./components/routes/UserProtectedRoute"
+import { UserProtectedRoute } from "./features/auth/UserProtectedRoute"
 import { InstructorLayout } from "./layouts/InstructorLayout/InstructorLayout"
 import { InstructorCohortsPage } from "./features/cohorts/Pages/InsrtuctorCohortPage"
 import { CohortsPage } from "./features/cohorts/Pages/CohortsPage"
-
-
-
-
-
 
 
 

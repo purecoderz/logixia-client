@@ -20,7 +20,10 @@ export interface Assignment extends RawAssignment {
   uiStatus: AssignmentStatus;
 }
 
-export function getUiStatus(a: RawAssignment, now = Date.now()): AssignmentStatus {
+export function getUiStatus(
+  a: RawAssignment,
+  now = Date.now(),
+): AssignmentStatus {
   if (a.status === "completed") return "done";
 
   const expired = new Date(a.due_date).getTime() < now;
@@ -30,14 +33,19 @@ export function getUiStatus(a: RawAssignment, now = Date.now()): AssignmentStatu
   return a.status === null ? "missed" : "incomplete"; // in_progress or submitted
 }
 
+export class NoCohortError extends Error {
+  constructor() {
+    super("You need to join a cohort in order to view assignments");
+    this.name = "NoCohortError";
+  }
+}
+
 export const AssignmentService = {
   getAssignments: async (): Promise<Assignment[]> => {
     const id = localStorage.getItem("activeCohortId");
     const cohortId = id ? JSON.parse(id) : null;
 
-    if (!cohortId) {
-      throw new Error("You need to join a cohort in order to view assignments");
-    }
+    if (!cohortId) throw new NoCohortError();
 
     const response = await apiFetch(`/cohorts/${cohortId}/assignments`);
 

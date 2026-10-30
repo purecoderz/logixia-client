@@ -53,6 +53,8 @@ async function handleError(response: Response): Promise<never> {
   throw new Error(typeof message === "string" ? message : JSON.stringify(message));
 }
 
+
+
 // Cohort API Service
 export const CohortService = {
   async getCohorts(path: string = "/cohorts"): Promise<Cohort[]> {

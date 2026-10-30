@@ -1,10 +1,10 @@
 import type { InstructorCohort } from "../../types/types";
 import { formatNaira } from "../../../../utils/format";
 import { DataTable, type Column } from "../../../../components/ui/DataTable";
-import { StatusChip } from "./StatusChip";
 import { CohortActions } from "./CohortActions";
 import { ScheduleSummary } from "./ScheduleSummary";
 import { SeatsSummary } from "./SeatsSummary";
+import { CohortStatusChip } from "./CohortStatusChip";
 
 interface CohortTableProps {
   cohorts: InstructorCohort[];
@@ -27,7 +27,7 @@ export function CohortTable({ cohorts, ...actions }: CohortTableProps) {
         </>
       ),
     },
-    { header: "Status", cell: (c) => <StatusChip status={c.status} /> },
+    { header: "Status", cell: (c) => <CohortStatusChip status={c.status} /> },
     { header: "Schedule", cell: (c) => <ScheduleSummary cohort={c} /> },
     { header: "Seats", cell: (c) => <SeatsSummary cohort={c} /> },
     {

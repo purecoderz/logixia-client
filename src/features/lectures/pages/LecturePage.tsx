@@ -3,7 +3,7 @@ import { Clock, Code, PlayCircle } from "lucide-react";
 import { SearchBar } from "../../../components/ui/SearchBar";
 import { GlobalHero } from "../../cohorts/components/students/CohortsHero";
 import { FilterTabs } from "../../../components/ui/FilterTabs";
-import { TutorialService, type Tutorial, type TutorialLevel } from "../../../services/LecturesService";
+import { TutorialService, type Tutorial, type TutorialLevel } from "../../../pages/Lectures/LecturesService";
 import { LectureCard} from "../components/LectureCard";
 
 

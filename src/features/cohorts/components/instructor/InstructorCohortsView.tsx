@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import type { InstructorCohort, InstructorCohortStatus } from "../../types/types";
 import { Button } from "../../../../components/ui/Button";
-import { StatCard } from "./StatCard";
+import { StatCard } from "../../../../components/ui/StatCard";
 import { formatNaira } from "../../../../utils/format";
 import { CohortTable } from "./CohortTable";
 import { CohortGrid } from "./CohortGrid";

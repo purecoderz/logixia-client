@@ -1,6 +1,6 @@
 import { Button } from "../../../components/ui/Button";
-import { useInstructorCohorts } from "../../../features/cohorts/hooks/useCohorts";
-import { CohortsPage } from "./CohortPage";
+import { useInstructorCohorts } from "../hooks/useCohorts";
+import { CohortsPage } from "../components/instructor/InstructorCohortsView";
 
 
 export function InstructorCohortsPage() {

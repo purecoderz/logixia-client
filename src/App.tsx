@@ -14,7 +14,7 @@ import { useAuth } from "./features/auth/context/AuthContext"
 import { StudentDashboardPage } from "./pages/student/StudentDashboardPage"
 import { UserProtectedRoute } from "./components/routes/UserProtectedRoute"
 import { InstructorLayout } from "./layouts/InstructorLayout/InstructorLayout"
-import { InstructorCohortsPage } from "./pages/instructor/instructorCohortsPage/InsrtuctorCohortPage"
+import { InstructorCohortsPage } from "./features/cohorts/Pages/InsrtuctorCohortPage"
 
 
 

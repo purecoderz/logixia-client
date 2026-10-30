@@ -1,13 +1,12 @@
 "use client"; // needed in Next.js App Router; harmless elsewhere
 
 import { useMemo, useState } from "react";
-import type { InstructorCohort, InstructorCohortStatus } from "../../../features/cohorts/types/types";
-import { Button } from "../../../components/ui/Button";
-import { StatCard } from "../../../features/cohorts/components/instructor/StatCard";
-import { formatNaira } from "../../../utils/format";
-import { CohortTable } from "../../../features/cohorts/components/instructor/CohortTable";
-import { CohortGrid } from "../../../features/cohorts/components/instructor/CohortGrid";
-import { mockCohorts } from "../mock";
+import type { InstructorCohort, InstructorCohortStatus } from "../../types/types";
+import { Button } from "../../../../components/ui/Button";
+import { StatCard } from "./StatCard";
+import { formatNaira } from "../../../../utils/format";
+import { CohortTable } from "./CohortTable";
+import { CohortGrid } from "./CohortGrid";
 
 
 type Filter = "all" | InstructorCohortStatus;
@@ -24,7 +23,7 @@ const tabs: { value: Filter; label: string }[] = [
 
 const fillPct = (c: InstructorCohort) => Math.round((c.seatsTaken / c.seatsTotal) * 100);
 
-export function CohortsPage({ cohorts=mockCohorts }: { cohorts: InstructorCohort[] }) {
+export function CohortsPage({ cohorts }: { cohorts: InstructorCohort[] }) {
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
   const [view, setView] = useState<View>("table");

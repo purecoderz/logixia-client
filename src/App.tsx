@@ -4,7 +4,7 @@ import StudentLayout from "./layouts/StudentLayout/StudentLayouts"
 import { Home } from "./features/home/pages/HomePage"
 
 import { CohortDetails } from "./features/cohorts/Pages/CohortDetailsPage"
-import { LecturePage } from "./pages/Lectures/LecturePage"
+import { LecturePage } from "./features/lectures/pages/LecturePage"
 import { AssignmentsPage } from "./features/assignments/pages/AssignmentsPage"
 import { LiveSessionsPage } from "./pages/student/LiveSessionPage"
 import { LiveRoomPage } from "./pages/student/LiveRoomPage"

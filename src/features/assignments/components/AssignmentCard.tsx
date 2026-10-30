@@ -9,8 +9,8 @@ import {
   Hourglass,
   Zap,
 } from "lucide-react";
-import type { Assignment } from "../../services/assignmentService";
-import { daysUntil, formatTime, plural} from "../../utils/assignments";
+import type { Assignment } from "../services/assignmentService";
+import { daysUntil, formatTime, plural} from "../utils/assignments";
 
 
 function look(a: Assignment) {

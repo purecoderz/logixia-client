@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import type { Assignment } from "../../services/assignmentService";
-import { formatTime } from "../../utils/assignments";
+import type { Assignment } from "../../features/assignments/services/assignmentService";
+import { formatTime } from "../../features/assignments/utils/assignments";
 
 
 const LATE = {

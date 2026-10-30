@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Bell, LogOut, Menu, Search, Settings } from "lucide-react";
-import { useAuth } from "../../features/auth/context/AuthContext";
-import { ConfirmModal } from "../../components/ui/ConfirmModal";
-import { CohortSwitcher } from "../../features/cohorts/components/CohortSwitcher";
+import { useAuth } from "@/features/auth/context/AuthContext";
+import { CohortSwitcher } from "@/features/cohorts/components/CohortSwitcher";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
+
 
 
 interface TopbarProps {

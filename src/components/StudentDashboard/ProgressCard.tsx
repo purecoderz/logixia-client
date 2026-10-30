@@ -1,4 +1,4 @@
-import type { Assignment, AssignmentStatus } from "../../services/assignmentService";
+import type { Assignment, AssignmentStatus } from "../../features/assignments/services/assignmentService";
 import { DashboardCard } from "./DashboardCard";
 import { ProgressRing } from "./ProgressRing";
 

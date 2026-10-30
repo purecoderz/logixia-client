@@ -2,11 +2,11 @@
 import { useMemo, useState } from "react";
 import { CalendarClock, CheckCircle2, Zap } from "lucide-react";
 
-import { useAssignments } from "../../hooks/useAssignments";
-import { SearchBar } from "../../features/cohorts/components/students/SearchBar";
-import { GlobalHero } from "../../features/cohorts/components/students/CohortsHero";
-import { AssignmentsView } from "../../components/AssignmentUi/AssignmentView";
-import { CardGridSkeleton } from "../../components/ui/CardGridSkeleton";
+import { useAssignments } from "../hooks/useAssignments";
+import { SearchBar } from "../../../components/ui/SearchBar";
+import { GlobalHero } from "../../cohorts/components/students/CohortsHero";
+import { CardGridSkeleton } from "../../../components/ui/CardGridSkeleton";
+import { AssignmentsView } from "../components/AssignmentView";
 
 const hero = {
   eyebrow: "Assignments",

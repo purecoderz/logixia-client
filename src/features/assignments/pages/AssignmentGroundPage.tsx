@@ -2,10 +2,11 @@
 import { useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 
-import { AssignmentService } from "../../services/assignmentService";
-import { CodeWorkspace } from "../../components/Workspace/workspace";
+import { AssignmentService } from "../services/assignmentService";
+import { CodeWorkspace } from "../../../components/Workspace/workspace";
 import { useParams } from "react-router-dom";
-import { TaskInstructions } from "../../components/AssignmentUi/TaskInstructions";
+import { TaskInstructions } from "../components/TaskInstructions";
+
 
 // Same shape as your tasks table, replace with a real fetch later
 const MOCK_TASK = {

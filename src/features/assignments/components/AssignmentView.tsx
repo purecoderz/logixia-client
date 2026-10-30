@@ -2,10 +2,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { LayoutGrid, List } from "lucide-react";
 
-import type { Assignment, AssignmentStatus } from "../../services/assignmentService";
-import { FilterTabs } from "../../features/cohorts/components/students/FilterTabs";
+import type { Assignment, AssignmentStatus } from "../services/assignmentService";
+
 import { AssignmentCard } from "./AssignmentCard";
 import { AssignmentsTable } from "./AssignmentTable";
+import { FilterTabs } from "@/components/ui/FilterTabs";
 
 
 type Filter = "all" | AssignmentStatus;

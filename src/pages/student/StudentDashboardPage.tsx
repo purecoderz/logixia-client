@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../features/auth/context/AuthContext";
-import { useAssignments } from "../../hooks/useAssignments";
+import { useAssignments } from "../../features/assignments/hooks/useAssignments";
 import { useDashboardStats } from "../../hooks/useDashboardStats";
 import { DashboardHero } from "../../components/StudentDashboard/DashboardHero";
 import { PerformanceCard } from "../../components/StudentDashboard/PerformanceCard";

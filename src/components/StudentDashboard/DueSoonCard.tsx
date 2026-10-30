@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { ChevronRight, Clock, Code2 } from "lucide-react";
-import type { Assignment } from "../../services/assignmentService";
+import type { Assignment } from "../../features/assignments/services/assignmentService";
 import { DashboardCard, EmptyState, SeeAllLink } from "./DashboardCard";
-import { dueText } from "../../utils/assignments";
+import { dueText } from "../../features/assignments/utils/assignments";
 
 function DueRow({ a }: { a: Assignment }) {
   return (

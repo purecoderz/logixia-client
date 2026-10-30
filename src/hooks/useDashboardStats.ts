@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import type { Assignment } from "../services/assignmentService";
-import { byDue, daysUntil } from "../utils/assignments";
+import type { Assignment } from "../features/assignments/services/assignmentService";
+import { byDue, daysUntil } from "../features/assignments/utils/assignments";
 
 export function useDashboardStats(assignments: Assignment[]) {
   return useMemo(() => {

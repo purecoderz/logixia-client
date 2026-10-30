@@ -1,4 +1,4 @@
-import type { Assignment } from "../../services/assignmentService";
+import type { Assignment } from "../../features/assignments/services/assignmentService";
 import { DashboardCard, EmptyState, SeeAllLink } from "./DashboardCard";
 import { DateRow } from "./DateRow";
 

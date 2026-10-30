@@ -3,9 +3,9 @@ import { Calendar, Users, Video } from "lucide-react";
 import { CohortService, type CohortStatus } from "../Services/cohortService";
 
 import { CardGridSkeleton } from "@/components/ui/CardGridSkeleton";
-import { SearchBar } from "../components/students/SearchBar";
+import { SearchBar } from "../../../components/ui/SearchBar";
 import { GlobalHero } from "../components/students/CohortsHero";
-import { FilterTabs } from "../components/students/FilterTabs";
+import { FilterTabs } from "../../../components/ui/FilterTabs";
 import { HostCohortBanner } from "../components/students/HostCohortBanner";
 import type { Cohort } from "../types/types";
 import { CohortCard } from "../components/students/CohortCard";

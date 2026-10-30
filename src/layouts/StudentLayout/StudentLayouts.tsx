@@ -1,9 +1,10 @@
 import { Outlet } from "react-router-dom";
 import { StudentSidebar } from "./sidebar/Sidebar";
 import { useCallback, useState } from "react";
-import { Topbar } from "../topbar/TopBar";
+
 import { MobileSidebar } from "./sidebar/MobileSidebar";
 import { BottomNav, useShowBottomNav } from "./BottomNav";
+import { Topbar } from "./topbar/TopBar";
 
 function StudentLayout() {
 

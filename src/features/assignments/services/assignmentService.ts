@@ -1,4 +1,4 @@
-import { apiFetch } from "../lib/http";
+import { apiFetch } from "../../../lib/http";
 
 // What the API returns
 export type SubmissionStatus = "in_progress" | "submitted" | "completed";

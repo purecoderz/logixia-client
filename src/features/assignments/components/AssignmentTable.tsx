@@ -2,8 +2,8 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowDown, ArrowUp } from "lucide-react";
-import type { Assignment, AssignmentStatus } from "../../services/assignmentService";
-import { daysUntil, formatTime, plural } from "../../utils/assignments";
+import type { Assignment, AssignmentStatus } from "../services/assignmentService";
+import { daysUntil, formatTime, plural } from "../utils/assignments";
 
 
 type SortKey = "title" | "due" | "xp";

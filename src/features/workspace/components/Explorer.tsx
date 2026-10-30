@@ -2,8 +2,9 @@
 import { ChevronRight, ChevronDown, Folder, File, FilePlus, FolderPlus, ChevronsDownUp, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { FsNode } from "../utils/File";
-import { NameModal } from "../../ui/NameModal";
-import { ConfirmModal } from "../../ui/ConfirmModal";
+import { NameModal } from "@/components/ui/NameModal";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
+
 
 type ExplorerProps = {
     nodes: FsNode[];

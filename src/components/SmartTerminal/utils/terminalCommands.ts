@@ -1,5 +1,6 @@
+import { FileManagement, type FsNode } from "@/features/workspace/utils/File";
 import type { TerminalLine } from "../TerminalView";
-import { FileManagement, type FsNode } from "../../Workspace/utils/File";
+
 
 export type CommandResult = {
   lines?: TerminalLine[];

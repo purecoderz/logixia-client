@@ -3,9 +3,10 @@ import { useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 
 import { AssignmentService } from "../services/assignmentService";
-import { CodeWorkspace } from "../../../components/Workspace/workspace";
+
 import { useParams } from "react-router-dom";
 import { TaskInstructions } from "../components/TaskInstructions";
+import { CodeWorkspace } from "@/features/workspace/Workspace";
 
 
 // Same shape as your tasks table, replace with a real fetch later

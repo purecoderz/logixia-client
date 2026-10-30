@@ -1,5 +1,5 @@
+import type { createAnalysisEngine } from "@/features/workspace/engine/analysisEngine";
 import { hoverTooltip } from "@codemirror/view";
-import type { createAnalysisEngine } from "../../Workspace/engine/analysisEngine";
 
 type AnalysisEngine = ReturnType<typeof createAnalysisEngine>;
 

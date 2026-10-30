@@ -1,6 +1,7 @@
-// pages/Playground/PlaygroundPage.tsx
+import { CodeWorkspace } from "../Workspace";
 
-import { CodeWorkspace } from "../../components/Workspace/workspace";
+
+
 
 
 export function PlaygroundPage() {

@@ -4,9 +4,6 @@ import { useLocation } from "react-router-dom";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import { Menu } from "lucide-react";
 
-import { CodeEditorMobile } from "../CodeEditor/CodeEditorMobile";
-import { AlertModal } from "../ui/AlertModal";
-import { NameModal } from "../ui/NameModal";
 
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 
@@ -16,10 +13,13 @@ import { Tabs } from "./components/Tabs";
 import { FileManagement, type FsNode } from "./utils/File";
 import { exportProject, getPath } from "./utils/exportProject";
 import { getLanguage } from "./utils/language";
-import { TerminalView } from "../SmartTerminal/TerminalView";
-import { useTerminal } from "../SmartTerminal/hooks/useTerminal";
 import { StatusBar } from "./components/StatusBar";
 import { Drawer } from "./components/ui/Drawer";
+import { useTerminal } from "@/components/SmartTerminal/hooks/useTerminal";
+import { CodeEditor } from "@/components/CodeEditor/CodeEditor";
+import { TerminalView } from "@/components/SmartTerminal/TerminalView";
+import { NameModal } from "@/components/ui/NameModal";
+import { AlertModal } from "@/components/ui/AlertModal";
 
 export function PlaygroundMobile() {
     const { pathname } = useLocation();
@@ -119,7 +119,7 @@ export function PlaygroundMobile() {
 
                             <div className="min-h-0 flex-1 overflow-hidden">
                                 {activeFile && language ? (
-                                    <CodeEditorMobile
+                                    <CodeEditor
                                         key={activeFile.id + language}
                                         value={activeFile.content ?? ""}
                                         onChange={(newText) =>

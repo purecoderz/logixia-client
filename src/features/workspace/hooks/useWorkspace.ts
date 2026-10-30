@@ -1,8 +1,7 @@
 // pages/PLaygroundLayout/hooks/useWorkspace.ts
-
-import { FileManagement, type FsNode } from "../components/Workspace/utils/File";
-import { getLanguage } from "../components/Workspace/utils/language";
-import { useLocalStorage } from "./useLocalStorage";
+import { useLocalStorage } from "../../../hooks/useLocalStorage";
+import { FileManagement, type FsNode } from "../utils/File";
+import { getLanguage } from "../utils/language";
 
 
 export function useWorkspace(prefix: string) {

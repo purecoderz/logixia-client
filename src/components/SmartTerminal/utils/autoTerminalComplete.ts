@@ -1,4 +1,5 @@
-import { FileManagement, type FsNode } from "../../Workspace/utils/File";
+
+import { FileManagement, type FsNode } from "@/features/workspace/utils/File";
 import { commands } from "./terminalCommands";
 
 

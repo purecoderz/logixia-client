@@ -1,5 +1,6 @@
+import type { createAnalysisEngine } from "@/features/workspace/engine/analysisEngine";
 import { autocompletion, type CompletionContext } from "@codemirror/autocomplete";
-import type { createAnalysisEngine } from "../../Workspace/engine/analysisEngine";
+
 
 type AnalysisEngine = ReturnType<typeof createAnalysisEngine>;
 

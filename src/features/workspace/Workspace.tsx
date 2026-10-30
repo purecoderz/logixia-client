@@ -8,14 +8,11 @@ import {
 } from "react-resizable-panels";
 import { Folder, Maximize2, Minimize2, PanelLeftClose, PanelLeftOpen, PanelRight } from "lucide-react";
 
-import { CodeEditor } from "../CodeEditor/CodeEditor";
-import { AlertModal } from "../ui/AlertModal";
-import { NameModal } from "../ui/NameModal";
 
-import { TerminalView, type TerminalLine } from "../SmartTerminal/TerminalView";
-import { useTerminal } from "../SmartTerminal/hooks/useTerminal";
+
+
 import { useMediaQuery } from "../../hooks/useMediaQuery";
-import { useWorkspace } from "../../hooks/useWorkspace";
+import { useWorkspace } from "./hooks/useWorkspace";
 import { FileManagement, type FsNode } from "./utils/File";
 import { Explorer } from "./components/Explorer";
 import { Tabs } from "./components/Tabs";
@@ -23,7 +20,13 @@ import { exportProject, getPath } from "./utils/exportProject";
 import { TopBar } from "./components/TopBar";
 import { StatusBar } from "./components/StatusBar";
 import { Drawer } from "./components/ui/Drawer";
-import { LiveEditor } from "../CodeEditor/LiveEditor";
+import { TerminalView, type TerminalLine } from "@/components/SmartTerminal/TerminalView";
+import { useTerminal } from "@/components/SmartTerminal/hooks/useTerminal";
+import { LiveEditor } from "@/components/CodeEditor/LiveEditor";
+import { CodeEditor } from "@/components/CodeEditor/CodeEditor";
+import { NameModal } from "@/components/ui/NameModal";
+import { AlertModal } from "@/components/ui/AlertModal";
+
 
 export interface WorkspaceContext {
     nodes: FsNode[];

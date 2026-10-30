@@ -1,10 +1,11 @@
 import { useMemo } from "react";
 import type { Extension } from "@codemirror/state";
-import { getAnalysisEngine } from "../../Workspace/engine/analysisEngine";
+
 import { pythonLinter } from "../utils/pythonLinter";
 import { pythonHover } from "../utils/pythonHover";
 import type { SupportedLanguage } from "../utils/languages";
 import { pythonComplete } from "../utils/pythonComplete";
+import { getAnalysisEngine } from "@/features/workspace/engine/analysisEngine";
 
 export function usePythonIntelligence(language: SupportedLanguage): Extension[] {
     return useMemo(() => {

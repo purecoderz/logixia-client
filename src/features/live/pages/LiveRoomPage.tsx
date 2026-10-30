@@ -5,8 +5,6 @@ import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import { Hand, MessageSquare, Mic, MicOff, Power, Terminal } from "lucide-react";
 import { useMediaQuery } from "../../../hooks/useMediaQuery";
 import { useLiveRoom } from "../hooks/useLiveRoom";
-import { CodeWorkspace } from "../../../components/Workspace/workspace";
-import { Drawer } from "../../../components/Workspace/components/ui/Drawer";
 import { AlertModal } from "../../../components/ui/AlertModal";
 import { ConfirmModal } from "../../../components/ui/ConfirmModal";
 import { useAccessVoice } from "../hooks/useAccessVoice";
@@ -17,6 +15,8 @@ import { ParticipantsList } from "../components/classroom/ParticipantsList";
 import { ChatPanel } from "../components/classroom/ChatPanel";
 import { AudioStatusButton } from "../components/classroom/AudioStatusButton";
 import { FloatingTerminal } from "../components/classroom/FloatingTerminal";
+import { CodeWorkspace } from "@/features/workspace/Workspace";
+import { Drawer } from "@/features/workspace/components/ui/Drawer";
 
 
 function explainClose(code: string | null, reason: string): string {

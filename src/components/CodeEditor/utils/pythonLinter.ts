@@ -1,5 +1,6 @@
+import type { createAnalysisEngine } from "@/features/workspace/engine/analysisEngine";
 import { linter, type Diagnostic } from "@codemirror/lint";
-import type { createAnalysisEngine } from "../../Workspace/engine/analysisEngine";
+
 
 type AnalysisEngine = ReturnType<typeof createAnalysisEngine>;
 

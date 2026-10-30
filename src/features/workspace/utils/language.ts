@@ -1,4 +1,5 @@
-import type { SupportedLanguage } from "../../CodeEditor/utils/languages"; // adjust the path
+import type { SupportedLanguage } from "@/components/CodeEditor/utils/languages";
+
 
 const LANGUAGES: Record<string, SupportedLanguage> = {
     py: "python",

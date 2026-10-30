@@ -13,7 +13,7 @@ import { AlertModal } from "../ui/AlertModal";
 import { NameModal } from "../ui/NameModal";
 
 import { TerminalView, type TerminalLine } from "../SmartTerminal/TerminalView";
-import { useTerminal } from "../../utils/Terminals/useTerminal";
+import { useTerminal } from "../SmartTerminal/hooks/useTerminal";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 import { useWorkspace } from "../../hooks/useWorkspace";
 import { FileManagement, type FsNode } from "./utils/File";

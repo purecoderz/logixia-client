@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import type { TerminalLine } from "../../components/SmartTerminal/TerminalView";
+import type { TerminalLine } from "../TerminalView";
 import {
   FileManagement,
   type FsNode,
-} from "../../components/Workspace/utils/File";
-import { collectFiles } from "../../components/Workspace/utils/exportProject";
-import { commands } from "./terminalCommands";
-import { createPythonEngine } from "../../components/Workspace/engine/pythonEngine";
-import { completeInput } from "./autoTerminalComplete";
+} from "../../Workspace/utils/File";
+import { collectFiles } from "../../Workspace/utils/exportProject";
+import { commands } from "../utils/terminalCommands";
+import { createPythonEngine } from "../../Workspace/engine/pythonEngine";
+import { completeInput } from "../utils/autoTerminalComplete";
 
 export function useTerminal(
   nodes: FsNode[],

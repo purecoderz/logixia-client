@@ -13,7 +13,7 @@ import { FileManagement, type FsNode } from "./utils/File";
 import { exportProject, getPath } from "./utils/exportProject";
 import { getLanguage } from "./utils/language";
 import { TerminalView } from "../SmartTerminal/TerminalView";
-import { useTerminal } from "../../utils/Terminals/useTerminal";
+import { useTerminal } from "../SmartTerminal/hooks/useTerminal";
 import { StatusBar } from "./components/StatusBar";
 
 export function PlaygroundLayout() {

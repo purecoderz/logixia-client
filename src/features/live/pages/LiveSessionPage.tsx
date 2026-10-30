@@ -6,7 +6,7 @@ import { Radio, CalendarClock, Video } from "lucide-react";
 import { SearchBar } from "../../../components/ui/SearchBar";
 import { GlobalHero } from "../../cohorts/components/students/CohortsHero";
 import { SessionService, type Session } from "../services/liveSessionServices";
-import { LiveSessionsView } from "../../components/liveSession/LiveSessionsView";
+import { LiveSessionsView } from "../components/session/LiveSessionsView";
 
 const hero = {
   eyebrow: "Live sessions",

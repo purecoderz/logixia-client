@@ -1,8 +1,8 @@
 // components/LiveRoom/FloatingTerminal.tsx
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { X } from "lucide-react";
-import { TerminalOutput } from "../SmartTerminal/TerminalOutput";
-import type { TerminalLine } from "../SmartTerminal/TerminalView";
+import type { TerminalLine } from "@/components/SmartTerminal/TerminalView";
+import { TerminalOutput } from "@/components/SmartTerminal/TerminalOutput";
 
 interface FloatingTerminalProps {
   open: boolean;

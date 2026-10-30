@@ -5,7 +5,7 @@ import { EditorView } from "@codemirror/view";
 import { Prec } from "@codemirror/state";
 import { dracula } from "@uiw/codemirror-theme-dracula";
 import { LANGUAGE_EXTENSIONS, type SupportedLanguage } from "./utils/languages";
-import { usePythonIntelligence } from "./utils/usePythonIntelligence";
+import { usePythonIntelligence } from "./hooks/usePythonIntelligence";
 
 export const editorTheme = EditorView.theme(
   {

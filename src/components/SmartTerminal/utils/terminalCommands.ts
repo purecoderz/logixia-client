@@ -1,5 +1,5 @@
-import type { TerminalLine } from "../../components/SmartTerminal/TerminalView";
-import { FileManagement, type FsNode } from "../../components/Workspace/utils/File";
+import type { TerminalLine } from "../TerminalView";
+import { FileManagement, type FsNode } from "../../Workspace/utils/File";
 
 export type CommandResult = {
   lines?: TerminalLine[];

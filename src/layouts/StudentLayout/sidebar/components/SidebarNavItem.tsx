@@ -1,5 +1,5 @@
 import React from 'react';
-import type { NavItem } from '../../../../StaticData/student/navConfig';
+import type { NavItem } from '../../navConfig';
 import { Link } from 'react-router-dom';
 
 interface SidebarNavItemProps {

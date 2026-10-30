@@ -1,5 +1,5 @@
 import React from 'react';
-import type { NavSection } from '../../../../StaticData/student/navConfig';
+import type { NavSection } from '../../navConfig';
 import { SidebarNavItem } from './SidebarNavItem';
 import { useLocation } from 'react-router-dom';
 

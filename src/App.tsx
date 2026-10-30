@@ -1,7 +1,7 @@
 import { AuthPage } from "./features/auth/AuthenticationPage"
 import { Route, Routes } from "react-router-dom"
 import StudentLayout from "./layouts/StudentLayout/StudentLayouts"
-import { Home } from "./pages/Home/HomePage"
+import { Home } from "./features/home/pages/HomePage"
 
 import { CohortDetails } from "./features/cohorts/Pages/CohortDetailsPage"
 import { LecturePage } from "./pages/Lectures/LecturePage"

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { ChevronDown, LogOut, X } from "lucide-react";
-import { instructorNav, type InstructorNavItem } from "../../../StaticData/instructor/navConfig";
+import { instructorNav, type InstructorNavItem } from "../navConfig";
 import { useAuth } from "../../../features/auth/context/AuthContext";
 
 

@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import { Hero } from "../../components/Home/Hero";
-import { CohortCard } from "../../components/Home/CohortCard";
-import { CourseCard } from "../../components/Home/CourseCard";
-import { PlaygroundBanner } from "../../components/Home/PlaygroundBanner";
-import { HostCohortBanner } from "../../features/cohorts/components/students/HostCohortBanner";
+import { Hero } from "../components/Hero";
+import { CohortCard } from "../components/CohortCard";
+import { CourseCard } from "../../courses/components/CourseCard";
+import { PlaygroundBanner } from "../components/PlaygroundBanner";
+import { HostCohortBanner } from "../../cohorts/components/students/HostCohortBanner";
 
 export function Home() {
   const courses = [

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { InstructorSidebar } from "./Sidebar/InstructorSidebar";
-import { InstructorTopbar } from "./Sidebar/InstructorTopbar";
+import { InstructorTopbar } from "./InstructorTopbar";
 
 
 export function InstructorLayout() {

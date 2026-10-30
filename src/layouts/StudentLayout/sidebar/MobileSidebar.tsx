@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { GUEST_NAV_SECTIONS, STUDENT_NAV_SECTIONS } from '../../../StaticData/student/navConfig';
+import { GUEST_NAV_SECTIONS, STUDENT_NAV_SECTIONS } from '../navConfig';
 import { SidebarHeader } from './components/SidebarHeader';
 import { SidebarSection } from './components/SidebarSection';
 import { SidebarFooter } from './components/SidebarFooter';

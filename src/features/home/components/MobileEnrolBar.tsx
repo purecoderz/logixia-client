@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { cohort, seatsLeft } from "../../pages/Home/cohortData";
+import { cohort, seatsLeft } from "../cohortData";
 
 export function MobileEnrolBar() {
   return (

@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
-import { CohortService } from "../../features/cohorts/Services/cohortService";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { CohortService } from "../Services/cohortService";
+import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { useEffect } from "react";
 
 export function CohortSwitcher() {

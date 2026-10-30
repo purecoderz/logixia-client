@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Bell, LogOut, Menu, Search, Settings } from "lucide-react";
 import { useAuth } from "../../features/auth/context/AuthContext";
 import { ConfirmModal } from "../../components/ui/ConfirmModal";
-import { CohortSwitcher } from "./CohortSwitcher";
+import { CohortSwitcher } from "../../features/cohorts/components/CohortSwitcher";
 
 
 interface TopbarProps {

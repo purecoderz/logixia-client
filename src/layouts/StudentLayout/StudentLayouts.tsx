@@ -1,8 +1,8 @@
 import { Outlet } from "react-router-dom";
-import { StudentSidebar } from "../sidebar/Sidebar";
+import { StudentSidebar } from "./sidebar/Sidebar";
 import { useCallback, useState } from "react";
 import { Topbar } from "../topbar/TopBar";
-import { MobileSidebar } from "../sidebar/MobileSidebar";
+import { MobileSidebar } from "./sidebar/MobileSidebar";
 import { BottomNav, useShowBottomNav } from "./BottomNav";
 
 function StudentLayout() {
@@ -22,7 +22,7 @@ function StudentLayout() {
     return (
         <div className="flex h-screen">
             <div className="hidden md:block">
-                <StudentSidebar isCollapsed={isCollapsed} onToggleCollapse={onToggleCollapse} />
+                <StudentSidebar isCollapsed={isCollapsed} />
             </div>
 
             <MobileSidebar isOpen={isMobileOpen} onClose={closeMobile} />

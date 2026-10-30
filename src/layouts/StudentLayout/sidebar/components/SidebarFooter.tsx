@@ -1,7 +1,7 @@
 import  { useState } from 'react';
-import { useAuth } from '../../../features/auth/context/AuthContext';
+import { useAuth } from '../../../../features/auth/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { ConfirmModal } from '../../../components/ui/ConfirmModal';
+import { ConfirmModal } from '../../../../components/ui/ConfirmModal';
 
 interface FooterProps {
   isCollapsed: boolean
@@ -25,7 +25,7 @@ export const SidebarFooter = ({ isCollapsed }: FooterProps) => {
         <button
           type="button"
           onClick={() => {
-            navigate("/login")
+            navigate("/auth/login")
           }}
           className={`w-full flex items-center justify-center gap-2 py-2.5 px-3 bg-[#238636] hover:bg-[#2ea043] text-white rounded-xl font-mono text-xs font-bold transition-all shadow-sm active:scale-[0.98] ${isCollapsed ? 'px-0' : ''
             }`}

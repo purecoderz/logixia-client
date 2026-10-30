@@ -17,7 +17,7 @@ export function UserProtectedRoute() {
 
   if (!profile) {
     // Remember where they were trying to go
-    return <Navigate to="/login" replace state={{ from: location }} />;
+    return <Navigate to="/auth/login" replace state={{ from: location }} />;
   }
 
   return <Outlet />;

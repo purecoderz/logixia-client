@@ -1,18 +1,20 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import type { LoginPayload, User } from "../../../services/authservice";
 import authservices from "../../../services/authservice";
-
+import { AUTH_EXPIRED_EVENT } from "../../../lib/http";
 
 interface AuthContextType {
     profile: User | null
     login: (payload: LoginPayload) => Promise<void>;
     isLoading: boolean
-    logout: ()=>void
+    logout: () => void
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 function AuthProvider({ children }: { children: ReactNode }) {
+    const queryClient = useQueryClient()
     const [profile, setProfile] = useState<User | null>(null)
     const [isLoading, setIsLoading] = useState(true)
 
@@ -22,9 +24,10 @@ function AuthProvider({ children }: { children: ReactNode }) {
         setProfile(response)
     }
 
-    const logout = ()=>{
+    const logout = () => {
         authservices.logout()
         setProfile(null)
+        queryClient.clear()
     }
 
     useEffect(() => {
@@ -32,8 +35,8 @@ function AuthProvider({ children }: { children: ReactNode }) {
             try {
                 const res = await authservices.getCurrentUser()
                 setProfile(res)
-            } catch (err) {
-                authservices.logout()
+            } catch {
+                setProfile(null)
             } finally {
                 setIsLoading(false)
             }
@@ -41,8 +44,15 @@ function AuthProvider({ children }: { children: ReactNode }) {
         checkLogin()
     }, [])
 
-
-
+    // session really expired (refresh failed): clear everything, the protected route redirects
+    useEffect(() => {
+        const onExpired = () => {
+            setProfile(null)
+            queryClient.clear()
+        }
+        window.addEventListener(AUTH_EXPIRED_EVENT, onExpired)
+        return () => window.removeEventListener(AUTH_EXPIRED_EVENT, onExpired)
+    }, [queryClient])
 
     return (
         <AuthContext value={{ profile, login, isLoading, logout }}>

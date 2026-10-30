@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuth } from '../../../features/auth/context/AuthContext';
+import { useAuth } from '../../../../features/auth/context/AuthContext';
 
 interface SidebarHeaderProps {
   isCollapsed: boolean;

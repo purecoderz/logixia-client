@@ -1,7 +1,6 @@
 import { AuthPage } from "./features/auth/AuthenticationPage"
 import { Route, Routes } from "react-router-dom"
 import StudentLayout from "./layouts/StudentLayout/StudentLayouts"
-import Sidebar from "./layouts/InstructorLayout/Sidebar/Sidebar"
 import { Home } from "./pages/Home/HomePage"
 import { CohortsPage } from "./pages/Cohorts/CohortsPage"
 import { CohortDetails } from "./pages/Cohorts/CohortDetailsPage"
@@ -14,6 +13,8 @@ import { AssignmentGroundPage } from "./pages/student/AssignmentGroundPage"
 import { useAuth } from "./features/auth/context/AuthContext"
 import { StudentDashboardPage } from "./pages/student/StudentDashboardPage"
 import { UserProtectedRoute } from "./components/routes/UserProtectedRoute"
+import { InstructorLayout } from "./layouts/InstructorLayout/InstructorLayout"
+import { InstructorCohortsPage } from "./pages/instructor/instructorCohortsPage/InsrtuctorCohortPage"
 
 
 
@@ -31,7 +32,8 @@ function App() {
 
 
     <Routes>
-      <Route path="/login" element={<AuthPage />} />
+      <Route path="/auth/login" element={<AuthPage />} />
+      <Route path="/auth/signup" element={<AuthPage />} />
       <Route path="/playground" element={<PlaygroundPage />} />
 
       {/* full screen pages for student with login */}
@@ -40,7 +42,24 @@ function App() {
         <Route path="/assignments/:id" element={<AssignmentGroundPage />} />
       </Route>
 
-      <Route path="/instructor" element={<Sidebar />} />
+      {/* Instructor pages */}
+      <Route path="/instructor" element={<InstructorLayout />} >
+        <Route path="cohorts" element={<InstructorCohortsPage/>} />
+        <Route path="cohorts/new" element={<h1>Testing page</h1>} />
+        <Route path="courses" element={<h1>Testing page</h1>} />
+        <Route path="courses/new" element={<h1>Testing page</h1>} />
+        <Route path="plan" element={<h1>Testing page</h1>} />
+
+
+
+
+
+      </Route>
+
+
+
+
+    {/* student pages routes */}
       <Route element={<StudentLayout />} >
 
         <Route element={<UserProtectedRoute />}>

@@ -1,17 +1,16 @@
-import { GUEST_NAV_SECTIONS, STUDENT_NAV_SECTIONS } from '../../StaticData/navConfig';
+import { GUEST_NAV_SECTIONS, STUDENT_NAV_SECTIONS } from '../../../StaticData/student/navConfig';
 import { SidebarHeader } from './components/SidebarHeader';
 import { SidebarSection } from './components/SidebarSection';
 import { SidebarFooter } from './components/SidebarFooter';
-import { useAuth } from '../../features/auth/context/AuthContext';
+import { useAuth } from '../../../features/auth/context/AuthContext';
 
 interface SidebarProps {
   isCollapsed: boolean;
-  onToggleCollapse: () => void;
+
 }
 
 export const StudentSidebar = ({
   isCollapsed,
-  onToggleCollapse,
 }: SidebarProps) => {
   const { profile, isLoading } = useAuth()
 

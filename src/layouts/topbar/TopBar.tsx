@@ -138,7 +138,7 @@ export function Topbar({ isCollapsed, onToggleCollapse }: TopbarProps) {
                         </div>
                     ) : (
                         <Link
-                            to="/login"
+                            to="/auth/login"
                             className="rounded-lg bg-[#238636] px-4 py-1.5 text-sm font-medium text-white"
                         >
                             Sign in

@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { GUEST_NAV_SECTIONS, STUDENT_NAV_SECTIONS } from '../../StaticData/navConfig';
+import { GUEST_NAV_SECTIONS, STUDENT_NAV_SECTIONS } from '../../../StaticData/student/navConfig';
 import { SidebarHeader } from './components/SidebarHeader';
 import { SidebarSection } from './components/SidebarSection';
 import { SidebarFooter } from './components/SidebarFooter';
-import { useAuth } from '../../features/auth/context/AuthContext';
+import { useAuth } from '../../../features/auth/context/AuthContext';
 
 interface MobileSidebarProps {
   isOpen: boolean;
@@ -71,7 +71,6 @@ export const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
             <SidebarHeader
               isCollapsed={false}
               onBrandClick={onClose}
-              onToggleCollapse={onClose}
             />
 
             <div className="custom-scrollbar flex-1 space-y-6 overflow-y-auto px-3 py-4">

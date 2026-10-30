@@ -3,42 +3,56 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import type { Assignment, AssignmentStatus } from "../../services/assignmentService";
+import { daysUntil, formatTime, plural } from "../../utils/assignments";
+
 
 type SortKey = "title" | "due" | "xp";
 type Sort = { key: SortKey; dir: "asc" | "desc" } | null;
 
-const DAY = 86_400_000;
-const startOfDay = (d: Date) =>
-  new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-const time = (d: Date) =>
-  d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 
-const STATUS: Record<AssignmentStatus, { label: string; chip: string }> = {
-  active: { label: "Active", chip: "bg-[#1f6feb]/15 text-[#58a6ff]" },
-  done: { label: "Done", chip: "bg-[#3fb950]/15 text-[#3fb950]" },
-  missed: { label: "Missed", chip: "bg-[#f85149]/15 text-[#f85149]" },
+const CHIP: Record<AssignmentStatus, string> = {
+  active: "bg-[#1f6feb]/15 text-[#58a6ff]",
+  done: "bg-[#3fb950]/15 text-[#3fb950]",
+  incomplete: "bg-[#d29922]/15 text-[#d29922]",
+  missed: "bg-[#f85149]/15 text-[#f85149]",
 };
+
+function statusLabel(a: Assignment) {
+  switch (a.uiStatus) {
+    case "done":
+      return "Completed";
+    case "incomplete":
+      return "Incomplete";
+    case "missed":
+      return "Missed";
+    default:
+      return a.status === null ? "Not started" : "In progress";
+  }
+}
 
 function due(a: Assignment) {
   const d = new Date(a.due_date);
-  const days = Math.round((startOfDay(d) - startOfDay(new Date())) / DAY);
+  const days = daysUntil(d);
+  const ago = Math.abs(days);
 
-  if (a.status === "done") {
-    const when = a.submitted_at
-      ? new Date(a.submitted_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })
-      : null;
-    return { text: when ? `Submitted ${when}` : "Submitted", color: "text-[#3fb950]" };
+  switch (a.uiStatus) {
+    case "done":
+      return { text: "Passed all tests", color: "text-[#3fb950]" };
+    case "incomplete":
+      return {
+        text: ago === 0 ? "Deadline passed today" : `Deadline passed ${plural(ago)} ago`,
+        color: "text-[#d29922]",
+      };
+    case "missed":
+      return {
+        text: ago === 0 ? "Overdue today" : `${plural(ago)} overdue`,
+        color: "text-[#f85149]",
+      };
+    default:
+      if (days === 0) return { text: `Today, ${formatTime(d)}`, color: "text-[#d29922]" };
+      if (days === 1) return { text: `Tomorrow, ${formatTime(d)}`, color: "text-[#d29922]" };
+      return { text: `In ${days} days`, color: "text-[#c9d1d9]" };
   }
-  if (a.status === "missed") {
-    const n = Math.abs(days);
-    return {
-      text: n === 0 ? "Overdue today" : `${n} day${n > 1 ? "s" : ""} overdue`,
-      color: "text-[#f85149]",
-    };
-  }
-  if (days === 0) return { text: `Today, ${time(d)}`, color: "text-[#d29922]" };
-  if (days === 1) return { text: `Tomorrow, ${time(d)}`, color: "text-[#d29922]" };
-  return { text: `In ${days} days`, color: "text-[#c9d1d9]" };
 }
 
 function SortHeader({
@@ -66,9 +80,8 @@ function SortHeader({
       <button
         type="button"
         onClick={() => onSort(k)}
-        className={`inline-flex items-center gap-1 transition-colors hover:text-white ${
-          active ? "text-white" : ""
-        }`}
+        className={`inline-flex items-center gap-1 transition-colors hover:text-white ${active ? "text-white" : ""
+          }`}
       >
         {label}
         {active && <Arrow className="size-3" aria-hidden />}
@@ -85,8 +98,8 @@ export function AssignmentsTable({ assignments }: { assignments: Assignment[] })
       s?.key !== key
         ? { key, dir: "asc" }
         : s.dir === "asc"
-        ? { key, dir: "desc" }
-        : null // third click returns to the default order
+          ? { key, dir: "desc" }
+          : null // third click returns to the default order
     );
 
   const rows = useMemo(() => {
@@ -125,13 +138,13 @@ export function AssignmentsTable({ assignments }: { assignments: Assignment[] })
                   >
                     {a.title}
                   </Link>
-                  <div className="text-xs text-[#8b949e]">{a.lesson_title}</div>
+                  <div className="text-xs capitalize text-[#8b949e]">{a.type}</div>
                 </td>
                 <td className="px-4 py-3">
                   <span
-                    className={`rounded-md px-2 py-0.5 text-[11px] font-medium ${STATUS[a.status].chip}`}
+                    className={`whitespace-nowrap rounded-md px-2 py-0.5 text-[11px] font-medium ${CHIP[a.uiStatus]}`}
                   >
-                    {STATUS[a.status].label}
+                    {statusLabel(a)}
                   </span>
                 </td>
                 <td className={`px-4 py-3 ${d.color}`}>{d.text}</td>

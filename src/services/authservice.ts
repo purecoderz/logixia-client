@@ -1,3 +1,5 @@
+import { apiFetch } from "../lib/http";
+
 // services/authService.ts
 export interface SignupPayload {
   fullname: string;
@@ -29,23 +31,17 @@ const api = "http://localhost:8000";
 
 const authservices = {
   async getCurrentUser(): Promise<User | null> {
-    const response = await fetch(`${api}/user`, {
-      method: "GET",
-      credentials: "include",
-    });
+    const response = await apiFetch("/user");
 
-    if (response.status === 401) {
-      return null;
-    }
+    if (response.status === 401) return null;
 
     if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.detail);
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.detail ?? "Failed to load user");
     }
 
-    return await response.json();
+    return response.json();
   },
-
   async userLogin(payload: LoginPayload): Promise<LoginResponse> {
     const response = await fetch(`${api}/login`, {
       method: "POST",

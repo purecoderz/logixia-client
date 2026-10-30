@@ -11,7 +11,12 @@ import { AssignmentsTable } from "./AssignmentTable";
 type Filter = "all" | AssignmentStatus;
 type View = "grid" | "table";
 
-const RANK: Record<AssignmentStatus, number> = { active: 0, missed: 1, done: 2 };
+const RANK: Record<AssignmentStatus, number> = {
+  active: 0,
+  incomplete: 1,
+  missed: 2,
+  done: 3,
+};
 const VIEW_KEY = "assignments-view";
 
 export function AssignmentsView({ assignments }: { assignments: Assignment[] }) {
@@ -25,11 +30,13 @@ export function AssignmentsView({ assignments }: { assignments: Assignment[] }) 
   }, [view]);
 
   const options = useMemo(() => {
-    const count = (s: AssignmentStatus) => assignments.filter((a) => a.status === s).length;
+    const count = (s: AssignmentStatus) =>
+      assignments.filter((a) => a.uiStatus === s).length;
     return [
       { value: "all" as Filter, label: `All ${assignments.length}` },
       { value: "active" as Filter, label: `Active ${count("active")}` },
       { value: "done" as Filter, label: `Done ${count("done")}` },
+      { value: "incomplete" as Filter, label: `Incomplete ${count("incomplete")}` },
       { value: "missed" as Filter, label: `Missed ${count("missed")}` },
     ];
   }, [assignments]);
@@ -37,10 +44,10 @@ export function AssignmentsView({ assignments }: { assignments: Assignment[] }) 
   const visible = useMemo(
     () =>
       assignments
-        .filter((a) => filter === "all" || a.status === filter)
+        .filter((a) => filter === "all" || a.uiStatus === filter)
         .sort(
           (x, y) =>
-            RANK[x.status] - RANK[y.status] ||
+            RANK[x.uiStatus] - RANK[y.uiStatus] ||
             new Date(x.due_date).getTime() - new Date(y.due_date).getTime()
         ),
     [assignments, filter]

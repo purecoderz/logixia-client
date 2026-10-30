@@ -1,9 +1,9 @@
 // pages/Assignments/AssignmentsPage.tsx
-import { useEffect, useMemo, useState } from "react";
-
-import { AssignmentService, type Assignment } from "../../services/assignmentService";
-import { SearchBar } from "../../components/Cohorts/SearchBar";
+import { useMemo, useState } from "react";
 import { CalendarClock, CheckCircle2, Zap } from "lucide-react";
+
+import { useAssignments } from "../../hooks/useAssignments";
+import { SearchBar } from "../../components/Cohorts/SearchBar";
 import { GlobalHero } from "../../components/Cohorts/CohortsHero";
 import { AssignmentsView } from "../../components/AssignmentUi/AssignmentView";
 import { CardGridSkeleton } from "../../components/ui/CardGridSkeleton";
@@ -20,52 +20,25 @@ const hero = {
 };
 
 export function AssignmentsPage() {
-  const [assignments, setAssignments] = useState<Assignment[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errMessage, setErrMessage] = useState<string | null>(null);
   const [query, setQuery] = useState("");
-
-  useEffect(() => {
-    let ignore = false;
-
-    const fetchAssignments = async () => {
-      setErrMessage(null);
-      try {
-        const response = await AssignmentService.getAssignments();
-        const responses = await AssignmentService.getTask();
-        if (!ignore) setAssignments(response);
-      } catch (err) {
-        if (!ignore) {
-          setErrMessage(err instanceof Error ? err.message : "Something went wrong");
-        }
-      } finally {
-        if (!ignore) setIsLoading(false);
-      }
-    };
-
-    fetchAssignments();
-    return () => {
-      ignore = true;
-    };
-  }, []);
+  const { data: assignments = [], isLoading, error } = useAssignments();
 
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return assignments;
-
-    return assignments.filter((a) =>
-      `${a.title} ${a.lesson_title} ${a.cohort_name}`.toLowerCase().includes(q)
-    );
+    return assignments.filter((a) => `${a.title} ${a.type}`.toLowerCase().includes(q));
   }, [query, assignments]);
 
   return (
     <div className="space-y-4">
-      {errMessage && <p className="text-red-500">{errMessage}</p>}
+      {error && <p className="text-red-500">{error.message}</p>}
       <SearchBar value={query} onChange={setQuery} placeholder="Search assignments" />
       <GlobalHero {...hero} />
 
-      {isLoading ? <CardGridSkeleton label="Loading assignments" /> : (
-        !errMessage && <AssignmentsView assignments={matches} />
+      {isLoading ? (
+        <CardGridSkeleton label="Loading assignments" />
+      ) : (
+        !error && <AssignmentsView assignments={matches} />
       )}
     </div>
   );

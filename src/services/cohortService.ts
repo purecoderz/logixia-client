@@ -1,8 +1,8 @@
 import type { Cohort } from "../components/Cohorts/CohortCard";
-import { CohortUtils } from "../utils/Cohorts";
 
-const BASE_URL = "http://localhost:8000";
-const API_URL = `${BASE_URL}/cohorts`;
+import { CohortUtils } from "../utils/Cohorts";
+import { apiFetch } from "../lib/http";
+import type { InstructorCohort, InstructorCohortStatus } from "../types/cohort";
 
 // Types
 export type CohortStatus =
@@ -21,7 +21,23 @@ export interface RawCohort {
   price: number;
   subtitle?: string;
   seats_taken?: number;
-  seats_total?: number;
+  seats?: number; // what the API actually sends
+  seats_total?: number; // legacy fallback
+}
+
+// GET /instructor/cohorts
+export interface RawInstructorCohort {
+  id: number;
+  name: string;
+  course_id: number;
+  course_title: string;
+  start_date: string;
+  end_date: string;
+  price: number;
+  seats: number;
+  seats_taken: number;
+  is_published: boolean;
+  status: InstructorCohortStatus;
 }
 
 // Used by the topbar cohort switcher
@@ -30,48 +46,43 @@ export interface CohortOption {
   name: string;
 }
 
-export interface MyCohorts {
-  items: CohortOption[];
-  activeCohortId: number | null;
-}
-
 async function handleError(response: Response): Promise<never> {
-  const error = await response.json().catch(() => "Request failed");
-  throw new Error(typeof error === "string" ? error : JSON.stringify(error));
+  const error = await response.json().catch(() => null);
+  const message =
+    typeof error === "string" ? error : error?.detail ?? "Request failed";
+  throw new Error(typeof message === "string" ? message : JSON.stringify(message));
 }
 
 // Cohort API Service
 export const CohortService = {
-  async getCohorts(endpoint: string = API_URL): Promise<Cohort[]> {
-    const response = await fetch(endpoint);
-
+  async getCohorts(path: string = "/cohorts"): Promise<Cohort[]> {
+    const response = await apiFetch(path);
     if (!response.ok) return handleError(response);
 
     const rawData: RawCohort[] | RawCohort = await response.json();
+    return Array.isArray(rawData)
+      ? rawData.map((item) => CohortUtils.transform(item))
+      : [CohortUtils.transform(rawData)];
+  },
 
-    if (Array.isArray(rawData)) {
-      return rawData.map((item) => CohortUtils.transform(item));
-    }
+  // TODO: change the path if your instructor route is named differently
+  async getInstructorCohorts(path: string = "/instructor/cohorts"): Promise<InstructorCohort[]> {
+    const response = await apiFetch(path);
+    if (!response.ok) return handleError(response);
 
-    return [CohortUtils.transform(rawData)];
+    const raw: RawInstructorCohort[] = await response.json();
+    return raw.map((item) => CohortUtils.transformForInstructor(item));
   },
 
   async getCohortsDetails(id: string): Promise<Cohort[]> {
-    const response = await fetch(`${API_URL}/${id}`);
-
+    const response = await apiFetch(`/cohorts/${id}`);
     if (!response.ok) return handleError(response);
-
     return response.json();
   },
 
   async getMine(): Promise<CohortOption[]> {
-    const response = await fetch(`${BASE_URL}/me/cohorts`, {
-      credentials: "include",
-    });
-
+    const response = await apiFetch("/user/cohorts");
     if (!response.ok) return handleError(response);
-
     return response.json();
   },
-
 };

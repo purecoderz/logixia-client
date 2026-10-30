@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { Calendar, Users, Video } from "lucide-react";
 import { CohortService, type CohortStatus } from "../Services/cohortService";
-import { CohortCard, type Cohort } from "../components/students/CohortCard";
+
 import { CardGridSkeleton } from "@/components/ui/CardGridSkeleton";
 import { SearchBar } from "../components/students/SearchBar";
 import { GlobalHero } from "../components/students/CohortsHero";
 import { FilterTabs } from "../components/students/FilterTabs";
 import { HostCohortBanner } from "../components/students/HostCohortBanner";
+import type { Cohort } from "../types/types";
+import { CohortCard } from "../components/students/CohortCard";
 
 
 type Filter = "all" | CohortStatus;

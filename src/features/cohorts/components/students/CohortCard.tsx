@@ -1,19 +1,7 @@
 import { Calendar, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
+import type { Cohort, CohortStatus } from "../../types/types";
 
-export type CohortStatus = "open" | "starting-soon" | "in-progress" | "completed";
-
-export interface Cohort {
-    id: string;
-    status: CohortStatus;
-    name: string;
-    subtitle: string;
-    startsOn: string;
-    durationLabel: string; // "12 weeks" or "Week 6 of 12"
-    seatsTaken: number;
-    seatsTotal: number;
-    price: number;
-}
 
 export type EnrolInfo = Pick<Cohort, "status" | "startsOn" | "durationLabel" | "price"> &
   Partial<Pick<Cohort, "seatsTaken" | "seatsTotal">>;

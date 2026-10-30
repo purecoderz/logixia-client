@@ -1,8 +1,8 @@
-import type { Cohort } from "../components/students/CohortCard";
+
 
 import { CohortUtils } from "../utils/Cohorts";
 import { apiFetch } from "../../../lib/http";
-import type { InstructorCohort, InstructorCohortStatus } from "../types/types";
+import type { Cohort, InstructorCohort, InstructorCohortStatus } from "../types/types";
 
 // Types
 export type CohortStatus =

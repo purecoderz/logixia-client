@@ -3,8 +3,8 @@ import { useMemo, useState } from "react";
 import { CalendarClock, CheckCircle2, Zap } from "lucide-react";
 
 import { useAssignments } from "../../hooks/useAssignments";
-import { SearchBar } from "../../components/Cohorts/SearchBar";
-import { GlobalHero } from "../../components/Cohorts/CohortsHero";
+import { SearchBar } from "../../features/cohorts/components/students/SearchBar";
+import { GlobalHero } from "../../features/cohorts/components/students/CohortsHero";
 import { AssignmentsView } from "../../components/AssignmentUi/AssignmentView";
 import { CardGridSkeleton } from "../../components/ui/CardGridSkeleton";
 

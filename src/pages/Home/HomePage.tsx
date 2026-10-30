@@ -3,7 +3,7 @@ import { Hero } from "../../components/Home/Hero";
 import { CohortCard } from "../../components/Home/CohortCard";
 import { CourseCard } from "../../components/Home/CourseCard";
 import { PlaygroundBanner } from "../../components/Home/PlaygroundBanner";
-import { HostCohortBanner } from "../../components/Cohorts/HostCohortBanner";
+import { HostCohortBanner } from "../../features/cohorts/components/students/HostCohortBanner";
 
 export function Home() {
   const courses = [

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { Calendar, Check, Users, Video } from "lucide-react";
 
-import { STATUS_STYLES } from "../../components/Cohorts/CohortCard";
+import { STATUS_STYLES } from "../../features/cohorts/components/students/CohortCard";
 import { EnrolCard, MobileEnrolBar } from "../../components/CohortsDetails/EnrolCard";
 import { CohortService, type CohortStatus } from "../../features/cohorts/Services/cohortService";
 

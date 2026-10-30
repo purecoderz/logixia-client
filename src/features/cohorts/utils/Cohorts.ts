@@ -1,4 +1,4 @@
-import type { Cohort } from "../../../components/Cohorts/CohortCard";
+import type { Cohort } from "../components/students/CohortCard";
 import type { InstructorCohort } from "../types/types";
 import type { CohortStatus, RawCohort, RawInstructorCohort } from "../Services/cohortService";
 

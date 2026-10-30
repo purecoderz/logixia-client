@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Calendar, Users, Video } from "lucide-react";
-import { SearchBar } from "../../components/Cohorts/SearchBar";
-import { GlobalHero as CohortsHero } from "../../components/Cohorts/CohortsHero";
-import { FilterTabs } from "../../components/Cohorts/FilterTabs";
-import { CohortCard, type Cohort, type CohortStatus } from "../../components/Cohorts/CohortCard";
-import { HostCohortBanner } from "../../components/Cohorts/HostCohortBanner";
+import { SearchBar } from "../../features/cohorts/components/students/SearchBar";
+import { GlobalHero as CohortsHero } from "../../features/cohorts/components/students/CohortsHero";
+import { FilterTabs } from "../../features/cohorts/components/students/FilterTabs";
+import { CohortCard, type Cohort, type CohortStatus } from "../../features/cohorts/components/students/CohortCard";
+import { HostCohortBanner } from "../../features/cohorts/components/students/HostCohortBanner";
 import { CohortService } from "../../features/cohorts/Services/cohortService";
 import { CardGridSkeleton } from "../../components/ui/CardGridSkeleton";
 

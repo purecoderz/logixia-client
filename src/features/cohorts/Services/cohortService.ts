@@ -1,4 +1,4 @@
-import type { Cohort } from "../../../components/Cohorts/CohortCard";
+import type { Cohort } from "../components/students/CohortCard";
 
 import { CohortUtils } from "../utils/Cohorts";
 import { apiFetch } from "../../../lib/http";

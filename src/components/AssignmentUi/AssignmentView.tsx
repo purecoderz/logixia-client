@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { LayoutGrid, List } from "lucide-react";
 
 import type { Assignment, AssignmentStatus } from "../../services/assignmentService";
-import { FilterTabs } from "../../components/Cohorts/FilterTabs";
+import { FilterTabs } from "../../features/cohorts/components/students/FilterTabs";
 import { AssignmentCard } from "./AssignmentCard";
 import { AssignmentsTable } from "./AssignmentTable";
 

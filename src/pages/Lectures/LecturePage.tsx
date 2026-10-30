@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Clock, Code, PlayCircle } from "lucide-react";
-import { SearchBar } from "../../components/Cohorts/SearchBar";
-import { GlobalHero } from "../../components/Cohorts/CohortsHero";
-import { FilterTabs } from "../../components/Cohorts/FilterTabs";
+import { SearchBar } from "../../features/cohorts/components/students/SearchBar";
+import { GlobalHero } from "../../features/cohorts/components/students/CohortsHero";
+import { FilterTabs } from "../../features/cohorts/components/students/FilterTabs";
 import { TutorialService, type Tutorial, type TutorialLevel } from "../../services/LecturesService";
 import { LectureCard} from "../../components/Lecture/LectureCard";
 

@@ -3,8 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Radio, CalendarClock, Video } from "lucide-react";
 
 
-import { SearchBar } from "../../components/Cohorts/SearchBar";
-import { GlobalHero } from "../../components/Cohorts/CohortsHero";
+import { SearchBar } from "../../features/cohorts/components/students/SearchBar";
+import { GlobalHero } from "../../features/cohorts/components/students/CohortsHero";
 import { SessionService, type Session } from "../../services/liveSessionServices";
 import { LiveSessionsView } from "../../components/liveSession/LiveSessionsView";
 

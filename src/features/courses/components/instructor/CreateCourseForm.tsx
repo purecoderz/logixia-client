@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Button } from "../../../../components/ui/Button";
+import { friendlyMessage } from "../../../../lib/apiError";
 import { Field, fieldProps } from "../../../../components/ui/Field";
+import { FormError } from "../../../../components/ui/FormError";
 import { inputClass } from "../../../../components/ui/formStyles";
 import { Markdown } from "../../../../components/ui/Markdown";
 import { MarkdownEditor } from "../../../../components/ui/MarkdownEditor";
@@ -78,7 +80,7 @@ export function CreateCourseForm({ languages, onSubmit, onCancel }: CreateCourse
         if (first) document.getElementById(first)?.focus();
       }
     } catch (error) {
-      setFormError(error instanceof Error ? error.message : "Something went wrong. Please try again.");
+      setFormError(friendlyMessage(error, "Couldn't save the course. Please try again."));
     } finally {
       setSaving(false);
     }
@@ -197,9 +199,9 @@ export function CreateCourseForm({ languages, onSubmit, onCancel }: CreateCourse
 
         <div className="flex flex-wrap items-center justify-between gap-4 p-6">
           {formError && (
-            <p role="alert" className="w-full text-sm text-red-400">
-              {formError}
-            </p>
+            <div className="w-full">
+              <FormError message={formError} onDismiss={() => setFormError(null)} />
+            </div>
           )}
           <p className="max-w-xs text-sm text-gray-400">
             Saves as a draft. Add modules and lessons next, or create a cohort on it right away.

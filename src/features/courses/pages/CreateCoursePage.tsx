@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "../../../components/ui/Button";
+import { ErrorState } from "../../../components/ui/ErrorState";
+import { Spinner } from "../../../components/ui/Spinner";
 import { CreateCourseForm } from "../components/instructor/CreateCourseForm";
 import { useCreateCourse } from "../hooks/useCreateCourse";
 import { useLanguages } from "../hooks/useLanguages";
@@ -32,16 +33,14 @@ export default function CreateCoursePage() {
         </p>
       </div>
 
-      {languages.isPending && <p className="text-gray-400">Loading…</p>}
+      {languages.isPending && (
+        <p role="status" className="flex items-center gap-3 text-sm text-gray-400">
+          <Spinner /> Loading the form…
+        </p>
+      )}
 
       {languages.isError && (
-        <div className="space-y-3">
-          <p className="text-gray-200">Couldn't load the form.</p>
-          <p className="text-sm text-gray-400">{languages.error.message}</p>
-          <Button variant="ghost" onClick={() => languages.refetch()}>
-            Try again
-          </Button>
-        </div>
+        <ErrorState variant="section" what="the form" error={languages.error} onRetry={() => languages.refetch()} />
       )}
 
       {languages.data && (

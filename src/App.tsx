@@ -16,6 +16,8 @@ import { UserProtectedRoute } from "./features/auth/UserProtectedRoute"
 import { InstructorLayout } from "./layouts/InstructorLayout/InstructorLayout"
 import { InstructorCohortsPage } from "./features/cohorts/Pages/InsrtuctorCohortPage"
 import { CohortsPage } from "./features/cohorts/Pages/CohortsPage"
+import InstructorCoursesPage from "./features/courses/pages/InstructorCoursesPage"
+import CreateCoursePage from "./features/courses/pages/CreateCoursePage"
 
 
 
@@ -42,8 +44,8 @@ function App() {
       <Route path="/instructor" element={<InstructorLayout />} >
         <Route path="cohorts" element={<InstructorCohortsPage/>} />
         <Route path="cohorts/new" element={<h1>Testing page</h1>} />
-        <Route path="courses" element={<h1>Testing page</h1>} />
-        <Route path="courses/new" element={<h1>Testing page</h1>} />
+        <Route path="courses" element={<InstructorCoursesPage/>} />
+        <Route path="courses/new" element={<CreateCoursePage/>} />
         <Route path="plan" element={<h1>Testing page</h1>} />
 
 

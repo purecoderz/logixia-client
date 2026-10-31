@@ -1,9 +1,9 @@
 import type { InstructorCohort } from "../../types/types";
 import { formatNaira } from "@/utils/format";
-import { StatusChip } from "../../../../components/ui/StatusChip"
 import { CohortActions } from "./CohortActions";
 import { ScheduleSummary } from "./ScheduleSummary";
 import { SeatsSummary } from "./SeatsSummary";
+import { CohortStatusChip } from "./CohortStatusChip";
 
 
 interface InstructorCohortCardProps {
@@ -24,7 +24,7 @@ export function InstructorCohortCard({ cohort: c, ...actions }: InstructorCohort
           </a>
           <p className="mt-0.5 text-xs text-gray-400">{c.course}</p>
         </div>
-        <StatusChip status={c.status} />
+        <CohortStatusChip status={c.status} />
       </div>
 
       <ScheduleSummary cohort={c} />

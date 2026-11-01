@@ -184,7 +184,7 @@ export function CreateCourseForm({ languages, onSubmit, onCancel }: CreateCourse
             </p>
           </div>
           <div className="max-w-64">
-            <Field label="Price" htmlFor="price" error={errors.price} hint="Enter 0 for a free course.">
+            <Field label="Price" htmlFor="price" error={errors.price} hint="Leave empty if this course is only taught through cohorts. Enter 0 for a free course.">
               <PrefixInput
                 {...fieldProps("price", errors.price, true)}
                 leading="₦"
@@ -252,8 +252,13 @@ export function CreateCourseForm({ languages, onSubmit, onCancel }: CreateCourse
               </div>
             )}
             <p className="border-t border-gray-800 pt-3 text-[15px] font-semibold text-gray-50">
-              {price === null ? "—" : formatPrice(price)}{" "}
-              <span className="text-xs font-normal text-gray-400">self-paced</span>
+              {price === null ? (
+                <span className="text-sm font-normal text-gray-400">Taught through cohorts</span>
+              ) : (
+                <>
+                  {formatPrice(price)} <span className="text-xs font-normal text-gray-400">self-paced</span>
+                </>
+              )}
             </p>
           </div>
         </div>

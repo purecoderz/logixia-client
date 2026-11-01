@@ -1,6 +1,8 @@
 import { apiErrorFrom } from "../../../lib/apiError";
 import { apiFetch } from "../../../lib/http";
+import type { CourseOutline } from "../types/outline";
 import type { InstructorCourse } from "../types/types";
+import { toCourseOutline, type RawCourseOutline } from "../utils/toCourseOutline";
 import { toInstructorCourse, type RawInstructorCourse } from "../utils/toInstructorCourse";
 import type { CourseFormErrors, CourseFormField, CourseFormValues, Language } from "../types/form";
 import { parsePrice } from "../utils/priceInput";
@@ -12,7 +14,7 @@ export interface CreateCourseRequest {
   description: string; // may be "" for a draft
   language_id: number;
   skills: string[];
-  price: number; // whole naira, 0 = free
+  price: number | null; // whole naira. 0 = free, null = not sold on its own
 }
 
 export interface CreatedCourse {
@@ -68,14 +70,24 @@ export function toRequest(v: CourseFormValues): CreateCourseRequest {
     description: v.description.trim(),
     language_id: Number(v.languageId),
     skills: v.skills,
-    price: parsePrice(v.price) ?? 0,
+    price: parsePrice(v.price), // "" becomes null
   };
 }
 
 // TODO: set this to your real route for "the logged-in instructor's courses"
 const INSTRUCTOR_COURSES_PATH = "/courses";
 
+// TODO: set this to your real route for a course's outline
+const outlinePath = (courseId: string) => `/courses/${courseId}/outline`;
+
 export const CourseService = {
+  async getOutline(courseId: string): Promise<CourseOutline> {
+    const response = await apiFetch(outlinePath(courseId));
+    if (!response.ok) throw await apiErrorFrom(response);
+    const raw: RawCourseOutline = await response.json();
+    return toCourseOutline(raw);
+  },
+
   async getInstructorCourses(): Promise<InstructorCourse[]> {
     const response = await apiFetch(INSTRUCTOR_COURSES_PATH);
     if (!response.ok) throw await apiErrorFrom(response);

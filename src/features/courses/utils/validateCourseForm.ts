@@ -23,8 +23,8 @@ export function validateCourseForm(v: CourseFormValues): CourseFormErrors {
 
   if (v.skills.some((s) => s.length > 40)) errors.skills = "Keep each skill under 40 characters.";
 
-  if (v.price.trim() === "") errors.price = "Enter a price, or 0 for a free course.";
-  else if (parsePrice(v.price) === null) errors.price = "Use numbers only, like 50,000.";
+  // Empty is allowed: it means the course is only taught through cohorts
+  if (v.price.trim() !== "" && parsePrice(v.price) === null) errors.price = "Use numbers only, like 50,000.";
 
   return errors;
 }

@@ -18,6 +18,7 @@ import { InstructorCohortsPage } from "./features/cohorts/Pages/InsrtuctorCohort
 import { CohortsPage } from "./features/cohorts/Pages/CohortsPage"
 import InstructorCoursesPage from "./features/courses/pages/InstructorCoursesPage"
 import CreateCoursePage from "./features/courses/pages/CreateCoursePage"
+import CourseBuilderPage from "./features/courses/pages/CourseBuilderPage"
 
 
 
@@ -46,6 +47,7 @@ function App() {
         <Route path="cohorts/new" element={<h1>Testing page</h1>} />
         <Route path="courses" element={<InstructorCoursesPage/>} />
         <Route path="courses/new" element={<CreateCoursePage/>} />
+        <Route path="courses/:courseId/builder" element={<CourseBuilderPage/>} />
         <Route path="plan" element={<h1>Testing page</h1>} />
 
 

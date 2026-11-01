@@ -1,5 +1,7 @@
 import { StatusChip } from "@/components/ui/StatusChip";
 import type { OutlineModule } from "../../types/outline";
+import { AddItemForm } from "./builder/AddItemForm";
+
 
 interface ModuleCardProps {
   module: OutlineModule;
@@ -8,6 +10,7 @@ interface ModuleCardProps {
   onToggle: () => void;
   openLessons: Set<number>;
   onToggleLesson: (lessonId: number) => void;
+  onAddLesson: (moduleId: number, title: string) => Promise<{ id: number }>;
 }
 
 const chevron = (open: boolean) => (
@@ -18,7 +21,7 @@ const chevron = (open: boolean) => (
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
-export function ModuleCard({ module: m, number, open, onToggle, openLessons, onToggleLesson }: ModuleCardProps) {
+export function ModuleCard({ module: m, number, open, onToggle, openLessons, onToggleLesson, onAddLesson }: ModuleCardProps) {
   const taskCount = m.lessons.reduce((sum, l) => sum + l.tasks.length, 0);
 
   return (
@@ -44,7 +47,7 @@ export function ModuleCard({ module: m, number, open, onToggle, openLessons, onT
       {open && (
         <div className="border-t border-gray-800">
           {m.lessons.length === 0 ? (
-            <p className="px-5 py-4 text-sm text-gray-400">This module has no lessons yet.</p>
+            <p className="px-5 pt-4 text-sm text-gray-400">This module has no lessons yet.</p>
           ) : (
             <ul>
               {m.lessons.map((lesson, i) => {
@@ -92,6 +95,17 @@ export function ModuleCard({ module: m, number, open, onToggle, openLessons, onT
               })}
             </ul>
           )}
+
+          <div className="p-3">
+            <AddItemForm
+              noun="lesson"
+              numberLabel={`Lesson ${number}.${m.lessons.length + 1}`}
+              existingCount={m.lessons.length}
+              inputId={`new-lesson-title-${m.id}`}
+              placeholder="For example: Installing Python"
+              save={(title) => onAddLesson(m.id, title)}
+            />
+          </div>
         </div>
       )}
     </section>

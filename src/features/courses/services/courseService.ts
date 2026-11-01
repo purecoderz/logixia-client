@@ -1,8 +1,15 @@
 import { apiErrorFrom } from "../../../lib/apiError";
 import { apiFetch } from "../../../lib/http";
-import type { CourseOutline } from "../types/outline";
+import type { CourseOutline, OutlineLesson, OutlineModule } from "../types/outline";
 import type { InstructorCourse } from "../types/types";
-import { toCourseOutline, type RawCourseOutline } from "../utils/toCourseOutline";
+import {
+  toCourseOutline,
+  toNewLesson,
+  toNewModule,
+  type RawCourseOutline,
+  type RawCreatedLesson,
+  type RawCreatedModule,
+} from "../utils/toCourseOutline";
 import { toInstructorCourse, type RawInstructorCourse } from "../utils/toInstructorCourse";
 import type { CourseFormErrors, CourseFormField, CourseFormValues, Language } from "../types/form";
 import { parsePrice } from "../utils/priceInput";
@@ -79,8 +86,36 @@ const INSTRUCTOR_COURSES_PATH = "/courses";
 
 // TODO: set this to your real route for a course's outline
 const outlinePath = (courseId: string) => `/courses/${courseId}/outline`;
+// TODO: and for adding a module to a course
+const modulesPath = (courseId: string) => `/courses/${courseId}/modules`;
+// TODO: and for adding a lesson to a module
+const lessonsPath = (moduleId: number) => `/modules/${moduleId}/lessons`;
 
 export const CourseService = {
+  /** The server picks the position (last) and starts the lesson with no text. Only the title is sent. */
+  async addLesson(moduleId: number, title: string): Promise<OutlineLesson> {
+    const response = await apiFetch(lessonsPath(moduleId), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title }),
+    });
+    if (!response.ok) throw await apiErrorFrom(response);
+    const raw: RawCreatedLesson = await response.json();
+    return toNewLesson(raw);
+  },
+
+  /** The server picks the position (last). Only the title is sent. */
+  async addModule(courseId: string, title: string): Promise<OutlineModule> {
+    const response = await apiFetch(modulesPath(courseId), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title }),
+    });
+    if (!response.ok) throw await apiErrorFrom(response);
+    const raw: RawCreatedModule = await response.json();
+    return toNewModule(raw);
+  },
+
   async getOutline(courseId: string): Promise<CourseOutline> {
     const response = await apiFetch(outlinePath(courseId));
     if (!response.ok) throw await apiErrorFrom(response);

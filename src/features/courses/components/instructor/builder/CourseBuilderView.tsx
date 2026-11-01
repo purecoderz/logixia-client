@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ModuleCard } from "../ModuleCard";
+import { StatusChip } from "../../../../../components/ui/StatusChip";
 import type { CourseOutline, OutlineIssue } from "../../../types/outline";
-import { StatusChip } from "@/components/ui/StatusChip";
+import { AddModuleForm } from "./AddModuleForm";
+import { useAddLesson } from "@/features/courses/hooks/useAddLesson";
+import { ModuleCard } from "../ModuleCard";
 import { PublishChecklist } from "../PublishChecklist";
 
 
@@ -14,6 +16,7 @@ export function CourseBuilderView({ outline }: { outline: CourseOutline }) {
     () => new Set(outline.modules.slice(0, 1).map((m) => m.id)),
   );
   const [openLessons, setOpenLessons] = useState<Set<number>>(new Set());
+  const addLesson = useAddLesson(String(outline.id));
 
   const toggle = (set: Set<number>, id: number) => {
     const next = new Set(set);
@@ -78,23 +81,33 @@ export function CourseBuilderView({ outline }: { outline: CourseOutline }) {
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)] lg:items-start">
         <main aria-label="Course outline" className="space-y-3">
-          {outline.modules.length === 0 ? (
-            <p className="rounded-xl border border-gray-800 bg-gray-800/30 px-5 py-12 text-center text-sm text-gray-400">
-              No modules yet.
-            </p>
-          ) : (
-            outline.modules.map((m, i) => (
-              <ModuleCard
-                key={m.id}
-                module={m}
-                number={i + 1}
-                open={openModules.has(m.id)}
-                onToggle={() => setOpenModules((s) => toggle(s, m.id))}
-                openLessons={openLessons}
-                onToggleLesson={(id) => setOpenLessons((s) => toggle(s, id))}
-              />
-            ))
+          {outline.modules.length === 0 && (
+            <div className="rounded-xl border border-gray-800 bg-gray-800/30 px-6 py-8 text-center">
+              <p className="font-semibold text-gray-50">Start by adding your first module</p>
+              <p className="mt-1.5 text-sm text-gray-400">
+                A module groups related lessons, like “Getting started” or “Working with files”.
+              </p>
+            </div>
           )}
+
+          {outline.modules.map((m, i) => (
+            <ModuleCard
+              key={m.id}
+              module={m}
+              number={i + 1}
+              open={openModules.has(m.id)}
+              onToggle={() => setOpenModules((s) => toggle(s, m.id))}
+              openLessons={openLessons}
+              onToggleLesson={(id) => setOpenLessons((s) => toggle(s, id))}
+              onAddLesson={(moduleId, title) => addLesson.mutateAsync({ moduleId, title })}
+            />
+          ))}
+
+          <AddModuleForm
+            courseId={String(outline.id)}
+            moduleCount={outline.modules.length}
+            onAdded={(id) => setOpenModules((s) => new Set(s).add(id))}
+          />
         </main>
 
         <PublishChecklist issues={outline.issues} counts={counts} onFix={fix} />

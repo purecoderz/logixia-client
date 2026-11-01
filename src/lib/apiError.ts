@@ -20,6 +20,8 @@ export async function apiErrorFrom(response: Response): Promise<ApiError> {
   return new ApiError(message, response.status);
 }
 
+const FETCH_FAILURE = /failed to fetch|networkerror|load failed|network request failed/i;
+
 export function kindOf(error: unknown): ErrorKind {
   if (error instanceof ApiError) {
     if (error.status === 401) return "auth";
@@ -29,9 +31,10 @@ export function kindOf(error: unknown): ErrorKind {
     return "server"; // 5xx, or an ApiError with no status
   }
   // fetch itself failed: no response at all
-  if (error instanceof TypeError || (typeof navigator !== "undefined" && navigator.onLine === false)) {
-    return "offline";
-  }
+  if (typeof navigator !== "undefined" && navigator.onLine === false) return "offline";
+  // fetch reports a network failure as a TypeError, but so does any bug in our own code
+  // (like reading a field that isn't there), so only the browsers' network wording counts
+  if (error instanceof TypeError && FETCH_FAILURE.test(error.message)) return "offline";
   return "server";
 }
 

@@ -1,7 +1,20 @@
+import { ErrorState } from "../../../components/ui/ErrorState";
+import { ListPageSkeleton } from "../../../components/ui/ListPageSkeleton";
 import { InstructorCoursesView } from "../components/instructor/InstructorCoursesView";
-import { mockCourses } from "../mockCourses";
+import { useInstructorCourses } from "../hooks/useInstructorCourses";
 
-// TODO: swap mockCourses for useInstructorCourses() once the endpoint exists
 export default function InstructorCoursesPage() {
-  return <InstructorCoursesView courses={mockCourses} />;
+  const { data, isPending, isError, error, refetch } = useInstructorCourses();
+
+  if (isPending) return <ListPageSkeleton label="Loading your courses" />;
+
+  if (isError) {
+    return (
+      <div className="p-6">
+        <ErrorState what="your courses" error={error} onRetry={() => refetch()} />
+      </div>
+    );
+  }
+
+  return <InstructorCoursesView courses={data} />;
 }

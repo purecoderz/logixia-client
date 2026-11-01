@@ -3,13 +3,13 @@ export type InstructorCourseStatus = "draft" | "published" | "archived";
 export interface InstructorCourse {
   id: string;
   title: string;
-  language: string; // "Python"
+  slug: string;
+  language: string; // display name, "Python"
   status: InstructorCourseStatus;
-  price: number; // naira; 0 means free
+  /** Self-paced price in naira. 0 = free, null = not sold on its own. */
+  price: number | null;
   lessons: number;
   cohorts: number;
   students: number;
   updatedAt: string; // ISO date
 }
-
-

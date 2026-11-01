@@ -1,5 +1,7 @@
 import { apiErrorFrom } from "../../../lib/apiError";
 import { apiFetch } from "../../../lib/http";
+import type { InstructorCourse } from "../types/types";
+import { toInstructorCourse, type RawInstructorCourse } from "../utils/toInstructorCourse";
 import type { CourseFormErrors, CourseFormField, CourseFormValues, Language } from "../types/form";
 import { parsePrice } from "../utils/priceInput";
 
@@ -70,8 +72,17 @@ export function toRequest(v: CourseFormValues): CreateCourseRequest {
   };
 }
 
+// TODO: set this to your real route for "the logged-in instructor's courses"
+const INSTRUCTOR_COURSES_PATH = "/courses";
 
 export const CourseService = {
+  async getInstructorCourses(): Promise<InstructorCourse[]> {
+    const response = await apiFetch(INSTRUCTOR_COURSES_PATH);
+    if (!response.ok) throw await apiErrorFrom(response);
+    const raw: RawInstructorCourse[] = await response.json();
+    return raw.map(toInstructorCourse);
+  },
+
   async create(values: CourseFormValues): Promise<CreatedCourse> {
     const response = await apiFetch("/courses", {
       method: "POST",

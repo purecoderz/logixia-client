@@ -1,13 +1,16 @@
-import type { OutlineIssue } from "../../types/outline";
+import { Link } from "react-router-dom";
+import type { OutlineIssue } from "../../../types/outline";
+import { editCoursePath } from "@/features/courses/utils/paths";
 
 
 interface PublishChecklistProps {
   issues: OutlineIssue[];
+  courseId: string
   counts: { modules: number; lessons: number; tasks: number };
   onFix: (issue: OutlineIssue) => void;
 }
 
-export function PublishChecklist({ issues, counts, onFix }: PublishChecklistProps) {
+export function PublishChecklist({ courseId, issues, counts, onFix }: PublishChecklistProps) {
   return (
     <aside aria-label="Course checklist" className="space-y-4 lg:sticky lg:top-6">
       <div className="rounded-xl border border-gray-800 bg-gray-800/30 p-5">
@@ -28,7 +31,14 @@ export function PublishChecklist({ issues, counts, onFix }: PublishChecklistProp
                   <path d="M8 2.5l6 10.5H2L8 2.5zM8 7v2.8M8 11.7v.1" />
                 </svg>
                 <span className="flex-1">{issue.message}</span>
-                {issue.target.kind !== "course" && (
+                {issue.target.kind === "course" ? (
+                  <Link
+                    to={editCoursePath(courseId)}
+                    className="-my-2 inline-flex min-h-11 shrink-0 items-center rounded-lg px-2 text-xs font-semibold text-sky-300 hover:bg-gray-800"
+                  >
+                    Fix<span className="sr-only">: {issue.message}</span>
+                  </Link>
+                ) : (
                   <button
                     type="button"
                     onClick={() => onFix(issue)}

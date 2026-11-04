@@ -1,27 +1,27 @@
+import { Link } from "react-router-dom";
 import { DataTable, type Column } from "../../../../components/ui/DataTable";
+import type { InstructorCourse } from "../../types/types";
 import { formatPrice } from "../../utils/formatPrice";
 import { formatUpdated } from "../../utils/formatUpdated";
-import type { InstructorCourse } from "../../types/types";
-import { CourseActions } from "./CourseActions";
+import { CourseActions, type CourseHandlers } from "./CourseActions";
 import { CourseStatusChip } from "./CourseStatusChip";
+import { builderPath } from "../../utils/paths";
 
 interface CourseTableProps {
   courses: InstructorCourse[];
-  onPublish: (course: InstructorCourse) => void;
-  onCreateCohort: (course: InstructorCourse) => void;
-  onOpenMenu: (course: InstructorCourse) => void;
+  busyId: string | null;
+  handlers: CourseHandlers;
 }
 
-export function CourseTable({ courses, ...actions }: CourseTableProps) {
+export function CourseTable({ courses, busyId, handlers }: CourseTableProps) {
   const columns: Column<InstructorCourse>[] = [
     {
       header: "Course",
       cell: (c) => (
         <>
-          {/* Swap for your router's <Link> */}
-          <a href={`/instructor/courses/${c.id}`} className="block max-w-xs font-semibold text-gray-50 hover:text-sky-300 hover:underline">
+          <Link to={builderPath(c.id)} className="block max-w-xs font-semibold text-gray-50 hover:text-sky-300 hover:underline">
             {c.title}
-          </a>
+          </Link>
           <p className="mt-0.5 text-xs text-gray-400">{c.language}</p>
         </>
       ),
@@ -37,7 +37,7 @@ export function CourseTable({ courses, ...actions }: CourseTableProps) {
       hideHeader: true,
       cell: (c) => (
         <div className="flex justify-end">
-          <CourseActions course={c} {...actions} />
+          <CourseActions course={c} busy={busyId === c.id} handlers={handlers} />
         </div>
       ),
     },

@@ -20,11 +20,14 @@ import { formatPriceInput, parsePrice } from "../../utils/priceInput";
 import { slugify } from "../../utils/slugify";
 import { getSaleChecklist, hasErrors, validateCourseForm } from "../../utils/validateCourseForm";
 
-export type SubmitAction = "draft" | "builder";
+export type SubmitAction = "draft" | "builder" | "save";
 
 interface CreateCourseFormProps {
   languages: Language[];
-  /** Return field errors from the server (like a duplicate title) to show them on the form. */
+  /** Pass the course's current values to edit it instead of creating a new one. */
+  initialValues?: CourseFormValues;
+  /** A published course can't change its web address. */
+  slugLocked?: boolean;
   onSubmit: (values: CourseFormValues, action: SubmitAction) => Promise<CourseFormErrors | void>;
   onCancel: () => void;
 }
@@ -34,10 +37,11 @@ const FIELD_ORDER: CourseFormField[] = ["title", "slug", "languageId", "descript
 
 const sectionClass = "space-y-5 border-b border-gray-800 p-6";
 
-export function CreateCourseForm({ languages, onSubmit, onCancel }: CreateCourseFormProps) {
-  const [values, setValues] = useState<CourseFormValues>(emptyCourseForm);
+export function CreateCourseForm({ languages, initialValues, slugLocked = false, onSubmit, onCancel }: CreateCourseFormProps) {
+  const editing = initialValues !== undefined;
+  const [values, setValues] = useState<CourseFormValues>(initialValues ?? emptyCourseForm);
   const [errors, setErrors] = useState<CourseFormErrors>({});
-  const [slugTouched, setSlugTouched] = useState(false);
+  const [slugTouched, setSlugTouched] = useState(editing);
   const [attempted, setAttempted] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -96,7 +100,7 @@ export function CreateCourseForm({ languages, onSubmit, onCancel }: CreateCourse
         noValidate
         onSubmit={(e) => {
           e.preventDefault();
-          void submit("draft");
+          void submit(editing ? "save" : "draft");;
         }}
         className="rounded-xl border border-gray-800 bg-gray-800/30"
       >
@@ -122,7 +126,13 @@ export function CreateCourseForm({ languages, onSubmit, onCancel }: CreateCourse
             label="Web address"
             htmlFor="slug"
             error={errors.slug}
-            hint="Filled in from the title. Change it if you want something shorter."
+            hint={
+              slugLocked
+                ? "The web address can’t be changed after publishing."
+                : editing
+                  ? "Changing it breaks any old links to this course."
+                  : "Filled in from the title. Change it if you want something shorter."
+            }
           >
             <PrefixInput
               {...fieldProps("slug", errors.slug, true)}

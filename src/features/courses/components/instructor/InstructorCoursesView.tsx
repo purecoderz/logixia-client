@@ -1,10 +1,17 @@
-import { useMemo, useState } from "react";
-import { Button } from "../../../../components/ui/Button";
+import { useCallback, useMemo, useState } from "react";
+import { ButtonLink } from "../../../../components/ui/ButtonLink";
+import { ConfirmDialog } from "../../../../components/ui/ConfirmDialog";
 import { StatCard } from "../../../../components/ui/StatCard";
 import { ViewToggle, type View } from "../../../../components/ui/ViewToggle";
+import { ApiError, friendlyMessage } from "../../../../lib/apiError";
 import type { InstructorCourse, InstructorCourseStatus } from "../../types/types";
+import { ActionNotice, type Notice } from "./ActionNotice";
+import type { CourseHandlers } from "./CourseActions";
 import { CourseGrid } from "./CourseGrid";
 import { CourseTable } from "./CourseTable";
+import { builderPath, NEW_COURSE_PATH } from "../../utils/paths";
+import { useUpdateCourse } from "../../hooks/UseUpdateCourse";
+import type { CoursePatch } from "../../types/Patch";
 
 type Filter = "all" | InstructorCourseStatus;
 
@@ -15,10 +22,86 @@ const tabs: { value: Filter; label: string }[] = [
   { value: "archived", label: "Archived" },
 ];
 
+const withStop = (text: string) => (/[.!?]$/.test(text) ? text : `${text}.`);
+
+function Header() {
+  return (
+    <div className="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight text-gray-50">Courses</h1>
+        <p className="mt-1 text-sm text-gray-400">Build your courses, then run them as cohorts.</p>
+      </div>
+      <ButtonLink to={NEW_COURSE_PATH}>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+          <path d="M8 2v12M2 8h12" />
+        </svg>
+        Create course
+      </ButtonLink>
+    </div>
+  );
+}
+
 export function InstructorCoursesView({ courses }: { courses: InstructorCourse[] }) {
+  const updateCourse = useUpdateCourse();
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
   const [view, setView] = useState<View>("table");
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [notice, setNotice] = useState<Notice | null>(null);
+  const [confirming, setConfirming] = useState<InstructorCourse | null>(null);
+  const dismiss = useCallback(() => setNotice(null), []);
+
+  /** Run one change on one course, then say what happened. */
+  async function run(
+    course: InstructorCourse,
+    patch: CoursePatch,
+    text: { success: string; failure: string; fixInBuilder?: boolean; undo?: () => void },
+  ) {
+    setBusyId(course.id);
+    setNotice(null);
+    try {
+      await updateCourse.mutateAsync({ courseId: course.id, patch });
+      setNotice({ kind: "success", message: text.success, undo: text.undo });
+    } catch (error) {
+      if (!(error instanceof ApiError)) console.error(error); // a bug on our side
+      // A 400 carries the reason ("Module 3 has no lessons"), so show it; anything else gets the plain line
+      const reason = error instanceof ApiError && error.status === 400;
+      setNotice({
+        kind: "error",
+        message: reason ? `${text.failure} ${withStop(error.message)}` : friendlyMessage(error, `${text.failure} Please try again.`),
+        link: reason && text.fixInBuilder ? { label: "Open builder", to: builderPath(course.id) } : undefined,
+      });
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  const restore = (c: InstructorCourse) =>
+    run(c, { is_archived: false }, { success: `“${c.title}” is restored.`, failure: `Couldn’t restore “${c.title}”.` });
+
+  const handlers: CourseHandlers = {
+    onPublish: (c) =>
+      void run(c, { is_published: true }, {
+        success: `“${c.title}” is published.`,
+        failure: `“${c.title}” isn’t ready to publish.`,
+        fixInBuilder: true,
+      }),
+    onUnpublish: (c) =>
+      void run(c, { is_published: false }, { success: `“${c.title}” is back to draft.`, failure: `Couldn’t unpublish “${c.title}”.` }),
+    onArchive: (c) => setConfirming(c),
+    onRestore: (c) => void restore(c),
+  };
+
+  async function confirmArchive() {
+    const course = confirming;
+    if (!course) return;
+    await run(course, { is_archived: true }, {
+      success: `“${course.title}” is archived.`,
+      failure: `Couldn’t archive “${course.title}”.`,
+      undo: () => void restore(course),
+    });
+    setConfirming(null);
+  }
 
   // "All" hides archived courses; they have their own tab
   const live = useMemo(() => courses.filter((c) => c.status !== "archived"), [courses]);
@@ -50,6 +133,22 @@ export function InstructorCoursesView({ courses }: { courses: InstructorCourse[]
     );
   }, [courses, filter, query]);
 
+  if (courses.length === 0) {
+    return (
+      <div className="space-y-6">
+        <Header />
+        <div className="flex flex-col items-center gap-3 rounded-xl border border-gray-800 bg-gray-800/30 px-6 py-16 text-center">
+          <h2 className="text-lg font-semibold text-gray-50">Create your first course</h2>
+          <p className="max-w-md text-sm text-gray-400">
+            A course is the content: modules, lessons and tasks. Once it’s ready you can run it as a cohort with a
+            live instructor.
+          </p>
+          <ButtonLink to={NEW_COURSE_PATH}>Create course</ButtonLink>
+        </div>
+      </div>
+    );
+  }
+
   const noCohortHint =
     stats.noCohort.length === 1
       ? `${stats.noCohort[0].title} has no cohort yet`
@@ -57,25 +156,11 @@ export function InstructorCoursesView({ courses }: { courses: InstructorCourse[]
         ? `${stats.noCohort.length} published courses have no cohort`
         : "Every published course has a cohort";
 
-  // TODO: replace with real endpoints, routes and toasts
-  const publish = (c: InstructorCourse) => console.log("publish", c.id);
-  const createCohort = (c: InstructorCourse) => console.log("create cohort for", c.id);
-  const openMenu = (c: InstructorCourse) => console.log("menu", c.id);
-
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-50">Courses</h1>
-          <p className="mt-1 text-sm text-gray-400">Build your courses, then run them as cohorts.</p>
-        </div>
-        <Button onClick={() => console.log("create course")}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-            <path d="M8 2v12M2 8h12" />
-          </svg>
-          Create course
-        </Button>
-      </div>
+    <div className="space-y-6">
+      <Header />
+
+      <ActionNotice notice={notice} onDismiss={dismiss} />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Total courses" value={stats.total} hint="Not counting archived" />
@@ -129,10 +214,20 @@ export function InstructorCoursesView({ courses }: { courses: InstructorCourse[]
       </div>
 
       {view === "table" ? (
-        <CourseTable courses={visible} onPublish={publish} onCreateCohort={createCohort} onOpenMenu={openMenu} />
+        <CourseTable courses={visible} busyId={busyId} handlers={handlers} />
       ) : (
-        <CourseGrid courses={visible} onPublish={publish} onCreateCohort={createCohort} onOpenMenu={openMenu} />
+        <CourseGrid courses={visible} busyId={busyId} handlers={handlers} />
       )}
+
+      <ConfirmDialog
+        open={confirming !== null}
+        title="Archive this course?"
+        message={`“${confirming?.title ?? ""}” will be hidden from your course list and can’t be used for new cohorts. You can restore it at any time.`}
+        confirmLabel="Archive"
+        busy={confirming !== null && busyId === confirming.id}
+        onConfirm={() => void confirmArchive()}
+        onCancel={() => setConfirming(null)}
+      />
     </div>
   );
 }

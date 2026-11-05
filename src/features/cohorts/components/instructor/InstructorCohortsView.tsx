@@ -1,8 +1,10 @@
-"use client"; // needed in Next.js App Router; harmless elsewhere
-
-import { useMemo, useState } from "react";
+import { ActionNotice, type Notice } from "@/features/courses/components/instructor/ActionNotice";
+import { friendlyMessage } from "@/lib/apiError";
+import { useUpdateCohortPublication } from "../../hooks/useCohorts";
+import { useCallback, useMemo, useRef, useState } from "react";
 import type { InstructorCohort, InstructorCohortStatus } from "../../types/types";
-import { Button } from "../../../../components/ui/Button";
+import { ButtonLink } from "@/components/ui/ButtonLink";
+import { ViewToggle, type View } from "@/components/ui/ViewToggle";
 import { StatCard } from "../../../../components/ui/StatCard";
 import { formatNaira } from "../../../../utils/format";
 import { CohortTable } from "./CohortTable";
@@ -10,7 +12,6 @@ import { CohortGrid } from "./CohortGrid";
 
 
 type Filter = "all" | InstructorCohortStatus;
-type View = "table" | "grid";
 
 const tabs: { value: Filter; label: string }[] = [
   { value: "all", label: "All" },
@@ -21,12 +22,34 @@ const tabs: { value: Filter; label: string }[] = [
   { value: "completed", label: "Completed" },
 ];
 
-const fillPct = (c: InstructorCohort) => Math.round((c.seatsTaken / c.seatsTotal) * 100);
+const fillPct = (c: InstructorCohort) => c.seatsTotal > 0 ? Math.round((c.seatsTaken / c.seatsTotal) * 100) : 0;
 
 export function CohortsPage({ cohorts }: { cohorts: InstructorCohort[] }) {
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
   const [view, setView] = useState<View>("table");
+
+  const publication = useUpdateCohortPublication();
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [notice, setNotice] = useState<Notice | null>(null);
+  const running = useRef(false);
+  const dismiss = useCallback(() => setNotice(null), []);
+
+  async function setPublished(c: InstructorCohort, isPublished: boolean) {
+    if (running.current) return;
+    running.current = true;
+    setBusyId(c.id);
+    setNotice(null);
+    try {
+      await publication.mutateAsync({ id: c.id, isPublished });
+      setNotice({ kind: "success", message: isPublished ? `“${c.name}” is published.` : `“${c.name}” is back to draft.` });
+    } catch (error) {
+      setNotice({ kind: "error", message: friendlyMessage(error, `Couldn’t ${isPublished ? "publish" : "unpublish"} “${c.name}”. Please try again.`) });
+    } finally {
+      running.current = false;
+      setBusyId(null);
+    }
+  }
 
   // Stats are always for ALL cohorts, not the filtered view
   const stats = useMemo(() => {
@@ -61,27 +84,48 @@ export function CohortsPage({ cohorts }: { cohorts: InstructorCohort[] }) {
         ? `${stats.attention.length} cohorts are under 50% filled`
         : "All cohorts are on track";
 
-  // TODO: replace with your real endpoints / toasts
-  const copyLink = (c: InstructorCohort) => navigator.clipboard.writeText(`${window.location.origin}/enroll/${c.id}`);
-  const publish = (c: InstructorCohort) => console.log("publish", c.id);
-  const openMenu = (c: InstructorCohort) => console.log("menu", c.id);
+  async function copyLink(c: InstructorCohort) {
+    setNotice(null);
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/cohort/${c.id}`);
+      setNotice({ kind: "success", message: `Link to “${c.name}” copied.` });
+    } catch {
+      setNotice({ kind: "error", message: "Couldn’t copy the link. Please try again.", link: { label: "Open cohort", to: `/cohort/${c.id}` } });
+    }
+  }
+
+  const actions = {
+    busyId,
+    onCopyLink: (c: InstructorCohort) => void copyLink(c),
+    onPublish: (c: InstructorCohort) => void setPublished(c, true),
+    onUnpublish: (c: InstructorCohort) => void setPublished(c, false),
+  };
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-gray-50">Cohorts</h1>
           <p className="mt-1 text-sm text-gray-400">Manage enrollment, schedules and revenue across your courses.</p>
         </div>
-        <Button onClick={() => console.log("create cohort")}>
+        <ButtonLink to="/instructor/cohorts/new">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
             <path d="M8 2v12M2 8h12" />
           </svg>
           Create cohort
-        </Button>
+        </ButtonLink>
       </div>
 
+      <ActionNotice notice={notice} onDismiss={dismiss} />
+
+      {cohorts.length === 0 ? (
+        <div className="flex flex-col items-center gap-3 rounded-xl border border-gray-800 bg-gray-800/30 px-6 py-16 text-center">
+          <h2 className="text-lg font-semibold text-gray-50">Create your first cohort</h2>
+          <p className="max-w-md text-sm text-gray-400">Run a course with a group of students, set your schedule, and open enrollment.</p>
+          <ButtonLink to="/instructor/cohorts/new">Create cohort</ButtonLink>
+        </div>
+      ) : <>
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Total students" value={stats.students} hint={`Across ${cohorts.length} cohorts`} />
@@ -140,41 +184,16 @@ export function CohortsPage({ cohorts }: { cohorts: InstructorCohort[] }) {
           />
         </label>
 
-        <div className="flex rounded-lg border border-gray-700 p-0.5" role="group" aria-label="View">
-          {(["grid", "table"] as const).map((v) => (
-            <button
-              key={v}
-              type="button"
-              aria-pressed={view === v}
-              aria-label={v === "grid" ? "Grid view" : "Table view"}
-              onClick={() => setView(v)}
-              className={`flex size-10 items-center justify-center rounded-md transition-colors ${
-                view === v ? "bg-sky-400/15 text-sky-300" : "text-gray-400 hover:text-gray-200"
-              }`}
-            >
-              {v === "grid" ? (
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-                  <rect x="2" y="2" width="5" height="5" rx="1" />
-                  <rect x="9" y="2" width="5" height="5" rx="1" />
-                  <rect x="2" y="9" width="5" height="5" rx="1" />
-                  <rect x="9" y="9" width="5" height="5" rx="1" />
-                </svg>
-              ) : (
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
-                  <path d="M2 4h12M2 8h12M2 12h12" />
-                </svg>
-              )}
-            </button>
-          ))}
-        </div>
+        <ViewToggle value={view} onChange={setView} />
         </div>
       </div>
 
       {view === "table" ? (
-        <CohortTable cohorts={visible} onCopyLink={copyLink} onPublish={publish} onOpenMenu={openMenu} />
+        <CohortTable cohorts={visible} {...actions} />
       ) : (
-        <CohortGrid cohorts={visible} onCopyLink={copyLink} onPublish={publish} onOpenMenu={openMenu} />
+        <CohortGrid cohorts={visible} {...actions} />
       )}
+      </>}
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import type { CohortActionProps } from "./CohortActions";
+import { Link } from "react-router-dom";
 import type { InstructorCohort } from "../../types/types";
 import { formatNaira } from "../../../../utils/format";
 import { DataTable, type Column } from "../../../../components/ui/DataTable";
@@ -6,11 +8,8 @@ import { ScheduleSummary } from "./ScheduleSummary";
 import { SeatsSummary } from "./SeatsSummary";
 import { CohortStatusChip } from "./CohortStatusChip";
 
-interface CohortTableProps {
+interface CohortTableProps extends CohortActionProps {
   cohorts: InstructorCohort[];
-  onCopyLink: (cohort: InstructorCohort) => void;
-  onPublish: (cohort: InstructorCohort) => void;
-  onOpenMenu: (cohort: InstructorCohort) => void;
 }
 
 export function CohortTable({ cohorts, ...actions }: CohortTableProps) {
@@ -19,10 +18,9 @@ export function CohortTable({ cohorts, ...actions }: CohortTableProps) {
       header: "Cohort",
       cell: (c) => (
         <>
-          {/* Swap for your router's <Link> */}
-          <a href={`/cohorts/${c.id}`} className="block max-w-xs font-semibold text-gray-50 hover:text-sky-300 hover:underline">
+          <Link to={`/cohort/${c.id}`} className="block max-w-xs font-semibold text-gray-50 hover:text-sky-300 hover:underline">
             {c.name}
-          </a>
+          </Link>
           <p className="mt-0.5 max-w-xs text-xs text-gray-400">{c.course}</p>
         </>
       ),

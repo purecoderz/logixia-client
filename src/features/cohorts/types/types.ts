@@ -9,6 +9,7 @@ export type InstructorCohortStatus =
 export interface InstructorCohort {
   id: string;
   name: string; // "Python Pro #2"
+  courseId: number;
   course: string; // course title
   status: InstructorCohortStatus;
   startDate?: string; // ISO date

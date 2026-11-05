@@ -1,12 +1,10 @@
+import type { CohortActionProps } from "./CohortActions";
 import type { InstructorCohort } from "../../types/types";
 import { InstructorCohortCard } from "./InstructorCohortCard";
 
 
-interface CohortGridProps {
+interface CohortGridProps extends CohortActionProps {
   cohorts: InstructorCohort[];
-  onCopyLink: (cohort: InstructorCohort) => void;
-  onPublish: (cohort: InstructorCohort) => void;
-  onOpenMenu: (cohort: InstructorCohort) => void;
 }
 
 export function CohortGrid({ cohorts, ...actions }: CohortGridProps) {

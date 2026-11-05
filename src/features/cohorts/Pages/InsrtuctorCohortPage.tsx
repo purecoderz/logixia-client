@@ -1,26 +1,11 @@
-import { Button } from "../../../components/ui/Button";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { ListPageSkeleton } from "@/components/ui/ListPageSkeleton";
 import { useInstructorCohorts } from "../hooks/useCohorts";
 import { CohortsPage } from "../components/instructor/InstructorCohortsView";
 
-
 export function InstructorCohortsPage() {
   const { data, isPending, isError, error, refetch } = useInstructorCohorts();
-
-  if (isPending) {
-    return <p className="p-6 text-gray-400">Loading cohorts…</p>;
-  }
-
-  if (isError) {
-    return (
-      <div className="space-y-3 p-6">
-        <p className="text-gray-200">Couldn't load your cohorts.</p>
-        <p className="text-sm text-gray-400">{error.message}</p>
-        <Button variant="ghost" onClick={() => refetch()}>
-          Try again
-        </Button>
-      </div>
-    );
-  }
-
+  if (isPending) return <ListPageSkeleton label="Loading your cohorts" />;
+  if (isError) return <ErrorState what="your cohorts" error={error} onRetry={() => refetch()} />;
   return <CohortsPage cohorts={data} />;
 }

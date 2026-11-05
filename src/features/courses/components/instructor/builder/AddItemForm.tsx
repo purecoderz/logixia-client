@@ -1,3 +1,4 @@
+import { Select } from "@/components/ui/Select";
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { Button } from "../../../../../components/ui/Button";
 import { Spinner } from "../../../../../components/ui/Spinner";
@@ -139,19 +140,9 @@ export function AddItemForm({
             />
 
             {pick && (
-              <select
-                aria-label={pick.label}
-                value={picked}
-                onChange={(e) => setPicked(e.target.value)}
-                disabled={saving}
-                className="min-h-11 rounded-lg border border-gray-700 bg-gray-900 px-3 text-sm text-gray-100 focus:border-sky-400 focus:outline-none"
-              >
-                {pick.options.map((o) => (
-                  <option key={o.value} value={o.value}>
-                    {o.label}
-                  </option>
-                ))}
-              </select>
+              <div className="min-w-40">
+                <Select aria-label={pick.label} value={picked} onChange={setPicked} disabled={saving} options={pick.options} />
+              </div>
             )}
 
             <Button type="submit" disabled={saving} aria-busy={saving}>

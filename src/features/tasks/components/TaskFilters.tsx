@@ -1,3 +1,4 @@
+import { Select } from "@/components/ui/Select";
 import { inputClass } from "@/components/ui/formStyles";
 import type { TaskKind } from "@/features/courses/types/outline";
 
@@ -37,33 +38,14 @@ export function TaskFilters(p: TaskFiltersProps) {
           <label htmlFor="task-course" className={labelClass}>
             Course
           </label>
-          <select id="task-course" value={p.courseId} onChange={(e) => p.onCourse(e.target.value)} className={inputClass}>
-            {p.courses.map((c) => (
-              <option key={c.value} value={c.value}>
-                {c.label}
-              </option>
-            ))}
-          </select>
+          <Select id="task-course" value={p.courseId} onChange={p.onCourse} options={p.courses} searchable searchPlaceholder="Search courses…" />
         </div>
 
         <div>
           <label htmlFor="task-module" className={labelClass}>
             Module
           </label>
-          <select
-            id="task-module"
-            value={p.moduleId}
-            disabled={p.modules.length === 0}
-            onChange={(e) => p.onModule(e.target.value)}
-            className={`${inputClass} disabled:opacity-60`}
-          >
-            <option value="all">All modules in this course</option>
-            {p.modules.map((m) => (
-              <option key={m.value} value={m.value}>
-                {m.label}
-              </option>
-            ))}
-          </select>
+          <Select id="task-module" value={p.moduleId} disabled={p.modules.length === 0} onChange={p.onModule} searchable searchPlaceholder="Search modules…" options={[{ value: "all", label: "All modules in this course" }, ...p.modules]} />
         </div>
 
         <div>

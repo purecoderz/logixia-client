@@ -63,6 +63,11 @@ export const instructorNav: InstructorNavSection[] = [
             label: "Create Cohort",
             path: "/instructor/cohorts/new",
           },
+          {
+            id: "manage-students",
+            label: "Manage Students",
+            path: "/instructor/cohorts/members",
+          },
         ],
       },
       {
@@ -81,11 +86,6 @@ export const instructorNav: InstructorNavSection[] = [
             id: "all-tasks",
             label: "All Task",
             path: "/instructor/tasks",
-          },
-          {
-            id: "create-cohorts",
-            label: "Create Tasks",
-            path: "/instructor/task/new",
           },
         ],
       },

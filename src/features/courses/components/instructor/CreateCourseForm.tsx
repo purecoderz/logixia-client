@@ -1,3 +1,4 @@
+import { Select } from "@/components/ui/Select";
 import { useState } from "react";
 import { Button } from "../../../../components/ui/Button";
 import { friendlyMessage } from "../../../../lib/apiError";
@@ -146,19 +147,16 @@ export function CreateCourseForm({ languages, initialValues, slugLocked = false,
           </Field>
 
           <Field label="Language" htmlFor="languageId" error={errors.languageId}>
-            <select
+            <Select
               {...fieldProps("languageId", errors.languageId)}
               value={values.languageId}
-              onChange={(e) => change({ languageId: e.target.value })}
-              className={inputClass}
-            >
-              <option value="">Choose a language</option>
-              {languages.map((l) => (
-                <option key={l.id} value={l.id}>
-                  {l.name}
-                </option>
-              ))}
-            </select>
+              onChange={(value) => change({ languageId: value })}
+              disabled={saving}
+              searchable
+              placeholder="Choose a language"
+              searchPlaceholder="Search languages…"
+              options={languages.map((l) => ({ value: String(l.id), label: l.name }))}
+            />
           </Field>
 
           <MarkdownEditor

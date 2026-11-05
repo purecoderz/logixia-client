@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { PasswordRequirements } from './PasswordRequirements';
 import { SocialAuth } from './SocialAuth';
 import authservices from '../../../services/authservice';
@@ -11,6 +11,10 @@ interface AuthFormProps {
 }
 
 export const AuthForm: React.FC<AuthFormProps> = ({ isLogin, onToggleAuth }) => {
+    const location = useLocation();
+    const from = (location.state as { from?: { pathname?: string; search?: string; hash?: string } } | null)?.from;
+    const returnPath = from?.pathname?.startsWith("/") && !from.pathname.startsWith("//") && !from.pathname.includes("\\") && !from.pathname.startsWith("/auth/")
+        ? `${from.pathname}${from.search ?? ""}${from.hash ?? ""}` : "/";
     const [fullName, setFullName] = useState('');
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
@@ -80,7 +84,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ isLogin, onToggleAuth }) => 
     }
 
     if (profile) {
-        return <Navigate to="/" replace />;
+        return <Navigate to={returnPath} replace />;
     }
 
     return (

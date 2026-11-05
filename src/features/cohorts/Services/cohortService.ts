@@ -1,3 +1,5 @@
+import type { CreateCohortInput } from "../types/create";
+import { apiErrorFrom } from "@/lib/apiError";
 
 
 import { CohortUtils } from "../utils/Cohorts";
@@ -37,7 +39,7 @@ export interface RawInstructorCohort {
   seats: number;
   seats_taken: number;
   is_published: boolean;
-  status: InstructorCohortStatus;
+  status?: InstructorCohortStatus | "starting_soon" | "in_progress" | null;
 }
 
 // Used by the topbar cohort switcher
@@ -47,17 +49,41 @@ export interface CohortOption {
 }
 
 async function handleError(response: Response): Promise<never> {
-  const error = await response.json().catch(() => null);
-  const message =
-    typeof error === "string" ? error : error?.detail ?? "Request failed";
-  throw new Error(typeof message === "string" ? message : JSON.stringify(message));
+  throw await apiErrorFrom(response);
 }
 
 
 
 // Cohort API Service
 export const CohortService = {
-  async getCohorts(path: string = "/cohorts"): Promise<Cohort[]> {
+  async update(id: string, patch: Partial<CreateCohortInput>): Promise<void> {
+    const response = await apiFetch(`/cohorts/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(patch),
+    });
+    if (!response.ok) return handleError(response);
+  },
+
+  async create(input: CreateCohortInput): Promise<void> {
+    const response = await apiFetch("/cohorts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+    if (!response.ok) return handleError(response);
+  },
+
+  async updatePublication(id: string, isPublished: boolean): Promise<void> {
+    const response = await apiFetch(`/cohorts/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ is_published: isPublished }),
+    });
+    if (!response.ok) return handleError(response);
+  },
+
+  async getCohorts(path: string = "/public/cohorts"): Promise<Cohort[]> {
     const response = await apiFetch(path);
     if (!response.ok) return handleError(response);
 
@@ -77,7 +103,7 @@ export const CohortService = {
   },
 
   async getCohortsDetails(id: string): Promise<Cohort[]> {
-    const response = await apiFetch(`/cohorts/${id}`);
+    const response = await apiFetch(`/public/cohorts/${id}`);
     if (!response.ok) return handleError(response);
     return response.json();
   },

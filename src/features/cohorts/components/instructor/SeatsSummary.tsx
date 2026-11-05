@@ -2,8 +2,8 @@ import type { InstructorCohort } from "../../types/types";
 import { ProgressBar } from "../../../../components/ui/ProgressBar";
 
 export function SeatsSummary({ cohort: c }: { cohort: InstructorCohort }) {
-  const full = c.seatsTaken >= c.seatsTotal;
-  const pct = Math.round((c.seatsTaken / c.seatsTotal) * 100);
+  const full = c.seatsTotal > 0 && c.seatsTaken >= c.seatsTotal;
+  const pct = c.seatsTotal > 0 ? Math.round((c.seatsTaken / c.seatsTotal) * 100) : 0;
   const lowFill = !full && pct < 50 && (c.status === "open" || c.status === "starting-soon");
 
   return (

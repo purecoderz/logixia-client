@@ -1,5 +1,5 @@
 
-import type { Cohort, InstructorCohort } from "../types/types";
+import type { Cohort, InstructorCohort, InstructorCohortStatus } from "../types/types";
 import type { CohortStatus, RawCohort, RawInstructorCohort } from "../Services/cohortService";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -87,18 +87,28 @@ export const CohortUtils = {
     };
   },
 
-  // Instructor view: the server already worked out the status (it knows about drafts)
+  // Prefer a recognized server status; otherwise derive it from publication and dates.
   transformForInstructor(item: RawInstructorCohort): InstructorCohort {
+    const statuses: Record<string, InstructorCohortStatus> = {
+      draft: "draft", open: "open", completed: "completed",
+      starting_soon: "starting-soon", "starting-soon": "starting-soon",
+      in_progress: "in-progress", "in-progress": "in-progress",
+    };
+    const normalized = item.status && Object.hasOwn(statuses, item.status) ? statuses[item.status] : undefined;
+    const status: InstructorCohortStatus = item.is_published === false
+      ? "draft"
+      : normalized ?? CohortUtils.getStatus(item.start_date, item.end_date);
     const progress =
-      item.status === "in-progress"
+      status === "in-progress"
         ? CohortUtils.getWeekProgress(item.start_date, item.end_date)
         : null;
 
     return {
       id: String(item.id),
       name: item.name,
+      courseId: item.course_id,
       course: item.course_title,
-      status: item.status,
+      status,
       startDate: item.start_date,
       endDate: item.end_date,
       seatsTaken: item.seats_taken,

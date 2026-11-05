@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ErrorState } from "../../../components/ui/ErrorState";
 import { Spinner } from "../../../components/ui/Spinner";
 import { CreateCourseForm } from "../components/instructor/CreateCourseForm";
@@ -16,6 +16,8 @@ import { PageBreadcrumbs, type Crumb } from "@/components/ui/BreadCrumbs";
 /** Create a course, or edit one when the route has a :courseId. */
 export default function CreateCoursePage() {
   const { courseId } = useParams();
+  const [searchParams] = useSearchParams();
+  const returnToCohort = !courseId && searchParams.get("returnTo") === "cohort";
   const editing = courseId !== undefined;
   const navigate = useNavigate();
   const languages = useLanguages();
@@ -65,7 +67,7 @@ export default function CreateCoursePage() {
           languages={languages.data}
           initialValues={initial}
           slugLocked={course.data?.isPublished ?? false}
-          onCancel={() => navigate(courseId ? builderPath(courseId) : COURSES_PATH)}
+          onCancel={() => navigate(courseId ? builderPath(courseId) : returnToCohort ? "/instructor/cohorts/new" : COURSES_PATH)}
           onSubmit={async (values, action) => {
             try {
               if (courseId && initial) {
@@ -75,7 +77,7 @@ export default function CreateCoursePage() {
                 return;
               }
               const created = await createCourse.mutateAsync(values);
-              navigate(action === "builder" ? builderPath(created.id) : COURSES_PATH);
+              navigate(returnToCohort ? `/instructor/cohorts/new?course=${created.id}` : action === "builder" ? builderPath(created.id) : COURSES_PATH);
             } catch (error) {
               // Field problems go back to the form; anything else the form shows as a banner
               if (error instanceof CourseFormRejected) return error.errors;

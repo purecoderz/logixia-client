@@ -1,3 +1,5 @@
+import type { CohortActionProps } from "./CohortActions";
+import { Link } from "react-router-dom";
 import type { InstructorCohort } from "../../types/types";
 import { formatNaira } from "@/utils/format";
 import { CohortActions } from "./CohortActions";
@@ -6,11 +8,8 @@ import { SeatsSummary } from "./SeatsSummary";
 import { CohortStatusChip } from "./CohortStatusChip";
 
 
-interface InstructorCohortCardProps {
+interface InstructorCohortCardProps extends CohortActionProps {
   cohort: InstructorCohort;
-  onCopyLink: (cohort: InstructorCohort) => void;
-  onPublish: (cohort: InstructorCohort) => void;
-  onOpenMenu: (cohort: InstructorCohort) => void;
 }
 
 export function InstructorCohortCard({ cohort: c, ...actions }: InstructorCohortCardProps) {
@@ -18,10 +17,9 @@ export function InstructorCohortCard({ cohort: c, ...actions }: InstructorCohort
     <article className="flex flex-col gap-4 rounded-xl border border-gray-800 bg-gray-800/30 p-5 hover:border-gray-700">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          {/* Swap for your router's <Link> */}
-          <a href={`/cohorts/${c.id}`} className="break-words font-semibold text-gray-50 hover:text-sky-300 hover:underline">
+          <Link to={`/cohort/${c.id}`} className="break-words font-semibold text-gray-50 hover:text-sky-300 hover:underline">
             {c.name}
-          </a>
+          </Link>
           <p className="mt-0.5 text-xs text-gray-400">{c.course}</p>
         </div>
         <CohortStatusChip status={c.status} />

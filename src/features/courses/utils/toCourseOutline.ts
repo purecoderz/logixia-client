@@ -1,4 +1,4 @@
-import type { CourseOutline, OutlineIssue, OutlineLesson, OutlineModule, TaskKind } from "../types/outline";
+import type { CourseOutline, OutlineIssue, OutlineLesson, OutlineModule, OutlineTask, TaskKind } from "../types/outline";
 
 export interface RawOutlineModule {
   id: number;
@@ -12,7 +12,17 @@ export interface RawOutlineModule {
     tasks: { id: number; title: string; type: TaskKind; order: number }[];
   }[];
 }
+// What the server returns right after creating a task (extra fields are ignored)
+export interface RawCreatedTask {
+  id: number;
+  title: string;
+  type: TaskKind;
+  task_order: number;
+}
 
+export function toNewTask(t: RawCreatedTask): OutlineTask {
+  return { id: t.id, title: t.title, type: t.type, order: t.task_order };
+}
 // The course outline: titles and counts only, already sorted by the server
 export interface RawCourseOutline {
   id: number;

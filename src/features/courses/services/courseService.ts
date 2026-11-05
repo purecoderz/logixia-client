@@ -5,15 +5,19 @@ import type {
   CourseOutline,
   OutlineLesson,
   OutlineModule,
+  OutlineTask,
+  TaskKind,
 } from "../types/outline";
 import type { InstructorCourse } from "../types/types";
 import {
   toCourseOutline,
   toNewLesson,
   toNewModule,
+  toNewTask,
   type RawCourseOutline,
   type RawCreatedLesson,
   type RawCreatedModule,
+  type RawCreatedTask,
 } from "../utils/toCourseOutline";
 import {
   toInstructorCourse,
@@ -122,6 +126,8 @@ const moduleOrderPath = (courseId: string) =>
   `/courses/${courseId}/modules/order`;
 const lessonOrderPath = (moduleId: number) =>
   `/modules/${moduleId}/lessons/order`;
+// TODO: check this against your route
+const tasksPath = (lessonId: number) => `/lessons/${lessonId}/tasks`;
 
 async function send(
   path: string,
@@ -183,6 +189,19 @@ export const CourseService = {
       if (fieldErrors) throw new CourseFormRejected(fieldErrors);
     }
     throw await apiErrorFrom(response);
+  },
+
+
+    /** The server picks the position (last). Only a title and a type are sent. */
+  async addTask(lessonId: number, title: string, type: TaskKind): Promise<OutlineTask> {
+    const response = await apiFetch(tasksPath(lessonId), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, type }),
+    });
+    if (!response.ok) throw await apiErrorFrom(response);
+    const raw: RawCreatedTask = await response.json();
+    return toNewTask(raw);
   },
 
   async getLesson(lessonId: string): Promise<LessonDetail> {

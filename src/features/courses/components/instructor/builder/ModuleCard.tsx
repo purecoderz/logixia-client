@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ActionMenu, type MenuItem } from "@/components/ui/ActionMenu";
 import { StatusChip } from "@/components/ui/StatusChip";
-import type { OutlineModule } from "@/features/courses/types/outline";
+import type { OutlineModule, TaskKind } from "@/features/courses/types/outline";
 import { lessonEditorPath } from "@/features/courses/utils/paths";
 import { AddItemForm } from "./AddItemForm";
 import { InlineRename } from "./InlineRename";
+import { useNavigate } from "react-router-dom";   // join your existing react-router-dom import
+import { tasksForModulePath } from "@/features/tasks/paths";
 
 type Kind = "module" | "lesson";
 
@@ -32,6 +34,7 @@ interface ModuleCardProps {
   onToggleLesson: (lessonId: number) => void;
   onAddLesson: (moduleId: number, title: string) => Promise<{ id: number }>;
   actions: OutlineActions;
+  onAddTask: (lessonId: number, title: string, type: TaskKind) => Promise<{ id: number }>;
 }
 
 const chevron = (open: boolean) => (
@@ -42,9 +45,10 @@ const chevron = (open: boolean) => (
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
-function menuFor(kind: Kind, id: number, first: boolean, last: boolean, actions: OutlineActions, rename: () => void): MenuItem[] {
+function menuFor(kind: Kind, id: number, first: boolean, last: boolean, actions: OutlineActions, rename: () => void, extra: MenuItem[] = []): MenuItem[] {
   return [
     { label: "Rename", onSelect: rename },
+    ...extra,
     ...(first ? [] : [{ label: "Move up", onSelect: () => void actions.move(kind, id, -1) }]),
     ...(last ? [] : [{ label: "Move down", onSelect: () => void actions.move(kind, id, 1) }]),
     { label: "Delete", onSelect: () => actions.remove(kind, id) },
@@ -52,7 +56,7 @@ function menuFor(kind: Kind, id: number, first: boolean, last: boolean, actions:
 }
 
 export function ModuleCard({
-  courseId, module: m, number, isFirst, isLast, open, onToggle, openLessons, onToggleLesson, onAddLesson, actions,
+  courseId, module: m, number, isFirst, isLast, open, onToggle, onAddTask, openLessons, onToggleLesson, onAddLesson, actions,
 }: ModuleCardProps) {
   const [renamingModule, setRenamingModule] = useState(false);
   const [renamingLesson, setRenamingLesson] = useState<number | null>(null);
@@ -66,6 +70,8 @@ export function ModuleCard({
     setRenamingLesson(null);
     focusLater(`lesson-${lessonId}`);
   };
+
+  const navigate = useNavigate();
 
   return (
     <section className="rounded-xl border border-gray-800 bg-gray-800/30">
@@ -104,7 +110,9 @@ export function ModuleCard({
         <ActionMenu
           id={`module-menu-${m.id}`}
           label={`Actions for module ${number}: ${m.title}`}
-          items={menuFor("module", m.id, isFirst, isLast, actions, () => setRenamingModule(true))}
+          items={menuFor("module", m.id, isFirst, isLast, actions, () => setRenamingModule(true), [
+            { label: "View tasks", onSelect: () => navigate(tasksForModulePath(courseId, m.id)) },
+          ])}
         />
       </div>
 
@@ -176,6 +184,24 @@ export function ModuleCard({
                             </li>
                           ))
                         )}
+
+                        <li className="pt-2">
+                          <AddItemForm
+                            noun="task"
+                            numberLabel={`Task ${lessonNumber}.${lesson.tasks.length + 1}`}
+                            existingCount={lesson.tasks.length}
+                            inputId={`new-task-title-${lesson.id}`}
+                            placeholder="For example: Print your name"
+                            pick={{
+                              label: "Task type",
+                              options: [
+                                { value: "code", label: "Code" },
+                                { value: "quiz", label: "Quiz" },
+                              ],
+                            }}
+                            save={(title, type) => onAddTask(lesson.id, title, type as TaskKind)}
+                          />
+                        </li>
                       </ul>
                     )}
                   </li>

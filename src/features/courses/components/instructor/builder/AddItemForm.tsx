@@ -6,14 +6,15 @@ import { ApiError, friendlyMessage } from "../../../../../lib/apiError";
 
 interface AddItemFormProps {
   /** Used in the button and the messages: "Add module", "Couldn’t add the lesson". */
-  noun: "module" | "lesson";
+  noun: "module" | "lesson" | "task";
   /** Shown beside the box and announced to screen readers: "Module 4", "Lesson 1.3". */
   numberLabel: string;
   existingCount: number;
   /** Must be unique on the page: several lesson forms can be on screen at once. */
   inputId: string;
   placeholder: string;
-  save: (title: string) => Promise<{ id: number }>;
+  pick?: { label: string; options: { value: string; label: string }[] };
+  save: (title: string, picked: string) => Promise<{ id: number }>;
   onAdded?: (id: number) => void;
   /** Focus the box on load when there's nothing yet. Only one form on a page should do this. */
   focusWhenEmpty?: boolean;
@@ -29,6 +30,7 @@ export function AddItemForm({
   placeholder,
   save,
   onAdded,
+  pick,
   focusWhenEmpty = false,
 }: AddItemFormProps) {
   const [opened, setOpened] = useState(false);
@@ -38,9 +40,13 @@ export function AddItemForm({
   const [announcement, setAnnouncement] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const openButtonRef = useRef<HTMLButtonElement>(null);
+  const [picked, setPicked] = useState(pick?.options[0]?.value ?? "");
+
 
   const isOpen = opened || existingCount === 0; // with nothing yet, the form is always shown
   const noteId = `${inputId}-note`;
+
+
 
   useEffect(() => {
     if (opened) inputRef.current?.focus();
@@ -68,7 +74,7 @@ export function AddItemForm({
     setAnnouncement("");
     setSaving(true);
     try {
-      const created = await save(clean);
+      const created = await save(clean, picked);
       setTitle("");
       setOpened(true); // stay open so several can be typed in a row
       setAnnouncement(`${numberLabel} added`);
@@ -131,6 +137,23 @@ export function AddItemForm({
               aria-describedby={noteId}
               className={`${inputClass} min-w-40 flex-1 ${saving ? "opacity-60" : ""}`}
             />
+
+            {pick && (
+              <select
+                aria-label={pick.label}
+                value={picked}
+                onChange={(e) => setPicked(e.target.value)}
+                disabled={saving}
+                className="min-h-11 rounded-lg border border-gray-700 bg-gray-900 px-3 text-sm text-gray-100 focus:border-sky-400 focus:outline-none"
+              >
+                {pick.options.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+            )}
+
             <Button type="submit" disabled={saving} aria-busy={saving}>
               {saving ? (
                 <>

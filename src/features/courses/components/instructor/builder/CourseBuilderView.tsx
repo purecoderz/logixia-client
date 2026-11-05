@@ -14,6 +14,7 @@ import { AddModuleForm } from "./AddModuleForm";
 import { focusLater, ModuleCard, type OutlineActions } from "./ModuleCard";
 import { PublishChecklist } from "./PublishChecklist";
 import { useUpdateCourse } from "@/features/courses/hooks/UseUpdateCourse";
+import { useAddTask } from "@/features/courses/hooks/useAddTask";
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
@@ -36,6 +37,7 @@ interface DeleteTarget {
 export function CourseBuilderView({ outline }: { outline: CourseOutline }) {
   const courseId = String(outline.id);
   const addLesson = useAddLesson(courseId);
+  const addTask = useAddTask(courseId); 
   const outlineActions = useOutlineActions();
   const updateCourse = useUpdateCourse();
 
@@ -235,6 +237,7 @@ export function CourseBuilderView({ outline }: { outline: CourseOutline }) {
               onToggleLesson={(id) => setOpenLessons((s) => toggle(s, id))}
               onAddLesson={(moduleId, title) => addLesson.mutateAsync({ moduleId, title })}
               actions={actions}
+              onAddTask={(lessonId, title, type) => addTask.mutateAsync({ lessonId, title, type })}
             />
           ))}
 

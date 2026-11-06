@@ -11,7 +11,7 @@ export function LiveSessionsView({ sessions }: { sessions: Session[] }) {
 
     if (live.length === 0 && upcoming.length === 0) {
         return (
-            <p className="py-10 text-center text-sm text-[#8b949e]">
+            <p className="py-10 text-center text-sm text-muted">
                 No live or upcoming sessions.
             </p>
         );
@@ -35,7 +35,7 @@ export function LiveSessionsView({ sessions }: { sessions: Session[] }) {
 
             {upcoming.length > 0 && (
                 <section>
-                    <h2 className="mb-2 text-sm font-semibold text-[#8b949e]">Upcoming</h2>
+                    <h2 className="mb-2 text-sm font-semibold text-muted">Upcoming</h2>
                     {upcoming.map((s) => (
                         <UpcomingSessionRow
                             key={s.id}

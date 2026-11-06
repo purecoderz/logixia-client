@@ -10,7 +10,7 @@ export function SeatsSummary({ cohort: c }: { cohort: InstructorCohort }) {
     <div>
       <p className="text-sm font-medium">
         {c.seatsTaken} / {c.seatsTotal}
-        {full && <span className="ml-2 text-xs text-emerald-300">Full</span>}
+        {full && <span className="ml-2 text-xs text-success">Full</span>}
       </p>
       <div className="my-1.5">
         <ProgressBar
@@ -20,7 +20,7 @@ export function SeatsSummary({ cohort: c }: { cohort: InstructorCohort }) {
           label="Seats filled"
         />
       </div>
-      <p className={`text-xs ${lowFill ? "text-amber-300" : "text-gray-400"}`}>{pct}% filled</p>
+      <p className={`text-xs ${lowFill ? "text-warning" : "text-muted"}`}>{pct}% filled</p>
     </div>
   );
 }

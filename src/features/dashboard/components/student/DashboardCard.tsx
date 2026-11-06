@@ -13,9 +13,9 @@ export function DashboardCard({
   className?: string;
 }) {
   return (
-    <section className={`rounded-2xl border border-[#30363d] bg-[#161b22] p-5 ${className}`}>
+    <section className={`rounded-2xl border border-line bg-surface p-5 ${className}`}>
       <header className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold text-white">{title}</h2>
+        <h2 className="text-sm font-semibold text-foreground">{title}</h2>
         {action}
       </header>
       {children}
@@ -27,7 +27,7 @@ export function SeeAllLink({ to = "/assignments" }: { to?: string }) {
   return (
     <Link
       to={to}
-      className="text-xs text-[#8b949e] underline-offset-2 hover:text-white hover:underline"
+      className="text-xs text-muted underline-offset-2 hover:text-foreground hover:underline"
     >
       See all
     </Link>
@@ -35,5 +35,5 @@ export function SeeAllLink({ to = "/assignments" }: { to?: string }) {
 }
 
 export function EmptyState({ children }: { children: ReactNode }) {
-  return <p className="py-6 text-center text-sm text-[#8b949e]">{children}</p>;
+  return <p className="py-6 text-center text-sm text-muted">{children}</p>;
 }

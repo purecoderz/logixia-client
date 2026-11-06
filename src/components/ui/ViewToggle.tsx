@@ -7,7 +7,7 @@ interface ViewToggleProps {
 
 export function ViewToggle({ value, onChange }: ViewToggleProps) {
   return (
-    <div className="flex rounded-lg border border-gray-700 p-0.5" role="group" aria-label="View">
+    <div className="flex rounded-lg border border-line p-0.5" role="group" aria-label="View">
       {(["grid", "table"] as const).map((v) => (
         <button
           key={v}
@@ -16,7 +16,7 @@ export function ViewToggle({ value, onChange }: ViewToggleProps) {
           aria-label={v === "grid" ? "Grid view" : "Table view"}
           onClick={() => onChange(v)}
           className={`flex size-10 items-center justify-center rounded-md transition-colors ${
-            value === v ? "bg-sky-400/15 text-sky-300" : "text-gray-400 hover:text-gray-200"
+            value === v ? "bg-accent/15 text-accent" : "text-muted hover:text-body"
           }`}
         >
           {v === "grid" ? (

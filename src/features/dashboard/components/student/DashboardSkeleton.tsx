@@ -2,12 +2,12 @@
 import type { ReactNode } from "react";
 
 function Bone({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse rounded-lg bg-[#21262d] ${className}`} />;
+  return <div className={`animate-pulse rounded-lg bg-hover ${className}`} />;
 }
 
 function SkeletonCard({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`rounded-2xl border border-[#30363d] bg-[#161b22] p-5 ${className}`}>
+    <div className={`rounded-2xl border border-line bg-surface p-5 ${className}`}>
       <div className="mb-4 flex items-center justify-between">
         <Bone className="h-4 w-24" />
         <Bone className="h-3 w-12" />
@@ -19,7 +19,7 @@ function SkeletonCard({ children, className = "" }: { children: ReactNode; class
 
 function RowBone() {
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-[#0d1117] p-3">
+    <div className="flex items-center gap-3 rounded-xl bg-input p-3">
       <Bone className="size-10 shrink-0" />
       <div className="flex-1 space-y-2">
         <Bone className="h-3.5 w-2/3" />
@@ -41,7 +41,7 @@ export function DashboardSkeleton() {
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div className="min-w-0 space-y-6">
           {/* hero */}
-          <div className="rounded-2xl border border-[#30363d] bg-[#161b22] p-6 md:p-8">
+          <div className="rounded-2xl border border-line bg-surface p-6 md:p-8">
             <Bone className="h-8 w-56" />
             <Bone className="mt-4 h-4 w-full max-w-md" />
             <Bone className="mt-2 h-4 w-2/3 max-w-sm" />

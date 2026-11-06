@@ -43,8 +43,8 @@ export default function CreateCoursePage() {
     <div className="mx-auto max-w-6xl space-y-6">
       <div>
         <PageBreadcrumbs items={crumbs} />
-        <h1 className="text-3xl font-bold tracking-tight text-gray-50">{editing ? "Edit course" : "Create course"}</h1>
-        <p className="mt-1.5 text-sm text-gray-400">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">{editing ? "Edit course" : "Create course"}</h1>
+        <p className="mt-1.5 text-sm text-muted">
           {editing
             ? "Changes apply as soon as you save."
             : "Set up the basics now. Add lessons whenever you like, and you can run a cohort on this course right away."}
@@ -52,7 +52,7 @@ export default function CreateCoursePage() {
       </div>
 
       {loading && (
-        <p role="status" className="flex items-center gap-3 text-sm text-gray-400">
+        <p role="status" className="flex items-center gap-3 text-sm text-muted">
           <Spinner /> Loading the form…
         </p>
       )}

@@ -11,8 +11,8 @@ import { toCohortView } from "../utils/toCohotView";
 import { InstructorProfile } from "../components/students/InstructorProfile";
 import { RoadmapRow } from "../../../components/CoursesUi/RoadmapRow";
 
-const card = "rounded-xl border border-[#30363d] bg-[#161b22] p-4";
-const h2 = "text-xl font-medium text-white";
+const card = "rounded-xl border border-line bg-surface p-4";
+const h2 = "text-xl font-medium text-foreground";
 
 // ---------- what the API sends ----------
 interface ApiLesson {
@@ -118,17 +118,17 @@ export function CohortDetails() {
   if (status === "notfound") return <Navigate to="/cohorts" replace />;
 
   if (status === "loading") {
-    return <p className="font-mono text-sm text-[#8b949e]">Loading cohort…</p>;
+    return <p className="font-mono text-sm text-muted">Loading cohort…</p>;
   }
 
   if (status === "error") {
     return (
       <div className={`${card} max-w-md`}>
-        <p className="text-sm text-white">We couldn't load this cohort.</p>
-        <p className="mt-1.5 text-[13px] text-[#8b949e]">Check your connection, then try again.</p>
+        <p className="text-sm text-foreground">We couldn't load this cohort.</p>
+        <p className="mt-1.5 text-[13px] text-muted">Check your connection, then try again.</p>
         <button
           onClick={() => setAttempt((a) => a + 1)}
-          className="mt-3 rounded-md border border-[#30363d] px-3 py-1.5 text-sm text-white hover:bg-[#21262d]"
+          className="mt-3 rounded-md border border-line px-3 py-1.5 text-sm text-foreground hover:bg-hover"
         >
           Try again
         </button>
@@ -151,8 +151,8 @@ export function CohortDetails() {
   const hasEnrolData = cohort.price != null && cohort.status !== "completed";
 
   return (
-    <div className="pb-24 text-[#c9d1d9] lg:pb-0">
-      <Link to="/cohorts" className="font-mono text-[13px] text-[#58a6ff] hover:text-[#79b8ff]">
+    <div className="pb-24 text-body lg:pb-0">
+      <Link to="/cohorts" className="font-mono text-[13px] text-accent hover:text-accent-hover">
         ← All cohorts
       </Link>
 
@@ -164,28 +164,28 @@ export function CohortDetails() {
               {s.label}
               {when && ` · ${when}`}
             </span>
-            <h1 className="mt-3.5 text-4xl font-semibold leading-tight text-white">{cohort.headline}</h1>
-            <p className="mt-3.5 max-w-2xl text-base leading-relaxed text-[#8b949e]">{cohort.summary}</p>
+            <h1 className="mt-3.5 text-4xl font-semibold leading-tight text-foreground">{cohort.headline}</h1>
+            <p className="mt-3.5 max-w-2xl text-base leading-relaxed text-muted">{cohort.summary}</p>
 
             <div className="mt-5 flex flex-wrap items-center gap-5 font-mono text-[13px]">
               {cohort.totalWeeks > 0 && (
                 <span className="flex items-center gap-2">
-                  <Calendar size={16} className="text-[#8b949e]" />
+                  <Calendar size={16} className="text-muted" />
                   {cohort.totalWeeks} weeks
                 </span>
               )}
               {cohort.seatsTotal != null && (
                 <span className="flex items-center gap-2">
-                  <Users size={16} className="text-[#8b949e]" />
+                  <Users size={16} className="text-muted" />
                   {cohort.seatsTotal} seats
                 </span>
               )}
               <span className="flex items-center gap-2">
-                <Video size={16} className="text-[#8b949e]" />
+                <Video size={16} className="text-muted" />
                 Weekly live classes
               </span>
               {cohort.prerequisite && (
-                <span className="rounded-md border border-[#30363d] px-2.5 py-0.5">{cohort.prerequisite}</span>
+                <span className="rounded-md border border-line px-2.5 py-0.5">{cohort.prerequisite}</span>
               )}
             </div>
           </header>
@@ -197,11 +197,11 @@ export function CohortDetails() {
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 {cohort.outcomes.map((o, i) => (
                   <div key={`${o.title}-${i}`} className={card}>
-                    <p className="flex items-center gap-2 text-sm font-medium text-white">
-                      <Check size={16} className="text-[#3fb950]" />
+                    <p className="flex items-center gap-2 text-sm font-medium text-foreground">
+                      <Check size={16} className="text-success" />
                       {o.title}
                     </p>
-                    <p className="mt-1.5 text-[13px] leading-relaxed text-[#8b949e]">{o.text}</p>
+                    <p className="mt-1.5 text-[13px] leading-relaxed text-muted">{o.text}</p>
                   </div>
                 ))}
               </div>
@@ -213,14 +213,14 @@ export function CohortDetails() {
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <h2 className={h2}>Syllabus</h2>
               {cohort.weeks.length > 0 && (
-                <span className="font-mono text-xs text-[#8b949e]">
+                <span className="font-mono text-xs text-muted">
                   {cohort.totalWeeks} weeks · {cohort.totalLessons} lessons
                 </span>
               )}
             </div>
 
             {cohort.weeks.length === 0 ? (
-              <p className="mt-4 text-sm text-[#8b949e]">The syllabus for this cohort hasn't been published yet.</p>
+              <p className="mt-4 text-sm text-muted">The syllabus for this cohort hasn't been published yet.</p>
             ) : (
               <div className="mt-4">
                 {cohort.weeks.map((week, i) => (

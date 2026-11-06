@@ -34,29 +34,29 @@ export function Home() {
   ];
 
   return (
-    <div className="text-[#c9d1d9]">
+    <div className="text-body">
       <Hero />
       <PlaygroundBanner />
 
       <section id="cohort" className="scroll-mt-8  pt-10">
-        <p className="mb-3 text-xs uppercase tracking-wider text-[#8b949e]">
+        <p className="mb-3 text-xs uppercase tracking-wider text-muted">
           Learn with a group
         </p>
         <CohortCard />
       </section>
 
 
-      <section className="mt-12 border-t border-[#30363d] pt-10 pb-8">
+      <section className="mt-12 border-t border-line pt-10 pb-8">
         <div className="mb-4 flex items-baseline justify-between">
           <div>
-            <p className="text-xs uppercase tracking-wider text-[#8b949e]">
+            <p className="text-xs uppercase tracking-wider text-muted">
               Learn on your own
             </p>
-            <h2 className="mt-1 text-lg font-medium text-white">
+            <h2 className="mt-1 text-lg font-medium text-foreground">
               Ready-made courses
             </h2>
           </div>
-          <Link to="/courses" className="text-xs text-[#58a6ff]">Browse all</Link>
+          <Link to="/courses" className="text-xs text-accent">Browse all</Link>
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {courses.map((course) => (

@@ -11,10 +11,10 @@ type Sort = { key: SortKey; dir: "asc" | "desc" } | null;
 
 
 const CHIP: Record<AssignmentStatus, string> = {
-  active: "bg-[#1f6feb]/15 text-[#58a6ff]",
-  done: "bg-[#3fb950]/15 text-[#3fb950]",
-  incomplete: "bg-[#d29922]/15 text-[#d29922]",
-  missed: "bg-[#f85149]/15 text-[#f85149]",
+  active: "bg-[#1f6feb]/15 text-accent",
+  done: "bg-[#3fb950]/15 text-success",
+  incomplete: "bg-[#d29922]/15 text-warning",
+  missed: "bg-[#f85149]/15 text-danger",
 };
 
 function statusLabel(a: Assignment) {
@@ -37,21 +37,21 @@ function due(a: Assignment) {
 
   switch (a.uiStatus) {
     case "done":
-      return { text: "Passed all tests", color: "text-[#3fb950]" };
+      return { text: "Passed all tests", color: "text-success" };
     case "incomplete":
       return {
         text: ago === 0 ? "Deadline passed today" : `Deadline passed ${plural(ago)} ago`,
-        color: "text-[#d29922]",
+        color: "text-warning",
       };
     case "missed":
       return {
         text: ago === 0 ? "Overdue today" : `${plural(ago)} overdue`,
-        color: "text-[#f85149]",
+        color: "text-danger",
       };
     default:
-      if (days === 0) return { text: `Today, ${formatTime(d)}`, color: "text-[#d29922]" };
-      if (days === 1) return { text: `Tomorrow, ${formatTime(d)}`, color: "text-[#d29922]" };
-      return { text: `In ${days} days`, color: "text-[#c9d1d9]" };
+      if (days === 0) return { text: `Today, ${formatTime(d)}`, color: "text-warning" };
+      if (days === 1) return { text: `Tomorrow, ${formatTime(d)}`, color: "text-warning" };
+      return { text: `In ${days} days`, color: "text-body" };
   }
 }
 
@@ -80,7 +80,7 @@ function SortHeader({
       <button
         type="button"
         onClick={() => onSort(k)}
-        className={`inline-flex items-center gap-1 transition-colors hover:text-white ${active ? "text-white" : ""
+        className={`inline-flex items-center gap-1 transition-colors hover:text-foreground ${active ? "text-foreground" : ""
           }`}
       >
         {label}
@@ -113,9 +113,9 @@ export function AssignmentsTable({ assignments }: { assignments: Assignment[] })
   }, [assignments, sort]);
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-[#30363d] bg-[#0d1117]">
+    <div className="overflow-x-auto rounded-lg border border-line bg-input">
       <table className="w-full min-w-[560px] border-collapse text-[13px]">
-        <thead className="bg-[#161b22] text-xs text-[#8b949e]">
+        <thead className="bg-surface text-xs text-muted">
           <tr>
             <SortHeader label="Assignment" k="title" sort={sort} onSort={onSort} />
             <th scope="col" className="px-4 py-2.5 text-left font-medium">Status</th>
@@ -129,16 +129,16 @@ export function AssignmentsTable({ assignments }: { assignments: Assignment[] })
             return (
               <tr
                 key={a.id}
-                className="border-t border-[#21262d] transition-colors hover:bg-[#161b22]"
+                className="border-t border-line transition-colors hover:bg-surface"
               >
                 <td className="px-4 py-3">
                   <Link
                     to={`/assignments/${a.id}`}
-                    className="font-medium text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#58a6ff]"
+                    className="font-medium text-foreground hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                   >
                     {a.title}
                   </Link>
-                  <div className="text-xs capitalize text-[#8b949e]">{a.type}</div>
+                  <div className="text-xs capitalize text-muted">{a.type}</div>
                 </td>
                 <td className="px-4 py-3">
                   <span
@@ -148,7 +148,7 @@ export function AssignmentsTable({ assignments }: { assignments: Assignment[] })
                   </span>
                 </td>
                 <td className={`px-4 py-3 ${d.color}`}>{d.text}</td>
-                <td className="px-4 py-3 text-right font-mono text-xs text-[#8b949e]">{a.xp}</td>
+                <td className="px-4 py-3 text-right font-mono text-xs text-muted">{a.xp}</td>
               </tr>
             );
           })}

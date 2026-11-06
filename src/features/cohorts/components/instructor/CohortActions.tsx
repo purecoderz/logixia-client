@@ -37,7 +37,7 @@ export function CohortActions({ cohort: c, busyId, onCopyLink, onPublish, onUnpu
       {(c.status === "open" || c.status === "starting-soon") && (
         <Button variant="ghost" onClick={() => onCopyLink(c)} disabled={disabled}>Copy link</Button>
       )}
-      {busy && c.status !== "draft" && <span role="status" className="text-sm text-gray-400"><Spinner /> Updating…</span>}
+      {busy && c.status !== "draft" && <span role="status" className="text-sm text-muted"><Spinner /> Updating…</span>}
       <ActionMenu label={`More actions for ${c.name}`} items={items} disabled={disabled} />
     </div>
   );

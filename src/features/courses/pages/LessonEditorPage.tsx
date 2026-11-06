@@ -5,7 +5,7 @@ import { useCourseOutline } from "../hooks/useCourseOutline";
 import { useLesson } from "../hooks/useLesson";
 import { LessonEditorView } from "../components/instructor/LessonEditorView";
 
-const bone = "rounded-md bg-gray-800 motion-safe:animate-pulse";
+const bone = "rounded-md bg-surface-muted motion-safe:animate-pulse";
 
 function LessonSkeleton() {
   return (

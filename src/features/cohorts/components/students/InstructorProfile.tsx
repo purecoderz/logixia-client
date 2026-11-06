@@ -1,4 +1,4 @@
-const card = "rounded-lg border border-[#30363d] bg-[#0d1117] p-4";
+const card = "rounded-lg border border-line bg-input p-4";
 
 export type Instructor = {
   name: string;
@@ -30,9 +30,9 @@ function initials(name: string) {
 export function ScheduleCard({ schedule }: { schedule: Schedule }) {
   return (
     <div className={card}>
-      <p className="font-mono text-xs text-[#8b949e]">Live class</p>
-      <p className="mt-1.5 text-sm text-white">{schedule.when}</p>
-      <p className="mt-1 text-[13px] text-[#8b949e]">{schedule.recordings}</p>
+      <p className="font-mono text-xs text-muted">Live class</p>
+      <p className="mt-1.5 text-sm text-foreground">{schedule.when}</p>
+      <p className="mt-1 text-[13px] text-muted">{schedule.recordings}</p>
     </div>
   );
 }
@@ -59,7 +59,7 @@ export function InstructorProfile({ instructor }: { instructor: Instructor }) {
           ) : (
             <div
               aria-hidden
-              className="flex size-[88px] items-center justify-center rounded-xl bg-[#161b22] text-2xl font-semibold tracking-tight text-white ring-1 ring-[#30363d]"
+              className="flex size-[88px] items-center justify-center rounded-xl bg-surface text-2xl font-semibold tracking-tight text-foreground ring-1 ring-[#30363d]"
             >
               {initials(name)}
             </div>
@@ -68,13 +68,13 @@ export function InstructorProfile({ instructor }: { instructor: Instructor }) {
 
         {/* Identity + bio */}
         <div className="min-w-0 flex-1">
-          <h3 className="text-xl font-semibold tracking-tight text-white">
+          <h3 className="text-xl font-semibold tracking-tight text-foreground">
             {name}
           </h3>
-          {role && <p className="mt-0.5 text-sm text-[#8b949e]">{role}</p>}
+          {role && <p className="mt-0.5 text-sm text-muted">{role}</p>}
 
           {bio && (
-            <p className="mt-3 max-w-[62ch] text-[14px] leading-relaxed text-[#c9d1d9]">
+            <p className="mt-3 max-w-[62ch] text-[14px] leading-relaxed text-body">
               {bio}
             </p>
           )}
@@ -87,7 +87,7 @@ export function InstructorProfile({ instructor }: { instructor: Instructor }) {
                     href={l.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center rounded-md border border-[#30363d] px-2.5 py-1 text-[13px] text-[#c9d1d9] transition-colors hover:border-[#8b949e] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#58a6ff]"
+                    className="inline-flex items-center rounded-md border border-line px-2.5 py-1 text-[13px] text-body transition-colors hover:border-line-strong hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                   >
                     {l.label}
                   </a>
@@ -100,14 +100,14 @@ export function InstructorProfile({ instructor }: { instructor: Instructor }) {
 
       {/* Proof points */}
       {highlights && highlights.length > 0 && (
-        <dl className="mt-6 grid grid-cols-2 divide-x divide-[#21262d] border-t border-[#21262d] pt-4 sm:grid-cols-3">
+        <dl className="mt-6 grid grid-cols-2 divide-x divide-line border-t border-line pt-4 sm:grid-cols-3">
           {highlights.slice(0, 3).map((h, i) => (
             <div
               key={h.label}
               className={`flex flex-col px-4 first:pl-0 ${i === 2 ? "hidden sm:flex" : ""}`}
             >
-              <dt className="order-2 text-[13px] text-[#8b949e]">{h.label}</dt>
-              <dd className="order-1 text-lg font-semibold text-white">{h.value}</dd>
+              <dt className="order-2 text-[13px] text-muted">{h.label}</dt>
+              <dd className="order-1 text-lg font-semibold text-foreground">{h.value}</dd>
             </div>
           ))}
         </dl>

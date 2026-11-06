@@ -44,7 +44,7 @@ function InvitationContent({ token }: { token: string }) {
     mutationFn: () => InvitationService.accept(token),
     onSuccess: () => { void client.invalidateQueries({ queryKey: cohortKeys.all }); },
   });
-  const authLink = (path: string) => <Link to={path} state={{ from: location }} className="inline-flex min-h-11 items-center justify-center rounded-lg border border-gray-700 px-4 text-sm font-semibold text-sky-300 hover:bg-gray-800">{path.endsWith("signup") ? "Create an account" : "Sign in"}</Link>;
+  const authLink = (path: string) => <Link to={path} state={{ from: location }} className="inline-flex min-h-11 items-center justify-center rounded-lg border border-line px-4 text-sm font-semibold text-accent hover:bg-surface-muted">{path.endsWith("signup") ? "Create an account" : "Sign in"}</Link>;
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
@@ -72,33 +72,33 @@ function InvitationContent({ token }: { token: string }) {
   }
 
   return (
-    <div className="mx-auto max-w-xl text-gray-200">
-      <div className="w-full max-w-xl space-y-6 rounded-2xl border border-[#30363d] bg-[#161b22] p-6 sm:p-8">
+    <div className="mx-auto max-w-xl text-body">
+      <div className="w-full max-w-xl space-y-6 rounded-2xl border border-line bg-surface p-6 sm:p-8">
         <div className="space-y-2">
-          <Ticket className="text-sky-400" aria-hidden="true" />
-          <h1 className="text-2xl font-semibold text-white">You’re invited to a cohort</h1>
-          <p className="text-sm text-gray-400">Review your invitation and accept when you’re ready to join.</p>
+          <Ticket className="text-accent" aria-hidden="true" />
+          <h1 className="text-2xl font-semibold text-foreground">You’re invited to a cohort</h1>
+          <p className="text-sm text-muted">Review your invitation and accept when you’re ready to join.</p>
         </div>
         {!token ? <FormError message="This link is missing its invitation token. Ask your instructor for the complete link." />
           : isLoading ? <p role="status" className="flex items-center gap-2"><Spinner /> Checking your session…</p>
-          : !profile ? <div className="space-y-4"><p className="text-sm text-gray-300">Sign in or create an account using the email your instructor invited. Opening this link does not enrol you automatically.</p><div className="flex flex-wrap gap-3">{authLink("/auth/login")}{authLink("/auth/signup")}</div></div>
-          : accept.isSuccess ? <div className="space-y-4"><CheckCircle2 className="text-emerald-400" aria-hidden="true" /><p role="status" className="text-lg font-semibold text-white">You’ve joined {preview?.cohort_name ?? "the cohort"}.</p><p className="text-sm text-gray-400">{preview?.access === "owing" ? "Your payment is outstanding. Your instructor’s payment and access rules apply." : "Your payment for this cohort is waived."}</p><ButtonLink to="/">Go to dashboard</ButtonLink></div>
+          : !profile ? <div className="space-y-4"><p className="text-sm text-body">Sign in or create an account using the email your instructor invited. Opening this link does not enrol you automatically.</p><div className="flex flex-wrap gap-3">{authLink("/auth/login")}{authLink("/auth/signup")}</div></div>
+          : accept.isSuccess ? <div className="space-y-4"><CheckCircle2 className="text-success" aria-hidden="true" /><p role="status" className="text-lg font-semibold text-foreground">You’ve joined {preview?.cohort_name ?? "the cohort"}.</p><p className="text-sm text-muted">{preview?.access === "owing" ? "Your payment is outstanding. Your instructor’s payment and access rules apply." : "Your payment for this cohort is waived."}</p><ButtonLink to="/">Go to dashboard</ButtonLink></div>
           : loadingPreview || (!preview && !previewError) ? <p role="status" className="flex items-center gap-2"><Spinner /> Loading invitation…</p>
           : previewError ? <div className="space-y-4"><FormError message={invitationError(previewError)} />{previewError instanceof ApiError && previewError.status === 401 ? authLink("/auth/login") : <Button variant="ghost" onClick={() => setAttempt((a) => a + 1)}>Try again</Button>}</div>
           : preview && <div className="space-y-5">
-            <div><h2 className="text-xl font-semibold text-white">{preview.cohort_name}</h2><p className="mt-1 text-sm text-gray-400">{preview.course_title}</p></div>
-            <dl className="space-y-3 rounded-xl border border-gray-700 p-4 text-sm">
-              <div><dt className="text-gray-400">Invited email</dt><dd className="mt-1 flex items-center gap-2 break-all"><Mail size={16} aria-hidden="true" />{preview.email}</dd></div>
-              <div><dt className="text-gray-400">Payment access</dt><dd className="mt-1">{preview.access === "waived" ? "Waived — no payment required" : "Owing — payment required"}</dd></div>
-              <div><dt className="text-gray-400">Expires</dt><dd className="mt-1">{new Date(preview.expires_at).toLocaleString()}</dd></div>
+            <div><h2 className="text-xl font-semibold text-foreground">{preview.cohort_name}</h2><p className="mt-1 text-sm text-muted">{preview.course_title}</p></div>
+            <dl className="space-y-3 rounded-xl border border-line p-4 text-sm">
+              <div><dt className="text-muted">Invited email</dt><dd className="mt-1 flex items-center gap-2 break-all"><Mail size={16} aria-hidden="true" />{preview.email}</dd></div>
+              <div><dt className="text-muted">Payment access</dt><dd className="mt-1">{preview.access === "waived" ? "Waived — no payment required" : "Owing — payment required"}</dd></div>
+              <div><dt className="text-muted">Expires</dt><dd className="mt-1">{new Date(preview.expires_at).toLocaleString()}</dd></div>
             </dl>
             {expired && <FormError message="This invitation has expired. Ask your instructor for a new link." />}
             {mismatch && <FormError message={`You’re signed in as ${profile.email}. Use the account matching ${preview.email} to accept.`} />}
             {accept.isError && <FormError message={invitationError(accept.error)} />}
-            <p className="text-xs text-gray-400">This invitation can be accepted once, using the invited email address.</p>
+            <p className="text-xs text-muted">This invitation can be accepted once, using the invited email address.</p>
             <Button onClick={() => void join()} disabled={expired || Boolean(mismatch) || accept.isPending} aria-busy={accept.isPending}>{accept.isPending ? <><Spinner tone="dark" /> Accepting…</> : "Accept invitation"}</Button>
           </div>}
-        {profile && !accept.isSuccess && <div className="border-t border-gray-700 pt-4 text-sm text-gray-400"><p className="break-all">Signed in as {profile.email}</p><Button variant="ghost" disabled={accept.isPending} onClick={() => logout()}>Sign out to use another account</Button></div>}
+        {profile && !accept.isSuccess && <div className="border-t border-line pt-4 text-sm text-muted"><p className="break-all">Signed in as {profile.email}</p><Button variant="ghost" disabled={accept.isPending} onClick={() => logout()}>Sign out to use another account</Button></div>}
       </div>
     </div>
   );

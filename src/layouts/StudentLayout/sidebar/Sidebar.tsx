@@ -24,7 +24,7 @@ export const StudentSidebar = ({
 
   return (
     <aside
-      className={`relative flex flex-col h-screen bg-[#161b22] border-r border-[#30363d] text-[#c9d1d9] transition-all duration-300 select-none z-30 ${isCollapsed ? 'w-16' : 'w-64'
+      className={`relative flex flex-col h-screen bg-surface border-r border-line text-body transition-all duration-300 select-none z-30 ${isCollapsed ? 'w-16' : 'w-64'
         }`}
     >
       <SidebarHeader isCollapsed={isCollapsed} onBrandClick={() => { }} />

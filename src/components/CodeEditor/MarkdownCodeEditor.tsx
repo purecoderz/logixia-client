@@ -1,3 +1,6 @@
+import { useMemo } from "react";
+import { githubLight } from "@uiw/codemirror-theme-github";
+import { useTheme } from "@/features/theme/ThemeProvider";
 import CodeMirror from "@uiw/react-codemirror";
 import { EditorView } from "@codemirror/view";
 import { Prec } from "@codemirror/state";
@@ -5,29 +8,27 @@ import { dracula } from "@uiw/codemirror-theme-dracula";
 import { LANGUAGE_EXTENSIONS } from "./utils/languages";
 // adjust to your path
 
-const markdownTheme = EditorView.theme(
+const markdownTheme = (dark: boolean) => EditorView.theme(
   {
-    "&": { height: "100%", backgroundColor: "#0d1117", fontSize: "14px" },
+    "&": { height: "100%", backgroundColor: "var(--app-input)", fontSize: "14px" },
     ".cm-content": { padding: "16px 0", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", lineHeight: "1.75" },
     ".cm-line": { padding: "0 16px 0 8px" },
-    ".cm-gutters": { backgroundColor: "#0d1117", color: "#484f58", border: "none" },
-    ".cm-activeLine": { backgroundColor: "#ffffff08" },
-    ".cm-activeLineGutter": { backgroundColor: "transparent", color: "#c9d1d9" },
-    ".cm-cursor": { borderLeftColor: "#58a6ff" },
-    ".cm-selectionBackground, &.cm-focused .cm-selectionBackground": { backgroundColor: "#264f78" },
-    ".cm-placeholder": { color: "#6e7681" },
+    ".cm-gutters": { backgroundColor: "var(--app-input)", color: "var(--app-muted)", border: "none" },
+    ".cm-activeLine": { backgroundColor: "var(--app-hover)" },
+    ".cm-activeLineGutter": { backgroundColor: "transparent", color: "var(--app-body)" },
+    ".cm-cursor": { borderLeftColor: "var(--app-accent)" },
+    ".cm-selectionBackground, &.cm-focused .cm-selectionBackground": { backgroundColor: "var(--app-selection)" },
+    ".cm-placeholder": { color: "var(--app-muted)" },
     "&.cm-focused": { outline: "none" },
     ".cm-scroller": {
       overscrollBehavior: "contain",
       scrollbarWidth: "thin",
-      scrollbarColor: "#44475a transparent",
+      scrollbarColor: "var(--app-border) transparent",
     },
   },
-  { dark: true },
+  { dark },
 );
 
-// static, so it is built once
-const extensions = [Prec.highest(markdownTheme), EditorView.lineWrapping, LANGUAGE_EXTENSIONS.markdown];
 
 interface MarkdownCodeEditorProps {
   value: string;
@@ -38,10 +39,12 @@ interface MarkdownCodeEditorProps {
 }
 
 export function MarkdownCodeEditor({ value, onChange, placeholder, onReady }: MarkdownCodeEditorProps) {
+  const { theme } = useTheme();
+  const extensions = useMemo(() => [Prec.highest(markdownTheme(theme === "dark")), EditorView.lineWrapping, LANGUAGE_EXTENSIONS.markdown], [theme]);
   return (
     <CodeMirror
       value={value}
-      theme={dracula}
+      theme={theme === "light" ? githubLight : dracula}
       className="h-full"
       placeholder={placeholder}
       extensions={extensions}

@@ -9,7 +9,7 @@ interface ProgressBarProps {
 }
 
 const fills: Record<Tone, string> = {
-  default: "bg-sky-400",
+  default: "bg-accent",
   warning: "bg-amber-400",
   success: "bg-emerald-400",
 };
@@ -24,7 +24,7 @@ export function ProgressBar({ value, max = 100, tone = "default", label }: Progr
       aria-valuemin={0}
       aria-valuemax={max}
       aria-valuenow={value}
-      className="h-1.5 w-full overflow-hidden rounded-full bg-gray-700"
+      className="h-1.5 w-full overflow-hidden rounded-full bg-hover"
     >
       <div
         className={`h-full rounded-full transition-[width] ${fills[tone]}`}

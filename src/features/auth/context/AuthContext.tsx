@@ -8,6 +8,7 @@ interface AuthContextType {
     profile: User | null
     login: (payload: LoginPayload) => Promise<void>;
     isLoading: boolean
+    updateProfile: (changes: Pick<User, "username">) => void
     logout: () => void
 }
 
@@ -22,6 +23,10 @@ function AuthProvider({ children }: { children: ReactNode }) {
         await authservices.userLogin(payload)
         const response = await authservices.getCurrentUser()
         setProfile(response)
+    }
+
+    const updateProfile = (changes: Pick<User, "username">) => {
+        setProfile((current) => current ? { ...current, ...changes } : current)
     }
 
     const logout = () => {
@@ -55,7 +60,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
     }, [queryClient])
 
     return (
-        <AuthContext value={{ profile, login, isLoading, logout }}>
+        <AuthContext value={{ profile, login, isLoading, logout, updateProfile }}>
             {children}
         </AuthContext>
     )

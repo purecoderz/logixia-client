@@ -27,7 +27,7 @@ export function ActionNotice({ notice, onDismiss }: ActionNoticeProps) {
   }, [notice, onDismiss]);
 
   const error = notice?.kind === "error";
-  const button = "min-h-11 rounded-lg px-2 text-sm font-semibold hover:bg-white/10";
+  const button = "min-h-11 rounded-lg px-2 text-sm font-semibold hover:bg-hover";
 
   return (
     <div role="status" aria-live="polite">
@@ -36,8 +36,8 @@ export function ActionNotice({ notice, onDismiss }: ActionNoticeProps) {
           role={error ? "alert" : undefined}
           className={`flex flex-wrap items-center gap-3 rounded-xl border px-4 py-3 text-sm ${
             error
-              ? "border-red-400/40 bg-red-400/10 text-red-200"
-              : "border-emerald-400/40 bg-emerald-400/10 text-emerald-100"
+              ? "border-red-400/40 bg-red-400/10 text-danger"
+              : "border-emerald-400/40 bg-emerald-400/10 text-success"
           }`}
         >
           <span className="min-w-48 flex-1">{notice.message}</span>

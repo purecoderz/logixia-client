@@ -37,13 +37,13 @@ export function ConfirmDialog({ open, title, message, confirmLabel, busy = false
       onClick={(e) => {
         if (e.target === ref.current && !busy) onCancel(); // a click on the dimmed area
       }}
-      className="m-auto w-[min(28rem,calc(100%-2rem))] rounded-xl border border-gray-700 bg-gray-900 p-0 text-gray-100 backdrop:bg-black/60"
+      className="m-auto w-[min(28rem,calc(100%-2rem))] rounded-xl border border-line bg-input p-0 text-foreground backdrop:bg-black/60"
     >
       <div className="space-y-4 p-6">
-        <h2 id={titleId} className="text-lg font-semibold text-gray-50">
+        <h2 id={titleId} className="text-lg font-semibold text-foreground">
           {title}
         </h2>
-        <p id={messageId} className="text-sm leading-relaxed text-gray-300">
+        <p id={messageId} className="text-sm leading-relaxed text-body">
           {message}
         </p>
         <div className="flex justify-end gap-2 pt-2">

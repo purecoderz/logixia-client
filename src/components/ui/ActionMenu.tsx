@@ -107,7 +107,7 @@ export function ActionMenu({id, label, items, disabled }: ActionMenuProps) {
         disabled={disabled}
         onClick={() => (open ? close(true) : openMenu())}
         onKeyDown={onTriggerKeyDown}
-        className="inline-flex size-11 items-center justify-center rounded-lg border border-gray-700 text-gray-200 hover:bg-gray-800 disabled:pointer-events-none disabled:opacity-50"
+        className="inline-flex size-11 items-center justify-center rounded-lg border border-line text-body hover:bg-surface-muted disabled:pointer-events-none disabled:opacity-50"
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
           <circle cx="3" cy="8" r="1.5" />
@@ -126,7 +126,7 @@ export function ActionMenu({id, label, items, disabled }: ActionMenuProps) {
             aria-label={label}
             style={{ position: "fixed", ...position }}
             onKeyDown={onMenuKeyDown}
-            className="z-50 min-w-48 rounded-xl border border-gray-700 bg-gray-900 p-1 shadow-xl"
+            className="z-50 min-w-48 rounded-xl border border-line bg-input p-1 shadow-xl"
           >
             {items.map((item) => (
               <button
@@ -138,7 +138,7 @@ export function ActionMenu({id, label, items, disabled }: ActionMenuProps) {
                   close(true);
                   item.onSelect();
                 }}
-                className="flex min-h-11 w-full items-center rounded-lg px-3 text-left text-sm text-gray-100 hover:bg-gray-800 focus:bg-gray-800 focus:outline-none"
+                className="flex min-h-11 w-full items-center rounded-lg px-3 text-left text-sm text-foreground hover:bg-surface-muted focus:bg-surface-muted focus:outline-none"
               >
                 {item.label}
               </button>

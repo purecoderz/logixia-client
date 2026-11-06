@@ -1,3 +1,4 @@
+import { ThemeToggle } from "@/features/theme/ThemeToggle";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Bell, LogOut, Menu, Search, Settings } from "lucide-react";
@@ -38,14 +39,14 @@ export function Topbar({ isCollapsed, onToggleCollapse }: TopbarProps) {
 
     return (
         <>
-            <header className="flex h-16 shrink-0 items-center gap-3 border-b border-[#30363d] bg-[#161b22] px-4 md:px-6">
+            <header className="flex h-16 shrink-0 items-center gap-3 border-b border-line bg-surface px-4 md:px-6">
                 <button
                     type="button"
                     onClick={onToggleCollapse}
                     title={label}
                     aria-label={label}
                     aria-expanded={!isCollapsed}
-                    className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg text-[#c9d1d9] transition-colors hover:bg-[#21262d] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#58a6ff] md:flex"
+                    className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg text-body transition-colors hover:bg-hover hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent md:flex"
                 >
                     <Menu size={20} aria-hidden />
                 </button>
@@ -54,24 +55,25 @@ export function Topbar({ isCollapsed, onToggleCollapse }: TopbarProps) {
                     <Search
                         size={16}
                         aria-hidden
-                        className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#8b949e]"
+                        className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted"
                     />
                     <input
                         type="search"
                         placeholder="Search"
                         aria-label="Search"
-                        className="h-9 w-full rounded-lg border border-[#30363d] bg-[#0d1117] pl-9 pr-3 text-sm text-[#c9d1d9] placeholder:text-[#8b949e] outline-none focus:border-[#58a6ff]"
+                        className="h-9 w-full rounded-lg border border-line bg-input pl-9 pr-3 text-sm text-body placeholder:text-muted outline-none focus:border-accent"
                     />
                 </div>
 
                 <div className="ml-auto flex shrink-0 items-center gap-2 md:gap-3">
                     {profile && <CohortSwitcher />}
+                    <ThemeToggle />
 
                     <button
                         type="button"
                         aria-label="Notifications"
                         title="Notifications"
-                        className="relative flex h-10 w-10 items-center justify-center rounded-lg text-[#c9d1d9] transition-colors hover:bg-[#21262d] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#58a6ff]"
+                        className="relative flex h-10 w-10 items-center justify-center rounded-lg text-body transition-colors hover:bg-hover hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
                     >
                         <Bell size={20} aria-hidden />
                         <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-[#da3633]" />
@@ -89,19 +91,19 @@ export function Topbar({ isCollapsed, onToggleCollapse }: TopbarProps) {
                                 onClick={() => setMenuOpen((o) => !o)}
                                 aria-haspopup="menu"
                                 aria-expanded={menuOpen}
-                                className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-[#21262d] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#58a6ff]"
+                                className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
                             >
                                 <span
                                     aria-hidden
-                                    className="flex h-8 w-8 items-center justify-center rounded-full bg-[#21262d] text-xs font-bold uppercase text-white"
+                                    className="flex h-8 w-8 items-center justify-center rounded-full bg-hover text-xs font-bold uppercase text-foreground"
                                 >
                                     {profile.username.charAt(0)}
                                 </span>
                                 <div className="hidden flex-col text-left leading-tight sm:flex">
-                                    <span className="font-mono text-sm font-semibold text-white">
+                                    <span className="font-mono text-sm font-semibold text-foreground">
                                         {profile.username}
                                     </span>
-                                    <span className="font-mono text-[10px] text-[#8b949e]">Student</span>
+                                    <span className="font-mono text-[10px] text-muted">Student</span>
                                 </div>
                             </button>
 
@@ -110,13 +112,13 @@ export function Topbar({ isCollapsed, onToggleCollapse }: TopbarProps) {
                                 <div className="absolute right-0 top-full z-50 w-48 pt-2">
                                     <div
                                         role="menu"
-                                        className="overflow-hidden rounded-xl border border-[#30363d] bg-[#161b22] py-1 shadow-xl"
+                                        className="overflow-hidden rounded-xl border border-line bg-surface py-1 shadow-xl"
                                     >
                                         <Link
                                             to="/settings"
                                             role="menuitem"
                                             onClick={() => setMenuOpen(false)}
-                                            className="flex items-center gap-2.5 px-3 py-2 font-mono text-xs text-[#c9d1d9] hover:bg-[#21262d] hover:text-white"
+                                            className="flex items-center gap-2.5 px-3 py-2 font-mono text-xs text-body hover:bg-hover hover:text-foreground"
                                         >
                                             <Settings size={15} aria-hidden />
                                             Profile settings
@@ -128,7 +130,7 @@ export function Topbar({ isCollapsed, onToggleCollapse }: TopbarProps) {
                                                 setMenuOpen(false);
                                                 setIsLogoutModalOpen(true);
                                             }}
-                                            className="flex w-full items-center gap-2.5 px-3 py-2 text-left font-mono text-xs text-[#f85149] hover:bg-[#21262d]"
+                                            className="flex w-full items-center gap-2.5 px-3 py-2 text-left font-mono text-xs text-danger hover:bg-hover"
                                         >
                                             <LogOut size={15} aria-hidden />
                                             Log out

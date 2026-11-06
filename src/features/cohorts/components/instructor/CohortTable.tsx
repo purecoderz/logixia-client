@@ -18,10 +18,10 @@ export function CohortTable({ cohorts, ...actions }: CohortTableProps) {
       header: "Cohort",
       cell: (c) => (
         <>
-          <Link to={`/cohort/${c.id}`} className="block max-w-xs font-semibold text-gray-50 hover:text-sky-300 hover:underline">
+          <Link to={`/cohort/${c.id}`} className="block max-w-xs font-semibold text-foreground hover:text-accent hover:underline">
             {c.name}
           </Link>
-          <p className="mt-0.5 max-w-xs text-xs text-gray-400">{c.course}</p>
+          <p className="mt-0.5 max-w-xs text-xs text-muted">{c.course}</p>
         </>
       ),
     },

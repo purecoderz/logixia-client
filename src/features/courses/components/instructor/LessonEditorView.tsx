@@ -85,7 +85,7 @@ export function LessonEditorView({ courseId, lesson, outline, autosaveDelay }: L
           />
 
           {where.current && (
-            <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-sky-400">
+            <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-accent">
               Lesson {where.current.moduleNumber}.{where.current.lessonNumber}
             </p>
           )}
@@ -100,10 +100,10 @@ export function LessonEditorView({ courseId, lesson, outline, autosaveDelay }: L
             aria-invalid={titleMissing ? true : undefined}
             aria-describedby={titleMissing ? "lesson-title-error" : undefined}
             placeholder="Lesson title"
-            className="w-full border-0 border-b border-transparent bg-transparent px-0 pb-1.5 text-xl font-semibold tracking-tight text-gray-50 placeholder:text-gray-600 hover:border-[#30363d] focus:border-sky-400 focus:outline-none aria-[invalid=true]:border-red-400 sm:text-2xl"
+            className="w-full border-0 border-b border-transparent bg-transparent px-0 pb-1.5 text-xl font-semibold tracking-tight text-foreground placeholder:text-gray-600 hover:border-line focus:border-accent focus:outline-none aria-[invalid=true]:border-red-400 sm:text-2xl"
           />
           {titleMissing && (
-            <p id="lesson-title-error" role="alert" className="mt-1 text-xs text-red-400">
+            <p id="lesson-title-error" role="alert" className="mt-1 text-xs text-danger">
               Give the lesson a title. Nothing is saved until it has one.
             </p>
           )}
@@ -121,9 +121,9 @@ export function LessonEditorView({ courseId, lesson, outline, autosaveDelay }: L
           <Link
             to={lessonEditorPath(courseId, where.previous.lesson.id)}
             onClick={goTo(lessonEditorPath(courseId, where.previous.lesson.id))}
-            className="min-h-11 max-w-xs rounded-lg px-3 py-2 text-sm text-gray-300 hover:bg-[#161b22]"
+            className="min-h-11 max-w-xs rounded-lg px-3 py-2 text-sm text-body hover:bg-surface"
           >
-            <span className="block text-xs text-gray-500">← Previous</span>
+            <span className="block text-xs text-muted">← Previous</span>
             <span className="block truncate font-semibold">{where.previous.lesson.title}</span>
           </Link>
         ) : (
@@ -133,9 +133,9 @@ export function LessonEditorView({ courseId, lesson, outline, autosaveDelay }: L
           <Link
             to={lessonEditorPath(courseId, where.next.lesson.id)}
             onClick={goTo(lessonEditorPath(courseId, where.next.lesson.id))}
-            className="min-h-11 max-w-xs rounded-lg px-3 py-2 text-right text-sm text-gray-300 hover:bg-[#161b22]"
+            className="min-h-11 max-w-xs rounded-lg px-3 py-2 text-right text-sm text-body hover:bg-surface"
           >
-            <span className="block text-xs text-gray-500">Next →</span>
+            <span className="block text-xs text-muted">Next →</span>
             <span className="block truncate font-semibold">{where.next.lesson.title}</span>
           </Link>
         )}

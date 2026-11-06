@@ -20,7 +20,7 @@ export const SidebarFooter = ({ isCollapsed }: FooterProps) => {
 
 
   return (
-    <div className="p-3 border-t border-[#30363d] bg-[#0d1117]/50 shrink-0">
+    <div className="p-3 border-t border-line bg-input/50 shrink-0">
       {!profile ? (
         <button
           type="button"
@@ -36,15 +36,15 @@ export const SidebarFooter = ({ isCollapsed }: FooterProps) => {
       ) : (
         <div className={`flex items-center gap-2 ${isCollapsed ? 'flex-col justify-center' : 'justify-between'}`}>
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-8 h-8 rounded-full bg-[#30363d] border border-[#484f58] flex items-center justify-center text-xs font-mono font-bold text-white shrink-0">
+            <div className="w-8 h-8 rounded-full bg-surface-muted border border-line-strong flex items-center justify-center text-xs font-mono font-bold text-foreground shrink-0">
               {getInitials(profile.username)}
             </div>
             {!isCollapsed && (
               <div className="flex flex-col truncate min-w-0">
-                <span className="text-xs font-semibold text-white font-mono truncate">
+                <span className="text-xs font-semibold text-foreground font-mono truncate">
                   {profile.username}
                 </span>
-                <span className="text-[10px] text-[#3fb950] font-mono flex items-center gap-1">
+                <span className="text-[10px] text-success font-mono flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#3fb950]" />
                   Student Pass Active
                 </span>
@@ -58,7 +58,7 @@ export const SidebarFooter = ({ isCollapsed }: FooterProps) => {
               setIsLogoutModalOpen(true)
             }}
             title="Log Out"
-            className="p-1.5 rounded-lg text-[#8b949e] hover:text-rose-400 hover:bg-[#21262d] transition-colors shrink-0"
+            className="p-1.5 rounded-lg text-muted hover:text-rose-400 hover:bg-hover transition-colors shrink-0"
           >
             <svg
               className="w-4 h-4"

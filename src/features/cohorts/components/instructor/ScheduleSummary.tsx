@@ -16,7 +16,7 @@ export function ScheduleSummary({ cohort: c }: { cohort: InstructorCohort }) {
       <div className="my-1.5">
         <ProgressBar value={c.currentWeek ?? 0} max={c.totalWeeks} label="Course progress" />
       </div>
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-muted">
         {formatDateRange(c.startDate, c.endDate)}
         {c.nextSession && ` · Next: ${c.nextSession}`}
       </p>

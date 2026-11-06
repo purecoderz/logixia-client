@@ -106,8 +106,8 @@ export function CohortsPage({ cohorts }: { cohorts: InstructorCohort[] }) {
       {/* Header */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-50">Cohorts</h1>
-          <p className="mt-1 text-sm text-gray-400">Manage enrollment, schedules and revenue across your courses.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Cohorts</h1>
+          <p className="mt-1 text-sm text-muted">Manage enrollment, schedules and revenue across your courses.</p>
         </div>
         <ButtonLink to="/instructor/cohorts/new">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
@@ -120,9 +120,9 @@ export function CohortsPage({ cohorts }: { cohorts: InstructorCohort[] }) {
       <ActionNotice notice={notice} onDismiss={dismiss} />
 
       {cohorts.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-gray-800 bg-gray-800/30 px-6 py-16 text-center">
-          <h2 className="text-lg font-semibold text-gray-50">Create your first cohort</h2>
-          <p className="max-w-md text-sm text-gray-400">Run a course with a group of students, set your schedule, and open enrollment.</p>
+        <div className="flex flex-col items-center gap-3 rounded-xl border border-line bg-surface-muted/30 px-6 py-16 text-center">
+          <h2 className="text-lg font-semibold text-foreground">Create your first cohort</h2>
+          <p className="max-w-md text-sm text-muted">Run a course with a group of students, set your schedule, and open enrollment.</p>
           <ButtonLink to="/instructor/cohorts/new">Create cohort</ButtonLink>
         </div>
       ) : <>
@@ -144,7 +144,7 @@ export function CohortsPage({ cohorts }: { cohorts: InstructorCohort[] }) {
       </div>
 
       {/* Tabs + search */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-800">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line">
         <div className="flex flex-wrap">
           {tabs.map((t) => {
             const active = filter === t.value;
@@ -156,12 +156,12 @@ export function CohortsPage({ cohorts }: { cohorts: InstructorCohort[] }) {
                 onClick={() => setFilter(t.value)}
                 className={`inline-flex min-h-11 items-center gap-2 border-b-2 px-3.5 text-sm font-semibold transition-colors ${
                   active
-                    ? "border-sky-400 text-sky-300"
-                    : "border-transparent text-gray-400 hover:text-gray-200"
+                    ? "border-accent text-accent"
+                    : "border-transparent text-muted hover:text-body"
                 }`}
               >
                 {t.label}
-                <span className="rounded-full bg-gray-800 px-2 py-0.5 text-xs text-gray-300">
+                <span className="rounded-full bg-surface-muted px-2 py-0.5 text-xs text-body">
                   {counts[t.value] ?? 0}
                 </span>
               </button>
@@ -170,8 +170,8 @@ export function CohortsPage({ cohorts }: { cohorts: InstructorCohort[] }) {
         </div>
 
         <div className="mb-2 flex items-center gap-2">
-        <label className="flex min-h-11 items-center gap-2 rounded-lg border border-gray-700 bg-gray-900 px-3 focus-within:border-sky-400">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="text-gray-400" aria-hidden="true">
+        <label className="flex min-h-11 items-center gap-2 rounded-lg border border-line bg-input px-3 focus-within:border-accent">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="text-muted" aria-hidden="true">
             <circle cx="7" cy="7" r="5" />
             <path d="M11 11l3.5 3.5" />
           </svg>
@@ -180,7 +180,7 @@ export function CohortsPage({ cohorts }: { cohorts: InstructorCohort[] }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search cohorts"
-            className="w-44 bg-transparent text-sm text-gray-100 placeholder:text-gray-500 focus:outline-none"
+            className="w-44 bg-transparent text-sm text-foreground placeholder:text-muted focus:outline-none"
           />
         </label>
 

@@ -10,7 +10,7 @@ interface CohortGridProps extends CohortActionProps {
 export function CohortGrid({ cohorts, ...actions }: CohortGridProps) {
   if (cohorts.length === 0) {
     return (
-      <p className="rounded-xl border border-gray-800 bg-gray-800/30 px-5 py-12 text-center text-sm text-gray-400">
+      <p className="rounded-xl border border-line bg-surface-muted/30 px-5 py-12 text-center text-sm text-muted">
         No cohorts match your filters.
       </p>
     );

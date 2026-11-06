@@ -14,7 +14,7 @@ interface MarkdownProps {
  */
 export function Markdown({ children, allowImages = false, className = "" }: MarkdownProps) {
   return (
-    <div className={`prose prose-invert prose-sm max-w-none ${className}`}>
+    <div className={`prose theme-prose prose-sm max-w-none ${className}`}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         disallowedElements={allowImages ? [] : ["img"]}

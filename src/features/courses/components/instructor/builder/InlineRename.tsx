@@ -82,7 +82,7 @@ export function InlineRename({ label, value, onSave, onCancel }: InlineRenamePro
         {saving && <Spinner />}
       </div>
       {error && (
-        <p id="rename-error" role="alert" className="mt-1 text-xs text-red-400">
+        <p id="rename-error" role="alert" className="mt-1 text-xs text-danger">
           {error}
         </p>
       )}

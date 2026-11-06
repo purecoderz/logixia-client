@@ -14,13 +14,13 @@ interface InstructorCourseCardProps {
 
 export function InstructorCourseCard({ course: c, busy, handlers }: InstructorCourseCardProps) {
   return (
-    <article className="flex flex-col gap-4 rounded-xl border border-gray-800 bg-gray-800/30 p-5 hover:border-gray-700">
+    <article className="flex flex-col gap-4 rounded-xl border border-line bg-surface-muted/30 p-5 hover:border-line">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <Link to={builderPath(c.id)} className="break-words font-semibold text-gray-50 hover:text-sky-300 hover:underline">
+          <Link to={builderPath(c.id)} className="break-words font-semibold text-foreground hover:text-accent hover:underline">
             {c.title}
           </Link>
-          <p className="mt-0.5 text-xs text-gray-400">
+          <p className="mt-0.5 text-xs text-muted">
             {c.language} · {formatPrice(c.price)}
           </p>
         </div>
@@ -36,14 +36,14 @@ export function InstructorCourseCard({ course: c, busy, handlers }: InstructorCo
           ] as const
         ).map(([label, value]) => (
           <div key={label}>
-            <dt className="text-xs text-gray-400">{label}</dt>
-            <dd className="font-semibold text-gray-100">{value}</dd>
+            <dt className="text-xs text-muted">{label}</dt>
+            <dd className="font-semibold text-foreground">{value}</dd>
           </div>
         ))}
       </dl>
 
-      <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-gray-800 pt-4">
-        <p className="text-xs text-gray-400">Updated {formatUpdated(c.updatedAt)}</p>
+      <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
+        <p className="text-xs text-muted">Updated {formatUpdated(c.updatedAt)}</p>
         <CourseActions course={c} busy={busy} handlers={handlers} />
       </div>
     </article>

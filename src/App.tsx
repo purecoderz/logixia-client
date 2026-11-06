@@ -1,3 +1,6 @@
+import TaskTestPage from "./features/tasks/pages/TaskTestPage"
+import TaskEditorPage from "./features/tasks/pages/TaskEditorPage"
+import InstructorSettingsPage from "./features/settings/pages/InstructorSettingsPage"
 import AcceptInvitationPage from "./features/cohorts/Pages/AcceptInvitationPage"
 import CohortMembersPage from "./features/cohorts/Pages/CohortMembersPage"
 import CreateCohortPage from "./features/cohorts/Pages/CreateCohortPage"
@@ -42,6 +45,7 @@ function App() {
 
       {/* full screen pages for student with login */}
       <Route element={<UserProtectedRoute />} >
+        <Route path="/instructor/courses/:courseId/tasks/:taskId/test" element={<TaskTestPage />} />
         <Route path="/live/room" element={<LiveRoomPage />} />
         <Route path="/assignments/:id" element={<AssignmentGroundPage />} />
       </Route>
@@ -58,7 +62,10 @@ function App() {
         <Route path="courses/:courseId/edit" element={<CreateCoursePage/>} />
         <Route path="courses/:courseId/builder" element={<CourseBuilderPage/>} />
         <Route path="courses/:courseId/lessons/:lessonId" element={<LessonEditorPage/>} />
+        <Route path="courses/:courseId/lessons/:lessonId/tasks/new" element={<TaskEditorPage />} />
+        <Route path="courses/:courseId/tasks/:taskId" element={<TaskEditorPage />} />
         <Route path="tasks" element={<AllTasksPage />} />
+        <Route element={<UserProtectedRoute />}><Route path="settings" element={<InstructorSettingsPage />} /></Route>
         <Route path="plan" element={<h1>Testing page</h1>} />
 
       </Route>

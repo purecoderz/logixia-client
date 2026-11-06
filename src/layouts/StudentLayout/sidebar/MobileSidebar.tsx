@@ -59,12 +59,12 @@ export const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
         role="dialog"
         aria-modal="true"
         aria-label="Navigation"
-        className={`absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col border-r border-[#30363d] bg-[#161b22] text-[#c9d1d9] shadow-2xl transition-transform duration-300 select-none ${
+        className={`absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col border-r border-line bg-surface text-body shadow-2xl transition-transform duration-300 select-none ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {isLoading ? (
-          <p className="p-4 text-sm text-[#8b949e]">Loading...</p>
+          <p className="p-4 text-sm text-muted">Loading...</p>
         ) : (
           <>
             {/* The « button doubles as the close button */}

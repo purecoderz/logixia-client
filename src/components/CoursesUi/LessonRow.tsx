@@ -18,8 +18,8 @@ export function LessonRow({ title, duration, locked, to, sample }: LessonRowProp
       badge={sample ? "SAMPLE" : undefined}
       trailing={
         <>
-          {locked && <Lock size={12} className="text-[#f85149]" />}
-          <span className="rounded bg-[#21262d] px-1.5 py-0.5 text-[11px] text-[#8b949e]">
+          {locked && <Lock size={12} className="text-danger" />}
+          <span className="rounded bg-hover px-1.5 py-0.5 text-[11px] text-muted">
             {duration}
           </span>
         </>

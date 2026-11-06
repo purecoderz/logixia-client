@@ -51,20 +51,20 @@ export function MarkdownSplitEditor({ label, value, onChange }: MarkdownSplitEdi
   const words = useMemo(() => (value.trim() ? value.trim().split(/\s+/).length : 0), [value]);
 
   const base = "min-h-9 rounded-md px-2.5 text-xs font-medium";
-  const on = "bg-[#21262d] text-gray-50";
-  const off = "text-gray-400 hover:text-gray-200";
+  const on = "bg-hover text-foreground";
+  const off = "text-muted hover:text-body";
 
   // On narrow screens "split" shows only the writing side, so Write looks selected there
   const writeClass =
-    mode === "write" ? on : mode === "split" ? `${off} max-lg:bg-[#21262d] max-lg:text-gray-50` : off;
+    mode === "write" ? on : mode === "split" ? `${off} max-lg:bg-hover max-lg:text-foreground` : off;
 
   const showWrite = mode !== "preview";
   const showPreview = mode !== "write";
 
   return (
-    <div className="flex h-[70dvh] min-h-[24rem] flex-col overflow-hidden rounded-xl border border-[#30363d] bg-[#0d1117] lg:h-[calc(100dvh-20rem)]">
+    <div className="flex h-[70dvh] min-h-[24rem] flex-col overflow-hidden rounded-xl border border-line bg-input lg:h-[calc(100dvh-20rem)]">
       {/* toolbar + view toggle */}
-      <div className="flex items-center justify-between gap-2 border-b border-[#30363d] bg-[#161b22] px-2 py-1">
+      <div className="flex items-center justify-between gap-2 border-b border-line bg-surface px-2 py-1">
         {/* `inert` takes the buttons out of the tab order as well, not just out of reach of the mouse */}
         <div inert={mode === "preview"} className={mode === "preview" ? "opacity-40" : ""}>
           <MarkdownToolbar onAction={run} />
@@ -100,7 +100,7 @@ export function MarkdownSplitEditor({ label, value, onChange }: MarkdownSplitEdi
         <div
           role="group"
           aria-label={label}
-          className={`${showWrite ? "block" : "hidden"} h-full min-h-0 overflow-hidden bg-[#1c2128]`}
+          className={`${showWrite ? "block" : "hidden"} h-full min-h-0 overflow-hidden bg-input`}
           onKeyDownCapture={onKeyDownCapture}
         >
           <MarkdownCodeEditor
@@ -115,21 +115,21 @@ export function MarkdownSplitEditor({ label, value, onChange }: MarkdownSplitEdi
           role="region"
           aria-label="Preview"
           className={`${showPreview ? "block" : "hidden"} ${
-            mode === "split" ? "max-lg:hidden lg:border-l lg:border-[#30363d]" : ""
-          } min-h-0 overflow-auto bg-[#0f141b] p-5`}
+            mode === "split" ? "max-lg:hidden lg:border-l lg:border-line" : ""
+          } min-h-0 overflow-auto bg-input p-5`}
         >
           {/* only built while it can be seen */}
           {showPreview &&
             (previewValue.trim() ? (
               <Markdown>{previewValue}</Markdown>
             ) : (
-              <p className="text-sm text-gray-500">Nothing to preview yet.</p>
+              <p className="text-sm text-muted">Nothing to preview yet.</p>
             ))}
         </div>
       </div>
 
       {/* status bar */}
-      <div className="flex items-center justify-between border-t border-[#30363d] bg-[#161b22] px-4 py-1.5 text-xs text-gray-500">
+      <div className="flex items-center justify-between border-t border-line bg-surface px-4 py-1.5 text-xs text-muted">
         <span>Markdown</span>
         <span>
           {words} {words === 1 ? "word" : "words"}

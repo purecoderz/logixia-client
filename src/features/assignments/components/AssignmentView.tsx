@@ -56,7 +56,7 @@ export function AssignmentsView({ assignments }: { assignments: Assignment[] }) 
 
   const toggle = (v: View) =>
     `flex items-center justify-center px-2.5 py-1.5 transition-colors ${
-      view === v ? "bg-[#161b22] text-white" : "text-[#8b949e] hover:text-white"
+      view === v ? "bg-surface text-foreground" : "text-muted hover:text-foreground"
     }`;
 
   return (
@@ -65,7 +65,7 @@ export function AssignmentsView({ assignments }: { assignments: Assignment[] }) 
         <FilterTabs options={options} value={filter} onChange={setFilter} />
 
         <div
-          className="flex shrink-0 divide-x divide-[#30363d] overflow-hidden rounded-md border border-[#30363d]"
+          className="flex shrink-0 divide-x divide-line overflow-hidden rounded-md border border-line"
           role="group"
           aria-label="View"
         >
@@ -91,7 +91,7 @@ export function AssignmentsView({ assignments }: { assignments: Assignment[] }) 
       </div>
 
       {!visible.length ? (
-        <p className="py-10 text-center text-sm text-[#8b949e]">No assignments here.</p>
+        <p className="py-10 text-center text-sm text-muted">No assignments here.</p>
       ) : view === "grid" ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {visible.map((a) => (

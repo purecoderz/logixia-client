@@ -18,7 +18,7 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
   return (
     <div className="space-y-1">
       {!isCollapsed && (
-        <h3 className="px-3 text-[10px] font-mono font-semibold uppercase tracking-wider text-[#8b949e] mb-2">
+        <h3 className="px-3 text-[10px] font-mono font-semibold uppercase tracking-wider text-muted mb-2">
           {section.title}
         </h3>
       )}

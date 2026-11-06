@@ -45,7 +45,7 @@ export function MarkdownToolbar({ onAction }: MarkdownToolbarProps) {
     >
       {groups.map((group, gi) => (
         <div key={gi} className="flex items-center gap-0.5">
-          {gi > 0 && <span aria-hidden="true" className="mx-1.5 h-4 w-px bg-[#30363d]" />}
+          {gi > 0 && <span aria-hidden="true" className="mx-1.5 h-4 w-px bg-surface-muted" />}
           {group.map((b) => (
             <button
               key={b.action}
@@ -55,7 +55,7 @@ export function MarkdownToolbar({ onAction }: MarkdownToolbarProps) {
               // keep the text selected: a click would otherwise move focus out of the editor
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => onAction(b.action)}
-              className="inline-flex size-10 shrink-0 items-center justify-center rounded-md text-gray-400 hover:bg-[#21262d] hover:text-gray-50 sm:size-8"
+              className="inline-flex size-10 shrink-0 items-center justify-center rounded-md text-muted hover:bg-hover hover:text-foreground sm:size-8"
             >
               {b.content}
             </button>

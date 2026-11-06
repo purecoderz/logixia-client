@@ -8,7 +8,7 @@ interface TimelineProps {
 export function Timeline({ children, className = "" }: TimelineProps) {
   return (
     <div className={`relative ${className}`}>
-      <div className="absolute bottom-6 left-4 top-6 w-px bg-[#30363d]" />
+      <div className="absolute bottom-6 left-4 top-6 w-px bg-surface-muted" />
       {children}
     </div>
   );

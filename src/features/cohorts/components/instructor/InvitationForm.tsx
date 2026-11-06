@@ -9,11 +9,12 @@ import { ApiError, friendlyMessage } from "@/lib/apiError";
 import type { CreatedInvitation, CreateInvitationInput, InvitationAccess } from "../../types/membership";
 
 interface Props {
+  embedded?: boolean;
   onCreate: (input: CreateInvitationInput) => Promise<CreatedInvitation>;
 }
 
 /** The server generates the link, fixes its expiry, and enforces email and single use. */
-export function InvitationForm({ onCreate }: Props) {
+export function InvitationForm({ onCreate, embedded = false }: Props) {
   const [email, setEmail] = useState("");
   const [access, setAccess] = useState<InvitationAccess>("owing");
   const [emailError, setEmailError] = useState<string>();
@@ -61,33 +62,33 @@ export function InvitationForm({ onCreate }: Props) {
   }
 
   return (
-    <section className="space-y-5 rounded-xl border border-gray-800 bg-gray-800/30 p-6" aria-labelledby="invite-heading">
-      <div>
-        <h2 id="invite-heading" className="text-lg font-semibold text-gray-50">Invite a student</h2>
-        <p className="mt-1 text-sm text-gray-400">Only the invited email can accept. Invitations expire after 24 hours and can be used once.</p>
-      </div>
-      <form onSubmit={submit} noValidate className="space-y-4">
+    <section className={embedded ? "space-y-4" : "space-y-3 rounded-lg border border-line bg-surface-muted/20 p-4"} aria-label={embedded ? "Invitation details" : undefined} aria-labelledby={embedded ? undefined : "invite-heading"}>
+      {!embedded && <div>
+        <h2 id="invite-heading" className="text-base font-semibold text-foreground">Invite a student</h2>
+        <p className="mt-1 text-xs leading-relaxed text-muted">Only the invited email can accept. Invitations expire after 24 hours and can be used once.</p>
+      </div>}
+      <form onSubmit={submit} noValidate className="space-y-3">
         {error && <FormError message={error} onDismiss={() => setError(null)} />}
-        <fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2 disabled:opacity-70">
+        <fieldset disabled={busy} className={`grid gap-4 disabled:opacity-70 ${embedded ? "" : "sm:grid-cols-2"}`}>
           <legend className="sr-only">Invitation details</legend>
           <Field label="Student email" htmlFor="invite-email" error={emailError}>
-            <input {...fieldProps("invite-email", emailError)} name="email" type="email" autoComplete="email" required className={inputClass} value={email} onChange={(e) => { setEmail(e.target.value); setEmailError(undefined); }} />
+            <input {...fieldProps("invite-email", emailError)} data-autofocus={embedded || undefined} name="email" type="email" autoComplete="email" required className={`${inputClass} !min-h-9 !py-2`} value={email} onChange={(e) => { setEmail(e.target.value); setEmailError(undefined); }} />
           </Field>
           <Field label="Payment access" htmlFor="invite-access" hint={access === "waived" ? "The student will not need to pay for this cohort." : "The student will join with payment outstanding."}>
-            <Select {...fieldProps("invite-access", undefined, true)} disabled={busy} value={access} onChange={(value) => setAccess(value as InvitationAccess)} options={[{ value: "owing", label: "Owing", description: "Payment required" }, { value: "waived", label: "Waived", description: "No payment required" }]} />
+            <Select className="!min-h-9 !py-2" {...fieldProps("invite-access", undefined, true)} disabled={busy} value={access} onChange={(value) => setAccess(value as InvitationAccess)} options={[{ value: "owing", label: "Owing", description: "Payment required" }, { value: "waived", label: "Waived", description: "No payment required" }]} />
           </Field>
         </fieldset>
-        <Button type="submit" disabled={busy} aria-busy={busy}>{busy ? <><Spinner tone="dark" /> Creating invitation…</> : "Create invitation"}</Button>
+        <Button className="!min-h-9 !py-2 !text-xs" type="submit" disabled={busy} aria-busy={busy}>{busy ? <><Spinner tone="dark" /> Creating invitation…</> : "Create invitation"}</Button>
       </form>
       {result && (
-        <div className="space-y-3 border-t border-gray-700 pt-4">
-          <p role="status" className="text-sm text-emerald-300">Invitation created for {result.email} · {result.access === "waived" ? "Payment waived" : "Payment owing"}.</p>
-          <p className="text-xs text-gray-400">Expires {new Date(result.expiresAt).toLocaleString()}.</p>
+        <div className="space-y-3 border-t border-line pt-4">
+          <p role="status" className="text-sm text-success">Invitation created for {result.email} · {result.access === "waived" ? "Payment waived" : "Payment owing"}.</p>
+          <p className="text-xs text-muted">Expires {new Date(result.expiresAt).toLocaleString()}.</p>
           <Field label="Invitation link" htmlFor="invite-link">
-            <input id="invite-link" readOnly className={inputClass} value={result.url} onFocus={(e) => e.target.select()} />
+            <input id="invite-link" readOnly className={`${inputClass} !min-h-9 !py-2`} value={result.url} onFocus={(e) => e.target.select()} />
           </Field>
-          <Button type="button" variant="ghost" onClick={() => void copy()}>Copy invitation link</Button>
-          <p role="status" className="text-sm text-gray-300">{copyMessage}</p>
+          <Button className="!min-h-9 !py-2 !text-xs" type="button" variant="ghost" onClick={() => void copy()}>Copy invitation link</Button>
+          <p role="status" className="text-sm text-body">{copyMessage}</p>
         </div>
       )}
     </section>

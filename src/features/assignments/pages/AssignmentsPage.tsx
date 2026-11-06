@@ -39,7 +39,7 @@ export function AssignmentsPage() {
 
   return (
     <div className="space-y-4">
-      {error && !noCohort && <p className="text-red-500">{error.message}</p>}
+      {error && !noCohort && <p className="text-danger">{error.message}</p>}
       <SearchBar value={query} onChange={setQuery} placeholder="Search assignments" />
       <GlobalHero {...hero} />
 

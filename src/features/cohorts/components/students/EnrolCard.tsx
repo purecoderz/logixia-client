@@ -35,19 +35,19 @@ export function EnrolCard({ cohort, totalWeeks, onAction }: Props) {
   const { hasSeats, taken, total, left, isFull, pct, cta } = useEnrol(cohort);
 
   return (
-    <div className="rounded-xl border border-[#30363d] bg-[#161b22] p-6">
-      <p className="text-3xl font-semibold text-white">{formatNaira(cohort.price)}</p>
-      <p className="mt-1 text-[13px] text-[#8b949e]">One-time payment for all {totalWeeks} weeks</p>
+    <div className="rounded-xl border border-line bg-surface p-6">
+      <p className="text-3xl font-semibold text-foreground">{formatNaira(cohort.price)}</p>
+      <p className="mt-1 text-[13px] text-muted">One-time payment for all {totalWeeks} weeks</p>
 
       {hasSeats && (
         <>
           <div className="mt-5 flex justify-between font-mono text-xs">
             <span>{taken} of {total} seats taken</span>
-            <span className={isFull ? "text-[#8b949e]" : "text-[#3fb950]"}>
+            <span className={isFull ? "text-muted" : "text-success"}>
               {isFull ? "Full" : `${left} left`}
             </span>
           </div>
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#21262d]">
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-hover">
             <div
               className={`h-full rounded-full ${isFull ? "bg-[#8b949e]" : "bg-[#3fb950]"}`}
               style={{ width: `${pct}%` }}
@@ -57,16 +57,16 @@ export function EnrolCard({ cohort, totalWeeks, onAction }: Props) {
       )}
 
       <dl className="mt-5 grid grid-cols-[1fr_auto] gap-x-4 gap-y-2.5 text-[13px]">
-        <dt className="text-[#8b949e]">Starts</dt><dd className="text-white">{cohort.startsOn}</dd>
-        <dt className="text-[#8b949e]">Duration</dt><dd className="text-white">{totalWeeks} weeks</dd>
-        <dt className="text-[#8b949e]">Format</dt><dd className="text-white">Weekly live classes</dd>
+        <dt className="text-muted">Starts</dt><dd className="text-foreground">{cohort.startsOn}</dd>
+        <dt className="text-muted">Duration</dt><dd className="text-foreground">{totalWeeks} weeks</dd>
+        <dt className="text-muted">Format</dt><dd className="text-foreground">Weekly live classes</dd>
       </dl>
 
       <button
         onClick={() => onAction?.()}
         className={`mt-6 min-h-11 w-full rounded-lg text-[15px] font-medium ${
           isFull
-            ? "border border-[#30363d] text-[#c9d1d9] hover:border-[#8b949e]"
+            ? "border border-line text-body hover:border-[#8b949e]"
             : "bg-[#238636] text-white hover:bg-[#2ea043]"
         }`}
       >
@@ -80,12 +80,12 @@ export function MobileEnrolBar({ cohort, onAction }: Omit<Props, "totalWeeks">) 
   const { isFull, cta } = useEnrol(cohort);
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-20 flex items-center justify-between gap-4 border-t border-[#30363d] bg-[#0d1117]/95 px-4 py-3 backdrop-blur lg:hidden">
-      <span className="text-lg font-semibold text-white">{formatNaira(cohort.price)}</span>
+    <div className="fixed inset-x-0 bottom-0 z-20 flex items-center justify-between gap-4 border-t border-line bg-input/95 px-4 py-3 backdrop-blur lg:hidden">
+      <span className="text-lg font-semibold text-foreground">{formatNaira(cohort.price)}</span>
       <button
         onClick={() => onAction?.()}
         className={`min-h-11 rounded-lg px-5 text-sm font-medium ${
-          isFull ? "border border-[#30363d] text-[#c9d1d9]" : "bg-[#238636] text-white"
+          isFull ? "border border-line text-body" : "bg-[#238636] text-white"
         }`}
       >
         {cta}

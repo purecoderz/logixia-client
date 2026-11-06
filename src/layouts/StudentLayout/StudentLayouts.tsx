@@ -1,3 +1,4 @@
+import { ThemeProvider } from "@/features/theme/ThemeProvider";
 import { Outlet } from "react-router-dom";
 import { StudentSidebar } from "./sidebar/Sidebar";
 import { useCallback, useState } from "react";
@@ -21,6 +22,7 @@ function StudentLayout() {
     const showBottomNav = useShowBottomNav();
 
     return (
+        <ThemeProvider>
         <div className="flex h-screen">
             <div className="hidden md:block">
                 <StudentSidebar isCollapsed={isCollapsed} />
@@ -30,7 +32,7 @@ function StudentLayout() {
 
             <div className="flex min-w-0 flex-1 flex-col">
                 <Topbar isCollapsed={isCollapsed} onToggleCollapse={onToggleCollapse} />
-                <main className="flex-1 overflow-y-auto bg-[#11151c] text-[#c9d1d9] ">
+                <main className="flex-1 overflow-y-auto bg-canvas text-body ">
                     <div
                         className={`mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8 ${showBottomNav ? "pb-24 md:pb-8" : ""
                             }`}
@@ -42,6 +44,7 @@ function StudentLayout() {
 
             <BottomNav onMoreClick={() => setIsMobileOpen(true)} />
         </div>
+        </ThemeProvider>
     );
 }
 

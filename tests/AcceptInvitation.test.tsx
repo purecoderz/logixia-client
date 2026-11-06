@@ -16,13 +16,13 @@ function setup({email="ada@example.com",guest=false,token=true,expired=false}={}
   vi.mocked(InvitationService.preview).mockResolvedValue(expired ? {...preview,expires_at:"2020-01-01T00:00:00Z"} : preview);
   vi.mocked(InvitationService.accept).mockResolvedValue({cohort_id:1,membership_id:12});
   const client = new QueryClient({defaultOptions:{queries:{retry:false},mutations:{retry:false}}});
-  render(<QueryClientProvider client={client}><AuthContext value={{profile:guest ? null : {id:"user-1",username:"ada",email},isLoading:false,login:vi.fn(),logout:vi.fn()}}><MemoryRouter initialEntries={[`/invitations/accept${token ? "?token=test-token" : ""}`]}><Routes><Route path="/invitations/accept" element={<AcceptInvitationPage/>}/><Route path="/auth/login" element={<LoginDestination/>}/></Routes></MemoryRouter></AuthContext></QueryClientProvider>);
+  render(<QueryClientProvider client={client}><AuthContext value={{profile:guest ? null : {id:"user-1",username:"ada",email},isLoading:false,login:vi.fn(),logout:vi.fn(),updateProfile:vi.fn()}}><MemoryRouter initialEntries={[`/invitations/accept${token ? "?token=test-token" : ""}`]}><Routes><Route path="/invitations/accept" element={<AcceptInvitationPage/>}/><Route path="/auth/login" element={<LoginDestination/>}/></Routes></MemoryRouter></AuthContext></QueryClientProvider>);
   return client;
 }
 
 describe("Invitation acceptance", () => {
  it("login returns to the invitation with its token", async () => {
-  render(<AuthContext value={{profile:{id:"user-1",username:"ada",email:"ada@example.com"},isLoading:false,login:vi.fn(),logout:vi.fn()}}><MemoryRouter initialEntries={[{pathname:"/auth/login",state:{from:{pathname:"/invitations/accept",search:"?token=original-token"}}}]}><Routes><Route path="/auth/login" element={<AuthForm isLogin onToggleAuth={()=>{}}/>}/><Route path="/invitations/accept" element={<LoginDestination/>}/></Routes></MemoryRouter></AuthContext>);
+  render(<AuthContext value={{profile:{id:"user-1",username:"ada",email:"ada@example.com"},isLoading:false,login:vi.fn(),logout:vi.fn(),updateProfile:vi.fn()}}><MemoryRouter initialEntries={[{pathname:"/auth/login",state:{from:{pathname:"/invitations/accept",search:"?token=original-token"}}}]}><Routes><Route path="/auth/login" element={<AuthForm isLogin onToggleAuth={()=>{}}/>}/><Route path="/invitations/accept" element={<LoginDestination/>}/></Routes></MemoryRouter></AuthContext>);
   // LoginDestination reads the current URL to check that Navigate retained the token.
   expect(await screen.findByText("Return: /invitations/accept?token=original-token")).toBeTruthy();
  });

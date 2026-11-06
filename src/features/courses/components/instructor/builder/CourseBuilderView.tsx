@@ -14,7 +14,6 @@ import { AddModuleForm } from "./AddModuleForm";
 import { focusLater, ModuleCard, type OutlineActions } from "./ModuleCard";
 import { PublishChecklist } from "./PublishChecklist";
 import { useUpdateCourse } from "@/features/courses/hooks/UseUpdateCourse";
-import { useAddTask } from "@/features/courses/hooks/useAddTask";
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
@@ -37,7 +36,6 @@ interface DeleteTarget {
 export function CourseBuilderView({ outline }: { outline: CourseOutline }) {
   const courseId = String(outline.id);
   const addLesson = useAddLesson(courseId);
-  const addTask = useAddTask(courseId); 
   const outlineActions = useOutlineActions();
   const updateCourse = useUpdateCourse();
 
@@ -185,10 +183,10 @@ export function CourseBuilderView({ outline }: { outline: CourseOutline }) {
         <div>
           <PageBreadcrumbs items={[{ label: "Courses", to: COURSES_PATH }, { label: "Builder" }]} />
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-50">{outline.title}</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">{outline.title}</h1>
             <StatusChip tone={outline.isPublished ? "success" : "draft"}>{outline.isPublished ? "Published" : "Draft"}</StatusChip>
           </div>
-          <p className="mt-1.5 text-sm text-gray-400">The table of contents students will see before they buy.</p>
+          <p className="mt-1.5 text-sm text-muted">The table of contents students will see before they buy.</p>
         </div>
 
         <div className="flex flex-col items-end gap-1.5">
@@ -202,7 +200,7 @@ export function CourseBuilderView({ outline }: { outline: CourseOutline }) {
             </Button>
           )}
           {!outline.isPublished && issueCount > 0 && (
-            <p className="text-xs text-gray-400">{plural(issueCount, "thing")} to fix first</p>
+            <p className="text-xs text-muted">{plural(issueCount, "thing")} to fix first</p>
           )}
         </div>
       </div>
@@ -215,9 +213,9 @@ export function CourseBuilderView({ outline }: { outline: CourseOutline }) {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)] lg:items-start">
         <main ref={mainRef} tabIndex={-1} aria-label="Course outline" className="space-y-3 outline-none">
           {outline.modules.length === 0 && (
-            <div className="rounded-xl border border-gray-800 bg-gray-800/30 px-6 py-8 text-center">
-              <p className="font-semibold text-gray-50">Start by adding your first module</p>
-              <p className="mt-1.5 text-sm text-gray-400">
+            <div className="rounded-xl border border-line bg-surface-muted/30 px-6 py-8 text-center">
+              <p className="font-semibold text-foreground">Start by adding your first module</p>
+              <p className="mt-1.5 text-sm text-muted">
                 A module groups related lessons, like “Getting started” or “Working with files”.
               </p>
             </div>
@@ -237,7 +235,6 @@ export function CourseBuilderView({ outline }: { outline: CourseOutline }) {
               onToggleLesson={(id) => setOpenLessons((s) => toggle(s, id))}
               onAddLesson={(moduleId, title) => addLesson.mutateAsync({ moduleId, title })}
               actions={actions}
-              onAddTask={(lessonId, title, type) => addTask.mutateAsync({ lessonId, title, type })}
             />
           ))}
 

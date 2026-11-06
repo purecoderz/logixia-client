@@ -11,7 +11,7 @@ interface CourseGridProps {
 export function CourseGrid({ courses, busyId, handlers }: CourseGridProps) {
   if (courses.length === 0) {
     return (
-      <p className="rounded-xl border border-gray-800 bg-gray-800/30 px-5 py-12 text-center text-sm text-gray-400">
+      <p className="rounded-xl border border-line bg-surface-muted/30 px-5 py-12 text-center text-sm text-muted">
         No courses match your filters.
       </p>
     );

@@ -9,8 +9,8 @@ interface LiveSessionCardProps {
 
 export function LiveSessionCard({ title, cohort, instructor, meetingUrl }: LiveSessionCardProps) {
   return (
-    <div className="rounded-xl border border-[#238636]/40 bg-[#161b22] p-5">
-      <div className="mb-3 flex items-center gap-2 text-xs font-semibold tracking-wide text-[#3fb950]">
+    <div className="rounded-xl border border-[#238636]/40 bg-surface p-5">
+      <div className="mb-3 flex items-center gap-2 text-xs font-semibold tracking-wide text-success">
         <span className="relative flex h-2 w-2">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#3fb950] opacity-75" />
           <span className="relative inline-flex h-2 w-2 rounded-full bg-[#3fb950]" />
@@ -18,8 +18,8 @@ export function LiveSessionCard({ title, cohort, instructor, meetingUrl }: LiveS
         LIVE NOW
       </div>
 
-      <h2 className="text-xl text-white">{title}</h2>
-      <p className="mt-1 text-sm text-[#8b949e]">
+      <h2 className="text-xl text-foreground">{title}</h2>
+      <p className="mt-1 text-sm text-muted">
         {cohort} · {instructor}
       </p>
 

@@ -49,16 +49,16 @@ export function PageBreadcrumbs({ items }: { items: Crumb[] }) {
 
 function Trail({ items }: { items: Crumb[] }) {
   return (
-    <ol className="flex min-w-0 items-center gap-2 text-sm text-gray-400">
+    <ol className="flex min-w-0 items-center gap-2 text-sm text-muted">
       {items.map((c, i) => (
         <li key={`${c.label}-${i}`} className="flex min-w-0 items-center gap-2">
           {i > 0 && <span aria-hidden="true">/</span>}
           {c.to ? (
-            <Link to={c.to} className="max-w-48 truncate hover:text-gray-200 hover:underline">
+            <Link to={c.to} className="max-w-48 truncate hover:text-body hover:underline">
               {c.label}
             </Link>
           ) : (
-            <span aria-current="page" className="max-w-64 truncate text-gray-100">
+            <span aria-current="page" className="max-w-64 truncate text-foreground">
               {c.label}
             </span>
           )}
@@ -82,7 +82,7 @@ export function TopbarBreadcrumbs() {
         <Trail items={items} />
       </div>
       {parent?.to && (
-        <Link to={parent.to} className="inline-flex min-h-11 items-center gap-1.5 text-sm text-gray-300 hover:text-gray-50 md:hidden">
+        <Link to={parent.to} className="inline-flex min-h-11 items-center gap-1.5 text-sm text-body hover:text-foreground md:hidden">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M10 4L6 8l4 4" />
           </svg>

@@ -40,16 +40,16 @@ export default function CreateCohortPage() {
     <div className="mx-auto max-w-3xl space-y-6">
       <header>
         <PageBreadcrumbs items={[{ label: "Cohorts", to: "/instructor/cohorts" }, { label: editing ? "Edit cohort" : "New cohort" }]} />
-        <h1 className="text-3xl font-bold tracking-tight text-gray-50">{editing ? "Edit cohort" : "Create cohort"}</h1>
-        <p className="mt-1.5 text-sm text-gray-400">{editing ? "Update the cohort details. Changes apply as soon as you save." : "Choose a course, set your dates, and decide how many students can join."}</p>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">{editing ? "Edit cohort" : "Create cohort"}</h1>
+        <p className="mt-1.5 text-sm text-muted">{editing ? "Update the cohort details. Changes apply as soon as you save." : "Choose a course, set your dates, and decide how many students can join."}</p>
       </header>
-      {loading && !failed ? <p role="status" className="flex items-center gap-3 text-sm text-gray-400"><Spinner /> Loading the form…</p>
+      {loading && !failed ? <p role="status" className="flex items-center gap-3 text-sm text-muted"><Spinner /> Loading the form…</p>
         : failed ? <ErrorState variant="section" what="the form" error={failed.error} onRetry={() => void failed.refetch()} />
         : editing && !cohort ? <ErrorState error={new ApiError("Cohort not found", 404)} what="this cohort" homeTo="/instructor/cohorts" homeLabel="Back to cohorts" />
         : available.length === 0 ? (
-          <div className="space-y-4 rounded-xl border border-gray-800 bg-gray-800/30 p-6">
-            <h2 className="text-lg font-semibold text-gray-50">Create a course first</h2>
-            <p className="text-sm text-gray-400">Every cohort needs a course for its modules and lessons. You can start with a draft course and add content later. Archived courses can’t be used for new cohorts.</p>
+          <div className="space-y-4 rounded-xl border border-line bg-surface-muted/30 p-6">
+            <h2 className="text-lg font-semibold text-foreground">Create a course first</h2>
+            <p className="text-sm text-muted">Every cohort needs a course for its modules and lessons. You can start with a draft course and add content later. Archived courses can’t be used for new cohorts.</p>
             <div className="flex flex-wrap gap-3"><ButtonLink to={NEW_COURSE}>Create course</ButtonLink><ButtonLink variant="ghost" to="/instructor/courses">View courses</ButtonLink></div>
           </div>
         ) : <CohortForm key={cohortId ? `${cohortId}:${cohort?.courseId}` : "new"} cohortId={cohortId} initialValues={initialValues} courses={available} initialCourse={params.get("course") ?? ""} />}
@@ -96,7 +96,7 @@ function CohortForm({ courses, initialCourse, cohortId, initialValues }: { cours
   }
 
   return (
-    <form onSubmit={submit} noValidate className="overflow-hidden rounded-xl border border-gray-800 bg-gray-800/20">
+    <form onSubmit={submit} noValidate className="overflow-hidden rounded-xl border border-line bg-surface-muted/20">
       <fieldset disabled={saving} className="space-y-5 p-6 disabled:opacity-70">
         <legend className="sr-only">Cohort details</legend>
         {message && <FormError message={message} onDismiss={() => setMessage(null)} />}
@@ -123,8 +123,8 @@ function CohortForm({ courses, initialCourse, cohortId, initialValues }: { cours
           </Field>
         </div>
       </fieldset>
-      <footer className="flex flex-wrap items-center justify-between gap-4 border-t border-gray-800 p-6">
-        <p className="text-sm text-gray-400">{cohortId ? "Saving keeps the current publication status." : "Saves as a draft. Publish from your cohorts page when ready."}</p>
+      <footer className="flex flex-wrap items-center justify-between gap-4 border-t border-line p-6">
+        <p className="text-sm text-muted">{cohortId ? "Saving keeps the current publication status." : "Saves as a draft. Publish from your cohorts page when ready."}</p>
         <div className="flex gap-2">
           <Button type="button" variant="ghost" disabled={saving} onClick={() => navigate("/instructor/cohorts")}>Cancel</Button>
           <Button type="submit" disabled={saving} aria-busy={saving}>{saving ? <><Spinner tone="dark" /> {cohortId ? "Saving…" : "Creating…"}</> : cohortId ? "Save changes" : "Create cohort"}</Button>

@@ -28,7 +28,7 @@ const typeTabs: { value: "" | TaskKind; label: string }[] = [
   { value: "quiz", label: "Quiz" },
 ];
 
-const labelClass = "mb-1.5 block text-xs font-semibold text-gray-400";
+const labelClass = "mb-1.5 block text-xs font-semibold text-muted";
 
 export function TaskFilters(p: TaskFiltersProps) {
   return (
@@ -63,7 +63,7 @@ export function TaskFilters(p: TaskFiltersProps) {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-800">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line">
         <div className="flex">
           {typeTabs.map((t) => {
             const active = p.type === t.value;
@@ -74,7 +74,7 @@ export function TaskFilters(p: TaskFiltersProps) {
                 aria-pressed={active}
                 onClick={() => p.onType(t.value)}
                 className={`inline-flex min-h-11 items-center border-b-2 px-3.5 text-sm font-semibold transition-colors ${
-                  active ? "border-sky-400 text-sky-300" : "border-transparent text-gray-400 hover:text-gray-200"
+                  active ? "border-accent text-accent" : "border-transparent text-muted hover:text-body"
                 }`}
               >
                 {t.label}
@@ -83,7 +83,7 @@ export function TaskFilters(p: TaskFiltersProps) {
           })}
         </div>
         {p.hasFilters && (
-          <button type="button" onClick={p.onClear} className="mb-1 min-h-11 rounded-lg px-3 text-sm font-semibold text-sky-300 hover:bg-gray-800">
+          <button type="button" onClick={p.onClear} className="mb-1 min-h-11 rounded-lg px-3 text-sm font-semibold text-accent hover:bg-surface-muted">
             Clear filters
           </button>
         )}

@@ -23,20 +23,20 @@ export function UpcomingSessionRow({
   });
 
   return (
-    <div className="flex items-center justify-between gap-4 rounded-lg px-2 py-3 hover:bg-[#161b22]">
+    <div className="flex items-center justify-between gap-4 rounded-lg px-2 py-3 hover:bg-surface">
       <div className="min-w-0">
-        <p className="truncate text-sm text-[#c9d1d9]">{title}</p>
-        <p className="truncate text-xs text-[#8b949e]">
+        <p className="truncate text-sm text-body">{title}</p>
+        <p className="truncate text-xs text-muted">
           {cohort} · {instructor}
         </p>
       </div>
       <div className="shrink-0 text-right">
-        <p className="text-xs text-[#8b949e]">{when}</p>
+        <p className="text-xs text-muted">{when}</p>
         <a
           href={meetingUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-[#58a6ff] hover:underline"
+          className="text-xs text-accent hover:underline"
         >
           Meeting link
         </a>

@@ -1,4 +1,4 @@
-const bone = "rounded-md bg-gray-800 motion-safe:animate-pulse";
+const bone = "rounded-md bg-surface-muted motion-safe:animate-pulse";
 
 /** Outline-shaped placeholder, so the page doesn't jump when the data arrives. */
 export function BuilderSkeleton() {
@@ -12,14 +12,14 @@ export function BuilderSkeleton() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
         <div className="space-y-3">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="flex items-center gap-4 rounded-xl border border-gray-800 p-5">
+            <div key={i} className="flex items-center gap-4 rounded-xl border border-line p-5">
               <div className={`${bone} size-5`} />
               <div className={`${bone} h-4 w-56`} />
               <div className={`${bone} ml-auto h-3.5 w-24`} />
             </div>
           ))}
         </div>
-        <div className="space-y-3 rounded-xl border border-gray-800 p-5">
+        <div className="space-y-3 rounded-xl border border-line p-5">
           <div className={`${bone} h-3.5 w-48`} />
           <div className={`${bone} h-3.5 w-full`} />
           <div className={`${bone} h-3.5 w-5/6`} />

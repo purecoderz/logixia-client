@@ -35,12 +35,12 @@ export const AlertModal: React.FC<AlertModalProps> = ({
       <div
         role="alertdialog"
         aria-modal="true"
-        className="w-full max-w-sm bg-[#161b22] border border-[#30363d] rounded-2xl p-6 shadow-2xl space-y-5"
+        className="w-full max-w-sm bg-surface border border-line rounded-2xl p-6 shadow-2xl space-y-5"
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="space-y-2">
-          <h3 className="text-base font-bold text-white font-mono leading-snug">{title}</h3>
-          <p className="text-xs text-[#8b949e] leading-relaxed font-sans">{message}</p>
+          <h3 className="text-base font-bold text-foreground font-mono leading-snug">{title}</h3>
+          <p className="text-xs text-muted leading-relaxed font-sans">{message}</p>
         </div>
 
         <div className="flex justify-end">

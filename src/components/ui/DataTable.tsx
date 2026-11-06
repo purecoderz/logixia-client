@@ -25,27 +25,27 @@ export function DataTable<T>({
   emptyMessage = "Nothing to show yet.",
 }: DataTableProps<T>) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-gray-800 bg-gray-800/30">
-      <table className="w-full border-collapse text-sm text-gray-200" style={{ minWidth }}>
-        <thead className="border-b border-gray-800 bg-gray-900/60">
+    <div className="overflow-x-auto rounded-xl border border-line bg-surface-muted/30">
+      <table className="w-full border-collapse text-sm text-body" style={{ minWidth }}>
+        <thead className="border-b border-line bg-input/60">
           <tr>
             {columns.map((col) => (
-              <th key={col.header} className="px-5 py-3 text-left text-xs font-semibold text-gray-400">
+              <th key={col.header} className="px-5 py-3 text-left text-xs font-semibold text-muted">
                 {col.hideHeader ? <span className="sr-only">{col.header}</span> : col.header}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-800">
+        <tbody className="divide-y divide-line">
           {rows.length === 0 ? (
             <tr>
-              <td colSpan={columns.length} className="px-5 py-12 text-center text-gray-400">
+              <td colSpan={columns.length} className="px-5 py-12 text-center text-muted">
                 {emptyMessage}
               </td>
             </tr>
           ) : (
             rows.map((row) => (
-              <tr key={getRowKey(row)} className="hover:bg-gray-800/40">
+              <tr key={getRowKey(row)} className="hover:bg-surface-muted/40">
                 {columns.map((col) => (
                   <td key={col.header} className="px-5 py-4 align-middle">
                     {col.cell(row)}

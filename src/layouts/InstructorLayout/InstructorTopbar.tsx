@@ -1,14 +1,15 @@
+import { ThemeToggle } from "@/features/theme/ThemeToggle";
 import { TopbarBreadcrumbs } from "@/components/ui/BreadCrumbs";
 import { Bell, Menu, Search } from "lucide-react";
 
 export function InstructorTopbar({ onMenu }: { onMenu: () => void }) {
   return (
-    <header className="flex h-16 shrink-0 items-center gap-3 border-b border-[#30363d] bg-[#161b22] px-4 md:px-6">
+    <header className="flex h-16 min-w-0 shrink-0 items-center gap-2 sm:gap-3 border-b border-line bg-surface px-4 md:px-6">
       <button
         type="button"
         onClick={onMenu}
         aria-label="Open menu"
-        className="flex size-10 items-center justify-center rounded-lg text-[#c9d1d9] hover:bg-[#21262d] lg:hidden"
+        className="flex size-10 shrink-0 items-center justify-center rounded-lg text-body hover:bg-hover lg:hidden"
       >
         <Menu size={20} aria-hidden />
       </button>
@@ -18,20 +19,22 @@ export function InstructorTopbar({ onMenu }: { onMenu: () => void }) {
         <TopbarBreadcrumbs />
       </div>
 
-      <div className="relative w-40 md:w-64">
-        <Search size={16} aria-hidden className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#8b949e]" />
+      <div className="relative hidden w-40 shrink-0 sm:block md:w-64">
+        <Search size={16} aria-hidden className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
         <input
           type="search"
           placeholder="Search"
           aria-label="Search"
-          className="h-9 w-full rounded-lg border border-[#30363d] bg-[#0d1117] pl-9 pr-3 text-sm text-[#c9d1d9] placeholder:text-[#8b949e] outline-none focus:border-[#58a6ff]"
+          className="h-9 w-full rounded-lg border border-line bg-input pl-9 pr-3 text-sm text-body placeholder:text-muted outline-none focus:border-accent"
         />
       </div>
+
+      <ThemeToggle />
 
       <button
         type="button"
         aria-label="Notifications"
-        className="flex size-10 items-center justify-center rounded-lg text-[#c9d1d9] hover:bg-[#21262d]"
+        className="flex size-10 shrink-0 items-center justify-center rounded-lg text-body hover:bg-hover"
       >
         <Bell size={20} aria-hidden />
       </button>

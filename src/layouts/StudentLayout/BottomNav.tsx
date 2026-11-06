@@ -27,7 +27,7 @@ export function BottomNav({ onMoreClick }: BottomNavProps) {
   const base = "flex flex-1 flex-col items-center gap-1 py-2 text-[10px]";
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[#30363d] bg-[#161b22] pb-[env(safe-area-inset-bottom)] md:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] md:hidden">
       <div className="flex">
         {tabs.map(({ to, label, icon: Icon, end }) => (
           <NavLink
@@ -35,7 +35,7 @@ export function BottomNav({ onMoreClick }: BottomNavProps) {
             to={to}
             end={end}
             className={({ isActive }) =>
-              `${base} ${isActive ? "text-[#58a6ff]" : "text-[#8b949e]"}`
+              `${base} ${isActive ? "text-accent" : "text-muted"}`
             }
           >
             <Icon size={20} />
@@ -43,7 +43,7 @@ export function BottomNav({ onMoreClick }: BottomNavProps) {
           </NavLink>
         ))}
 
-        <button onClick={onMoreClick} className={`${base} text-[#8b949e]`}>
+        <button onClick={onMoreClick} className={`${base} text-muted`}>
           <Menu size={20} />
           More
         </button>

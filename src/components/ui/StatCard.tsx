@@ -10,14 +10,14 @@ export function StatCard({ label, value, hint, tone = "default" }: StatCardProps
   return (
     <div
       className={`rounded-xl border p-5 ${
-        warn ? "border-amber-500/40 bg-amber-500/10" : "border-gray-800 bg-gray-800/30"
+        warn ? "border-amber-500/40 bg-amber-500/10" : "border-line bg-surface-muted/30"
       }`}
     >
-      <p className={`text-sm font-medium ${warn ? "text-amber-300" : "text-gray-400"}`}>{label}</p>
-      <p className={`mt-1 text-3xl font-bold tracking-tight ${warn ? "text-amber-200" : "text-gray-50"}`}>
+      <p className={`text-sm font-medium ${warn ? "text-warning" : "text-muted"}`}>{label}</p>
+      <p className={`mt-1 text-3xl font-bold tracking-tight ${warn ? "text-warning" : "text-foreground"}`}>
         {value}
       </p>
-      {hint && <p className={`mt-1 text-sm ${warn ? "text-amber-200/80" : "text-gray-400"}`}>{hint}</p>}
+      {hint && <p className={`mt-1 text-sm ${warn ? "text-warning/80" : "text-muted"}`}>{hint}</p>}
     </div>
   );
 }

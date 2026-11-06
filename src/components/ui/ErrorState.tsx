@@ -24,12 +24,12 @@ const icons: Record<ErrorKind, string> = {
 };
 
 const tones: Record<ErrorKind, string> = {
-  server: "text-red-400 bg-red-400/10",
-  request: "text-amber-400 bg-amber-400/10",
-  offline: "text-amber-400 bg-amber-400/10",
-  auth: "text-gray-400 bg-gray-400/10",
-  forbidden: "text-gray-400 bg-gray-400/10",
-  notFound: "text-gray-400 bg-gray-400/10",
+  server: "text-danger bg-red-400/10",
+  request: "text-warning bg-amber-400/10",
+  offline: "text-warning bg-amber-400/10",
+  auth: "text-muted bg-gray-400/10",
+  forbidden: "text-muted bg-gray-400/10",
+  notFound: "text-muted bg-gray-400/10",
 };
 
 export function ErrorState({
@@ -58,7 +58,7 @@ export function ErrorState({
         (homeTo ? (
           <Link
             to={homeTo}
-            className="inline-flex min-h-11 items-center rounded-lg border border-gray-700 px-4 text-sm font-semibold text-gray-200 hover:bg-gray-800"
+            className="inline-flex min-h-11 items-center rounded-lg border border-line px-4 text-sm font-semibold text-body hover:bg-surface-muted"
           >
             {homeLabel}
           </Link>
@@ -71,9 +71,9 @@ export function ErrorState({
   );
 
   const details = copy.details && (
-    <details className="text-sm text-gray-400">
+    <details className="text-sm text-muted">
       <summary className="inline-flex min-h-11 cursor-pointer items-center">Show details</summary>
-      <code className="block rounded-lg border border-gray-800 bg-gray-950 px-3 py-2.5 text-left font-mono text-xs text-gray-300">
+      <code className="block rounded-lg border border-line bg-input px-3 py-2.5 text-left font-mono text-xs text-body">
         {copy.details}
       </code>
     </details>
@@ -81,10 +81,10 @@ export function ErrorState({
 
   if (page) {
     return (
-      <div role="alert" className="mx-auto flex max-w-lg flex-col items-center gap-3.5 rounded-xl border border-gray-800 bg-gray-800/30 px-6 py-14 text-center">
+      <div role="alert" className="mx-auto flex max-w-lg flex-col items-center gap-3.5 rounded-xl border border-line bg-surface-muted/30 px-6 py-14 text-center">
         {icon}
-        <h2 className="text-xl font-semibold text-gray-50">{copy.title}</h2>
-        <p className="max-w-sm text-sm leading-relaxed text-gray-400">{copy.text}</p>
+        <h2 className="text-xl font-semibold text-foreground">{copy.title}</h2>
+        <p className="max-w-sm text-sm leading-relaxed text-muted">{copy.text}</p>
         {actions}
         {details}
       </div>
@@ -92,11 +92,11 @@ export function ErrorState({
   }
 
   return (
-    <div role="alert" className="flex items-start gap-3.5 rounded-xl border border-gray-800 bg-gray-800/30 p-5">
+    <div role="alert" className="flex items-start gap-3.5 rounded-xl border border-line bg-surface-muted/30 p-5">
       {icon}
       <div className="space-y-2">
-        <p className="font-semibold text-gray-50">{copy.title}</p>
-        <p className="text-sm text-gray-400">{copy.text}</p>
+        <p className="font-semibold text-foreground">{copy.title}</p>
+        <p className="text-sm text-muted">{copy.text}</p>
         {actions}
         {details}
       </div>

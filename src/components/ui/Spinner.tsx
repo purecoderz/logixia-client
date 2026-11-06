@@ -10,7 +10,7 @@ export function Spinner({ size = 16, tone = "light" }: SpinnerProps) {
       aria-hidden="true"
       style={{ width: size, height: size }}
       className={`inline-block shrink-0 rounded-full border-2 motion-safe:animate-spin ${
-        tone === "dark" ? "border-gray-950/25 border-t-gray-950" : "border-gray-600 border-t-sky-400"
+        tone === "dark" ? "border-on-accent/25 border-t-on-accent" : "border-line-strong border-t-accent"
       }`}
     />
   );

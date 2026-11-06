@@ -36,7 +36,7 @@ interface CreateCourseFormProps {
 // Order the fields appear in, so we can focus the first one with a problem
 const FIELD_ORDER: CourseFormField[] = ["title", "slug", "languageId", "description", "skills", "price"];
 
-const sectionClass = "space-y-5 border-b border-gray-800 p-6";
+const sectionClass = "space-y-5 border-b border-line p-6";
 
 export function CreateCourseForm({ languages, initialValues, slugLocked = false, onSubmit, onCancel }: CreateCourseFormProps) {
   const editing = initialValues !== undefined;
@@ -103,12 +103,12 @@ export function CreateCourseForm({ languages, initialValues, slugLocked = false,
           e.preventDefault();
           void submit(editing ? "save" : "draft");;
         }}
-        className="rounded-xl border border-gray-800 bg-gray-800/30"
+        className="rounded-xl border border-line bg-surface-muted/30"
       >
         <section className={sectionClass}>
           <div>
-            <h2 className="text-base font-semibold text-gray-50">Basics</h2>
-            <p className="mt-1 text-sm text-gray-400">What students see first.</p>
+            <h2 className="text-base font-semibold text-foreground">Basics</h2>
+            <p className="mt-1 text-sm text-muted">What students see first.</p>
           </div>
 
           <Field label="Title" htmlFor="title" error={errors.title}>
@@ -171,8 +171,8 @@ export function CreateCourseForm({ languages, initialValues, slugLocked = false,
 
         <section className={sectionClass}>
           <div>
-            <h2 className="text-base font-semibold text-gray-50">What students will learn</h2>
-            <p className="mt-1 text-sm text-gray-400">Short skills, one at a time. They appear as tags on the course page.</p>
+            <h2 className="text-base font-semibold text-foreground">What students will learn</h2>
+            <p className="mt-1 text-sm text-muted">Short skills, one at a time. They appear as tags on the course page.</p>
           </div>
           <Field label="Skills" htmlFor="skills" error={errors.skills}>
             <TagInput
@@ -186,8 +186,8 @@ export function CreateCourseForm({ languages, initialValues, slugLocked = false,
 
         <section className={sectionClass}>
           <div>
-            <h2 className="text-base font-semibold text-gray-50">Self-paced price</h2>
-            <p className="mt-1 text-sm text-gray-400">
+            <h2 className="text-base font-semibold text-foreground">Self-paced price</h2>
+            <p className="mt-1 text-sm text-muted">
               What a student pays to take this course on their own. Cohorts have their own price.
             </p>
           </div>
@@ -211,7 +211,7 @@ export function CreateCourseForm({ languages, initialValues, slugLocked = false,
               <FormError message={formError} onDismiss={() => setFormError(null)} />
             </div>
           )}
-          <p className="max-w-xs text-sm text-gray-400">
+          <p className="max-w-xs text-sm text-muted">
             Saves as a draft. Add modules and lessons next, or create a cohort on it right away.
           </p>
           <div className="flex flex-wrap gap-2">
@@ -229,13 +229,13 @@ export function CreateCourseForm({ languages, initialValues, slugLocked = false,
       </form>
 
       <aside aria-label="Preview and checklist" className="space-y-4 lg:sticky lg:top-6">
-        <div className="rounded-xl border border-gray-800 bg-gray-800/30 p-5">
-          <p className="mb-3 text-xs font-semibold text-gray-400">How students will see it</p>
-          <div className="space-y-3 rounded-xl border border-gray-800 bg-gray-900 p-4">
-            <span className="inline-block rounded-full bg-sky-500/15 px-2.5 py-0.5 text-xs font-semibold text-sky-300">
+        <div className="rounded-xl border border-line bg-surface-muted/30 p-5">
+          <p className="mb-3 text-xs font-semibold text-muted">How students will see it</p>
+          <div className="space-y-3 rounded-xl border border-line bg-input p-4">
+            <span className="inline-block rounded-full bg-sky-500/15 px-2.5 py-0.5 text-xs font-semibold text-accent">
               {language?.name ?? "Language"}
             </span>
-            <p className={`text-base font-semibold leading-snug ${values.title.trim() ? "text-gray-50" : "text-gray-500"}`}>
+            <p className={`text-base font-semibold leading-snug ${values.title.trim() ? "text-foreground" : "text-muted"}`}>
               {values.title.trim() || "Your course title"}
             </p>
             {values.description.trim() ? (
@@ -243,49 +243,49 @@ export function CreateCourseForm({ languages, initialValues, slugLocked = false,
                 <Markdown>{values.description}</Markdown>
               </div>
             ) : (
-              <p className="text-sm text-gray-500">Your description appears here.</p>
+              <p className="text-sm text-muted">Your description appears here.</p>
             )}
             {values.skills.length > 0 && (
               <div className="flex flex-wrap gap-1.5">
                 {values.skills.slice(0, 2).map((s) => (
-                  <span key={s} className="rounded-md bg-gray-800 px-2 py-0.5 text-xs text-gray-300">
+                  <span key={s} className="rounded-md bg-surface-muted px-2 py-0.5 text-xs text-body">
                     {s}
                   </span>
                 ))}
                 {values.skills.length > 2 && (
-                  <span className="rounded-md bg-gray-800 px-2 py-0.5 text-xs text-gray-300">
+                  <span className="rounded-md bg-surface-muted px-2 py-0.5 text-xs text-body">
                     +{values.skills.length - 2}
                   </span>
                 )}
               </div>
             )}
-            <p className="border-t border-gray-800 pt-3 text-[15px] font-semibold text-gray-50">
+            <p className="border-t border-line pt-3 text-[15px] font-semibold text-foreground">
               {price === null ? (
-                <span className="text-sm font-normal text-gray-400">Taught through cohorts</span>
+                <span className="text-sm font-normal text-muted">Taught through cohorts</span>
               ) : (
                 <>
-                  {formatPrice(price)} <span className="text-xs font-normal text-gray-400">self-paced</span>
+                  {formatPrice(price)} <span className="text-xs font-normal text-muted">self-paced</span>
                 </>
               )}
             </p>
           </div>
         </div>
 
-        <div className="rounded-xl border border-gray-800 bg-gray-800/30 p-5">
-          <p className="mb-3 text-xs font-semibold text-gray-400">Before you can sell it self-paced</p>
-          <ul className="space-y-3 text-sm text-gray-300">
+        <div className="rounded-xl border border-line bg-surface-muted/30 p-5">
+          <p className="mb-3 text-xs font-semibold text-muted">Before you can sell it self-paced</p>
+          <ul className="space-y-3 text-sm text-body">
             {checklist.map((item) => (
               <li key={item.key} className="flex items-center gap-2.5">
                 <CheckIcon done={item.done} />
-                <span className={item.done ? "" : "text-gray-400"}>{item.label}</span>
+                <span className={item.done ? "" : "text-muted"}>{item.label}</span>
               </li>
             ))}
-            <li className="flex items-center gap-2.5 text-gray-400">
+            <li className="flex items-center gap-2.5 text-muted">
               <CheckIcon done={false} />
               At least one module with a lesson
             </li>
           </ul>
-          <p className="mt-4 text-xs leading-relaxed text-gray-400">
+          <p className="mt-4 text-xs leading-relaxed text-muted">
             None of this is needed to run a cohort on the course.
           </p>
         </div>

@@ -80,6 +80,7 @@ Require authentication. Return `200`:
 
 Preview must not consume the invitation or create membership. Return `Cache-Control: no-store`. The frontend waits for sign-in before requesting this information and returns to the full invitation URL after login/signup. It shows the expiry and payment obligation and requires an explicit acceptance click. The backend must verify the signed-in user's verified email; the frontend email comparison is only a usability check. Avoid logging invitation tokens.
 
+
 ## Accept an invitation
 
 `POST /invitations/accept`

@@ -41,7 +41,7 @@ export function NameModal({
             onMouseDown={onClose}
         >
             <div
-                className="w-80 rounded-md border border-[#30363d] bg-[#161b22] p-4 text-[#c9d1d9] shadow-xl"
+                className="w-80 rounded-md border border-line bg-surface p-4 text-body shadow-xl"
                 onMouseDown={(e) => e.stopPropagation()}
             >
                 <h2 className="mb-3 text-sm font-semibold">{title}</h2>
@@ -57,16 +57,16 @@ export function NameModal({
                         if (e.key === "Enter") submit();
                         if (e.key === "Escape") onClose();
                     }}
-                    className={`w-full rounded-sm border bg-[#0d1117] px-2 py-1 text-sm outline-none ${
-                        error ? "border-red-500" : "border-[#30363d] focus:border-[#58a6ff]"
+                    className={`w-full rounded-sm border bg-input px-2 py-1 text-sm outline-none ${
+                        error ? "border-red-500" : "border-line focus:border-accent"
                     }`}
                 />
-                {error && <p className="mt-1 text-xs text-red-400">{error}</p>}
+                {error && <p className="mt-1 text-xs text-danger">{error}</p>}
 
                 <div className="mt-4 flex justify-end gap-2">
                     <button
                         onClick={onClose}
-                        className="rounded-md border border-[#30363d] px-3 py-1 text-sm hover:bg-[#30363d]/60"
+                        className="rounded-md border border-line px-3 py-1 text-sm hover:bg-surface-muted/60"
                     >
                         Cancel
                     </button>

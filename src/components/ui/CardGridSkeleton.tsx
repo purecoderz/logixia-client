@@ -12,7 +12,7 @@ interface CardGridSkeletonProps {
 
 function CardSkeleton({ progress }: { progress: boolean }) {
   return (
-    <div className="rounded-xl border border-[#30363d] bg-[#0d1117] p-5">
+    <div className="rounded-xl border border-line bg-input p-5">
       <div className="flex items-center justify-between">
         <Skeleton className="h-3 w-24" />
         <Skeleton className="h-5 w-12" />

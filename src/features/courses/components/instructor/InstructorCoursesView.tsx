@@ -28,8 +28,8 @@ function Header() {
   return (
     <div className="flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-50">Courses</h1>
-        <p className="mt-1 text-sm text-gray-400">Build your courses, then run them as cohorts.</p>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Courses</h1>
+        <p className="mt-1 text-sm text-muted">Build your courses, then run them as cohorts.</p>
       </div>
       <ButtonLink to={NEW_COURSE_PATH}>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
@@ -137,9 +137,9 @@ export function InstructorCoursesView({ courses }: { courses: InstructorCourse[]
     return (
       <div className="space-y-6">
         <Header />
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-gray-800 bg-gray-800/30 px-6 py-16 text-center">
-          <h2 className="text-lg font-semibold text-gray-50">Create your first course</h2>
-          <p className="max-w-md text-sm text-gray-400">
+        <div className="flex flex-col items-center gap-3 rounded-xl border border-line bg-surface-muted/30 px-6 py-16 text-center">
+          <h2 className="text-lg font-semibold text-foreground">Create your first course</h2>
+          <p className="max-w-md text-sm text-muted">
             A course is the content: modules, lessons and tasks. Once it’s ready you can run it as a cohort with a
             live instructor.
           </p>
@@ -174,7 +174,7 @@ export function InstructorCoursesView({ courses }: { courses: InstructorCourse[]
         />
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-800">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line">
         <div className="flex flex-wrap">
           {tabs.map((t) => {
             const active = filter === t.value;
@@ -185,19 +185,19 @@ export function InstructorCoursesView({ courses }: { courses: InstructorCourse[]
                 aria-pressed={active}
                 onClick={() => setFilter(t.value)}
                 className={`inline-flex min-h-11 items-center gap-2 border-b-2 px-3.5 text-sm font-semibold transition-colors ${
-                  active ? "border-sky-400 text-sky-300" : "border-transparent text-gray-400 hover:text-gray-200"
+                  active ? "border-accent text-accent" : "border-transparent text-muted hover:text-body"
                 }`}
               >
                 {t.label}
-                <span className="rounded-full bg-gray-800 px-2 py-0.5 text-xs text-gray-300">{counts[t.value]}</span>
+                <span className="rounded-full bg-surface-muted px-2 py-0.5 text-xs text-body">{counts[t.value]}</span>
               </button>
             );
           })}
         </div>
 
         <div className="mb-2 flex items-center gap-2">
-          <label className="flex min-h-11 items-center gap-2 rounded-lg border border-gray-700 bg-gray-900 px-3 focus-within:border-sky-400">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="text-gray-400" aria-hidden="true">
+          <label className="flex min-h-11 items-center gap-2 rounded-lg border border-line bg-input px-3 focus-within:border-accent">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="text-muted" aria-hidden="true">
               <circle cx="7" cy="7" r="5" />
               <path d="M11 11l3.5 3.5" />
             </svg>
@@ -206,7 +206,7 @@ export function InstructorCoursesView({ courses }: { courses: InstructorCourse[]
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search courses"
-              className="w-44 bg-transparent text-sm text-gray-100 placeholder:text-gray-500 focus:outline-none"
+              className="w-44 bg-transparent text-sm text-foreground placeholder:text-muted focus:outline-none"
             />
           </label>
           <ViewToggle value={view} onChange={setView} />

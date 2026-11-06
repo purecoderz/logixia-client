@@ -1,11 +1,11 @@
 export type Tone = "neutral" | "success" | "warning" | "info" | "draft";
 
 const tones: Record<Tone, string> = {
-  neutral: "bg-gray-500/20 text-gray-300",
-  success: "bg-emerald-500/15 text-emerald-300",
-  warning: "bg-amber-500/15 text-amber-300",
-  info: "bg-sky-500/15 text-sky-300",
-  draft: "border border-dashed border-gray-500 text-gray-300",
+  neutral: "bg-gray-500/20 text-body",
+  success: "bg-emerald-500/15 text-success",
+  warning: "bg-amber-500/15 text-warning",
+  info: "bg-sky-500/15 text-accent",
+  draft: "border border-dashed border-line-strong text-body",
 };
 
 export function StatusChip({ tone, children }: { tone: Tone; children: string }) {

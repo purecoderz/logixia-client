@@ -59,12 +59,12 @@ export function LiveSessionsPage() {
 
   return (
     <div className="space-y-4">
-      {errMessage && <p className="text-red-500">{errMessage}</p>}
+      {errMessage && <p className="text-danger">{errMessage}</p>}
       <SearchBar value={query} onChange={setQuery} placeholder="Search sessions" />
       <GlobalHero {...hero} />
 
       {isLoading ? (
-        <p className="py-10 text-center text-sm text-[#8b949e]">Loading sessions...</p>
+        <p className="py-10 text-center text-sm text-muted">Loading sessions...</p>
       ) : (
         !errMessage && <LiveSessionsView sessions={matches} />
       )}

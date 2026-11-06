@@ -1,6 +1,76 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* Semantic colors default to the existing dark palette outside themed app layouts. */
+:root {
+  --app-selection: #264f78;
+  --app-canvas: #11151c;
+  --app-surface: #161b22;
+  --app-muted-surface: #1f2937;
+  --app-input: #0d1117;
+  --app-hover: #21262d;
+  --app-fg: #f0f6fc;
+  --app-body: #c9d1d9;
+  --app-muted: #8b949e;
+  --app-border: #30363d;
+  --app-border-strong: #484f58;
+  --app-accent: #58a6ff;
+  --app-accent-hover: #79b8ff;
+  --app-on-accent: #0d1117;
+  --app-success: #6ee7b7;
+  --app-warning: #fcd34d;
+  --app-danger: #fca5a5;
+}
+body[data-app-theme="dark"] { color-scheme: dark; }
+body[data-app-theme="light"] {
+  color-scheme: light;
+  --app-selection: #dbeafe;
+  --app-canvas: #f5f7fa;
+  --app-surface: #ffffff;
+  --app-muted-surface: #e8edf3;
+  --app-input: #ffffff;
+  --app-hover: #edf2f7;
+  --app-fg: #182230;
+  --app-body: #344054;
+  --app-muted: #667085;
+  --app-border: #d8dee8;
+  --app-border-strong: #98a2b3;
+  --app-accent: #175cd3;
+  --app-accent-hover: #1849a9;
+  --app-on-accent: #ffffff;
+  --app-success: #067647;
+  --app-warning: #93370d;
+  --app-danger: #b42318;
+}
+@theme inline {
+  --color-canvas: var(--app-canvas);
+  --color-surface: var(--app-surface);
+  --color-surface-muted: var(--app-muted-surface);
+  --color-input: var(--app-input);
+  --color-hover: var(--app-hover);
+  --color-foreground: var(--app-fg);
+  --color-body: var(--app-body);
+  --color-muted: var(--app-muted);
+  --color-line: var(--app-border);
+  --color-line-strong: var(--app-border-strong);
+  --color-accent: var(--app-accent);
+  --color-accent-hover: var(--app-accent-hover);
+  --color-on-accent: var(--app-on-accent);
+  --color-success: var(--app-success);
+  --color-warning: var(--app-warning);
+  --color-danger: var(--app-danger);
+}
+
+
+/* The instructor shell owns scrolling. Prevent wheel/touch overscroll from
+   moving the document beyond it; student and standalone routes keep their rules. */
+html:has([data-instructor-layout]),
+body:has([data-instructor-layout]) {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -20,8 +90,8 @@
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
-  -webkit-text-fill-color: #f8fafc !important;
-  -webkit-box-shadow: 0 0 0px 1000px #0f172a inset !important;
+  -webkit-text-fill-color: var(--app-fg) !important;
+  -webkit-box-shadow: 0 0 0px 1000px var(--app-input) inset !important;
   transition: background-color 5000s ease-in-out 0s;
 }
 
@@ -36,19 +106,39 @@ input:-webkit-autofill:focus {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #30363d;
+  background: var(--app-border);
   border-radius: 9999px;
-  border: 2px solid #11151c; /* makes the thumb look slimmer */
+  border: 2px solid var(--app-canvas); /* makes the thumb look slimmer */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #484f58;
+  background: var(--app-border-strong);
 }
 
 /* Firefox only */
 @supports (-moz-appearance: none) {
   * {
     scrollbar-width: thin;
-    scrollbar-color: #30363d transparent;
+    scrollbar-color: var(--app-border) transparent;
   }
+}
+/* Markdown colors follow the same palette as forms and lesson previews. */
+.theme-prose {
+  --tw-prose-body: var(--app-body);
+  --tw-prose-headings: var(--app-fg);
+  --tw-prose-lead: var(--app-muted);
+  --tw-prose-links: var(--app-accent);
+  --tw-prose-bold: var(--app-fg);
+  --tw-prose-counters: var(--app-muted);
+  --tw-prose-bullets: var(--app-muted);
+  --tw-prose-hr: var(--app-border);
+  --tw-prose-quotes: var(--app-body);
+  --tw-prose-quote-borders: var(--app-border);
+  --tw-prose-captions: var(--app-muted);
+  --tw-prose-kbd: var(--app-fg);
+  --tw-prose-code: var(--app-fg);
+  --tw-prose-pre-code: var(--app-body);
+  --tw-prose-pre-bg: var(--app-input);
+  --tw-prose-th-borders: var(--app-border);
+  --tw-prose-td-borders: var(--app-border);
 }

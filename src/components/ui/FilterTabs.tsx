@@ -17,8 +17,8 @@ export function FilterTabs<T extends string>({ options, value, onChange }: Filte
             onClick={() => onChange(o.value)}
             className={`rounded-full border px-3 py-1 text-xs transition-colors ${
               active
-                ? "border-[#58a6ff]/50 bg-[#58a6ff]/15 text-[#58a6ff]"
-                : "border-[#30363d] text-[#8b949e] hover:text-[#c9d1d9]"
+                ? "border-accent/50 bg-accent/15 text-accent"
+                : "border-line text-muted hover:text-body"
             }`}
           >
             {o.label}

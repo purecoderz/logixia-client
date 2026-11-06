@@ -76,7 +76,7 @@ export function CohortsPage() {
   return (
     <div className="space-y-4">
       {errMessage && (
-        <p className="text-red-500">{errMessage}</p>
+        <p className="text-danger">{errMessage}</p>
       )}
       <SearchBar value={query} onChange={setQuery} placeholder="Search cohorts" />
       <GlobalHero {...hero} />
@@ -91,7 +91,7 @@ export function CohortsPage() {
           ))}
         </div>
       ) : (
-        <p className="py-10 text-center text-sm text-[#8b949e]">
+        <p className="py-10 text-center text-sm text-muted">
           No cohorts match your search.
         </p>
       )}

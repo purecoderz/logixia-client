@@ -69,13 +69,13 @@ export function LecturePage() {
 
   return (
     <div className="space-y-4">
-      {errMessage && <p className="text-red-500">{errMessage}</p>}
+      {errMessage && <p className="text-danger">{errMessage}</p>}
       <SearchBar value={query} onChange={setQuery} placeholder="Search lectures" />
       <GlobalHero {...hero} />
       <FilterTabs options={FILTERS} value={filter} onChange={setFilter} />
 
       {isLoading ? (
-        <p className="py-10 text-center text-sm text-[#8b949e]">Loading lectures...</p>
+        <p className="py-10 text-center text-sm text-muted">Loading lectures...</p>
       ) : visible.length ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {visible.map((t) => (
@@ -84,7 +84,7 @@ export function LecturePage() {
         </div>
       ) : (
         !errMessage && (
-          <p className="py-10 text-center text-sm text-[#8b949e]">No lectures match your search.</p>
+          <p className="py-10 text-center text-sm text-muted">No lectures match your search.</p>
         )
       )}
     </div>

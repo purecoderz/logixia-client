@@ -35,7 +35,7 @@ export function MarkdownEditor({
       aria-selected={mode === m}
       onClick={() => setMode(m)}
       className={`min-h-11 rounded-lg px-3.5 text-sm font-semibold transition-colors ${
-        mode === m ? "bg-gray-800 text-gray-50" : "text-gray-400 hover:text-gray-200"
+        mode === m ? "bg-surface-muted text-foreground" : "text-muted hover:text-body"
       }`}
     >
       {text}
@@ -64,11 +64,11 @@ export function MarkdownEditor({
         className={mode === "write" ? `${inputClass} resize-y leading-6` : "hidden"}
       />
       {mode === "preview" && (
-        <div role="tabpanel" className="min-h-32 rounded-lg border border-gray-700 bg-gray-900 p-3">
+        <div role="tabpanel" className="min-h-32 rounded-lg border border-line bg-input p-3">
           {value.trim() ? (
             <Markdown allowImages={allowImages}>{value}</Markdown>
           ) : (
-            <p className="text-sm text-gray-500">Nothing to preview yet.</p>
+            <p className="text-sm text-muted">Nothing to preview yet.</p>
           )}
         </div>
       )}

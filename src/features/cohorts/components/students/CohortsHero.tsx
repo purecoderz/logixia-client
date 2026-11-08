@@ -12,7 +12,12 @@ interface CohortsHeroProps {
   facts: HeroFact[];
 }
 
-export function GlobalHero({ eyebrow, title, description, facts }: CohortsHeroProps) {
+export function GlobalHero({
+  eyebrow,
+  title,
+  description,
+  facts,
+}: CohortsHeroProps) {
   return (
     <section className="relative overflow-hidden rounded-xl border border-accent/25 bg-accent/[0.08] p-6">
       <Users

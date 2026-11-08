@@ -32,7 +32,6 @@ export const cohort = {
 
 export const seatsLeft = cohort.seatsTotal - cohort.seatsTaken;
 
-
 export interface RoadmapWeek {
   week: number;
   title: string;

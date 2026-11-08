@@ -18,7 +18,14 @@ interface AutosaveOptions<T> {
  * typed during a save is saved straight after, and whatever is unsaved is saved when the
  * component goes away.
  */
-export function useAutosave<T>({ value, initial, equals, isValid = () => true, save, delay = 1500 }: AutosaveOptions<T>) {
+export function useAutosave<T>({
+  value,
+  initial,
+  equals,
+  isValid = () => true,
+  save,
+  delay = 1500,
+}: AutosaveOptions<T>) {
   const [status, setStatus] = useState<SaveStatus>("idle");
   const savedRef = useRef(initial);
   const latest = useRef(value);
@@ -90,7 +97,8 @@ export function useAutosave<T>({ value, initial, equals, isValid = () => true, s
     () => () => {
       clearTimeout(timer.current);
       const { equals: same, isValid: valid } = opts.current;
-      if (!same(latest.current, savedRef.current) && valid(latest.current)) void run();
+      if (!same(latest.current, savedRef.current) && valid(latest.current))
+        void run();
     },
     [run],
   );

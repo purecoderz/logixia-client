@@ -8,7 +8,12 @@ interface DrawerProps {
   side?: "left" | "right";
 }
 
-export function Drawer({ open, onClose, children, side = "left" }: DrawerProps) {
+export function Drawer({
+  open,
+  onClose,
+  children,
+  side = "left",
+}: DrawerProps) {
   const isLeft = side === "left";
 
   useEffect(() => {
@@ -28,7 +33,7 @@ export function Drawer({ open, onClose, children, side = "left" }: DrawerProps) 
       />
       <aside
         aria-hidden={!open}
-        className={`absolute inset-y-0 w-[85%] max-w-sm border-[#30363d] bg-[#161b22] transition-transform duration-300 ease-out ${
+        className={`absolute inset-y-0 w-[85%] max-w-sm border-line bg-surface transition-transform duration-300 ease-out ${
           isLeft ? "left-0 border-r" : "right-0 border-l"
         } ${open ? "translate-x-0" : isLeft ? "-translate-x-full" : "translate-x-full"}`}
       >

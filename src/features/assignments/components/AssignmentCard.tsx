@@ -10,8 +10,7 @@ import {
   Zap,
 } from "lucide-react";
 import type { Assignment } from "../services/assignmentService";
-import { daysUntil, formatTime, plural} from "../utils/assignments";
-
+import { daysUntil, formatTime, plural } from "../utils/assignments";
 
 function look(a: Assignment) {
   const due = new Date(a.due_date);
@@ -34,7 +33,10 @@ function look(a: Assignment) {
       return {
         Icon: Hourglass,
         label: "Incomplete",
-        detail: ago === 0 ? "Deadline passed today" : `Deadline passed ${plural(ago)} ago`,
+        detail:
+          ago === 0
+            ? "Deadline passed today"
+            : `Deadline passed ${plural(ago)} ago`,
         accent: "bg-[#d29922]",
         pill: "bg-[#d29922]/15 text-warning",
         text: "text-warning",
@@ -59,13 +61,20 @@ function look(a: Assignment) {
         Icon: Clock,
         label: started ? "In progress" : "Not started",
         detail:
-          days === 0 ? `Due today, ${formatTime(due)}`
-          : days === 1 ? `Due tomorrow, ${formatTime(due)}`
-          : `Due in ${days} days`,
+          days === 0
+            ? `Due today, ${formatTime(due)}`
+            : days === 1
+              ? `Due tomorrow, ${formatTime(due)}`
+              : `Due in ${days} days`,
         accent: soon ? "bg-[#d29922]" : "bg-accent",
         pill: started ? "bg-accent/15 text-accent" : "bg-hover text-muted",
         text: soon ? "text-warning" : "text-body",
-        cta: a.status === "in_progress" ? "Continue" : a.status === "submitted" ? "Retry" : "Start",
+        cta:
+          a.status === "in_progress"
+            ? "Continue"
+            : a.status === "submitted"
+              ? "Retry"
+              : "Start",
       };
     }
   }
@@ -76,7 +85,7 @@ export function AssignmentCard({ a }: { a: Assignment }) {
 
   return (
     <Link
-      to={`/assignments/${a.id}`}
+      to={`/tasks/${a.id}`}
       className="group relative flex min-h-[200px] flex-col overflow-hidden rounded-xl border border-line bg-input p-5 transition-all hover:-translate-y-0.5 hover:border-line-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
     >
       {/* status accent along the top edge */}
@@ -87,7 +96,9 @@ export function AssignmentCard({ a }: { a: Assignment }) {
           <Code2 className="size-3.5" aria-hidden />
           {a.type}
         </span>
-        <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${pill}`}>
+        <span
+          className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${pill}`}
+        >
           {label}
         </span>
       </div>
@@ -96,7 +107,9 @@ export function AssignmentCard({ a }: { a: Assignment }) {
         {a.title}
       </h3>
 
-      <p className={`mt-2 flex items-center gap-1.5 text-[13px] font-medium ${text}`}>
+      <p
+        className={`mt-2 flex items-center gap-1.5 text-[13px] font-medium ${text}`}
+      >
         <Icon className="size-4 shrink-0" aria-hidden />
         {detail}
       </p>

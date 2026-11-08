@@ -9,6 +9,7 @@ export function useCreateCourse() {
   return useMutation({
     mutationFn: (values: CourseFormValues) => CourseService.create(values),
     // The new course must show up on the courses list
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: courseKeys.all }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: courseKeys.all }),
   });
 }

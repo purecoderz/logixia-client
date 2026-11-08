@@ -8,27 +8,44 @@ import { dracula } from "@uiw/codemirror-theme-dracula";
 import { LANGUAGE_EXTENSIONS } from "./utils/languages";
 // adjust to your path
 
-const markdownTheme = (dark: boolean) => EditorView.theme(
-  {
-    "&": { height: "100%", backgroundColor: "var(--app-input)", fontSize: "14px" },
-    ".cm-content": { padding: "16px 0", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", lineHeight: "1.75" },
-    ".cm-line": { padding: "0 16px 0 8px" },
-    ".cm-gutters": { backgroundColor: "var(--app-input)", color: "var(--app-muted)", border: "none" },
-    ".cm-activeLine": { backgroundColor: "var(--app-hover)" },
-    ".cm-activeLineGutter": { backgroundColor: "transparent", color: "var(--app-body)" },
-    ".cm-cursor": { borderLeftColor: "var(--app-accent)" },
-    ".cm-selectionBackground, &.cm-focused .cm-selectionBackground": { backgroundColor: "var(--app-selection)" },
-    ".cm-placeholder": { color: "var(--app-muted)" },
-    "&.cm-focused": { outline: "none" },
-    ".cm-scroller": {
-      overscrollBehavior: "contain",
-      scrollbarWidth: "thin",
-      scrollbarColor: "var(--app-border) transparent",
+const markdownTheme = (dark: boolean) =>
+  EditorView.theme(
+    {
+      "&": {
+        height: "100%",
+        backgroundColor: "var(--app-input)",
+        fontSize: "14px",
+      },
+      ".cm-content": {
+        padding: "16px 0",
+        fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+        lineHeight: "1.75",
+      },
+      ".cm-line": { padding: "0 16px 0 8px" },
+      ".cm-gutters": {
+        backgroundColor: "var(--app-input)",
+        color: "var(--app-muted)",
+        border: "none",
+      },
+      ".cm-activeLine": { backgroundColor: "var(--app-hover)" },
+      ".cm-activeLineGutter": {
+        backgroundColor: "transparent",
+        color: "var(--app-body)",
+      },
+      ".cm-cursor": { borderLeftColor: "var(--app-accent)" },
+      ".cm-selectionBackground, &.cm-focused .cm-selectionBackground": {
+        backgroundColor: "var(--app-selection)",
+      },
+      ".cm-placeholder": { color: "var(--app-muted)" },
+      "&.cm-focused": { outline: "none" },
+      ".cm-scroller": {
+        overscrollBehavior: "contain",
+        scrollbarWidth: "thin",
+        scrollbarColor: "var(--app-border) transparent",
+      },
     },
-  },
-  { dark },
-);
-
+    { dark },
+  );
 
 interface MarkdownCodeEditorProps {
   value: string;
@@ -38,9 +55,21 @@ interface MarkdownCodeEditorProps {
   onReady?: (view: EditorView) => void;
 }
 
-export function MarkdownCodeEditor({ value, onChange, placeholder, onReady }: MarkdownCodeEditorProps) {
+export function MarkdownCodeEditor({
+  value,
+  onChange,
+  placeholder,
+  onReady,
+}: MarkdownCodeEditorProps) {
   const { theme } = useTheme();
-  const extensions = useMemo(() => [Prec.highest(markdownTheme(theme === "dark")), EditorView.lineWrapping, LANGUAGE_EXTENSIONS.markdown], [theme]);
+  const extensions = useMemo(
+    () => [
+      Prec.highest(markdownTheme(theme === "dark")),
+      EditorView.lineWrapping,
+      LANGUAGE_EXTENSIONS.markdown,
+    ],
+    [theme],
+  );
   return (
     <CodeMirror
       value={value}

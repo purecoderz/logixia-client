@@ -7,12 +7,16 @@ import { useCourseOutline } from "../hooks/useCourseOutline";
 
 export default function CourseBuilderPage() {
   const { courseId } = useParams();
-  const { data, isPending, isError, error, refetch } = useCourseOutline(courseId);
+  const { data, isPending, isError, error, refetch } =
+    useCourseOutline(courseId);
 
   if (!courseId) {
     return (
       <div className="p-6">
-        <ErrorState what="the course" error={new ApiError("Missing course id", 404)} />
+        <ErrorState
+          what="the course"
+          error={new ApiError("Missing course id", 404)}
+        />
       </div>
     );
   }
@@ -22,7 +26,11 @@ export default function CourseBuilderPage() {
   if (isError) {
     return (
       <div className="p-6">
-        <ErrorState what="the course outline" error={error} onRetry={() => refetch()} />
+        <ErrorState
+          what="the course outline"
+          error={error}
+          onRetry={() => refetch()}
+        />
       </div>
     );
   }

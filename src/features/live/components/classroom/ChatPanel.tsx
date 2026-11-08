@@ -60,7 +60,10 @@ export function ChatPanel({ messages, onSend }: ChatPanelProps) {
         <div ref={endRef} />
       </div>
 
-      <form onSubmit={submit} className="flex items-center gap-2 border-t border-[#21262d] p-2">
+      <form
+        onSubmit={submit}
+        className="flex items-center gap-2 border-t border-[#21262d] p-2"
+      >
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}

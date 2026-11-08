@@ -1,23 +1,21 @@
-import  { useState } from 'react';
-import { useAuth } from '../../../../features/auth/context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { ConfirmModal } from '../../../../components/ui/ConfirmModal';
+import { useState } from "react";
+import { useAuth } from "../../../../features/auth/context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { ConfirmModal } from "../../../../components/ui/ConfirmModal";
 
 interface FooterProps {
-  isCollapsed: boolean
+  isCollapsed: boolean;
 }
 
 export const SidebarFooter = ({ isCollapsed }: FooterProps) => {
-  const { profile, logout } = useAuth()
-  const navigate = useNavigate()
+  const { profile, logout } = useAuth();
+  const navigate = useNavigate();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
-
   const getInitials = (name?: string) => {
-    if (!name) return 'ST';
-    return name[0]
+    if (!name) return "ST";
+    return name[0];
   };
-
 
   return (
     <div className="p-3 border-t border-line bg-input/50 shrink-0">
@@ -25,16 +23,19 @@ export const SidebarFooter = ({ isCollapsed }: FooterProps) => {
         <button
           type="button"
           onClick={() => {
-            navigate("/auth/login")
+            navigate("/auth/login");
           }}
-          className={`w-full flex items-center justify-center gap-2 py-2.5 px-3 bg-[#238636] hover:bg-[#2ea043] text-white rounded-xl font-mono text-xs font-bold transition-all shadow-sm active:scale-[0.98] ${isCollapsed ? 'px-0' : ''
-            }`}
+          className={`w-full flex items-center justify-center gap-2 py-2.5 px-3 bg-[#238636] hover:bg-[#2ea043] text-white rounded-xl font-mono text-xs font-bold transition-all shadow-sm active:scale-[0.98] ${
+            isCollapsed ? "px-0" : ""
+          }`}
         >
           <span>🔑</span>
           {!isCollapsed && <span>Sign In / Register</span>}
         </button>
       ) : (
-        <div className={`flex items-center gap-2 ${isCollapsed ? 'flex-col justify-center' : 'justify-between'}`}>
+        <div
+          className={`flex items-center gap-2 ${isCollapsed ? "flex-col justify-center" : "justify-between"}`}
+        >
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-8 h-8 rounded-full bg-surface-muted border border-line-strong flex items-center justify-center text-xs font-mono font-bold text-foreground shrink-0">
               {getInitials(profile.username)}
@@ -54,8 +55,8 @@ export const SidebarFooter = ({ isCollapsed }: FooterProps) => {
 
           <button
             type="button"
-            onClick={()=>{
-              setIsLogoutModalOpen(true)
+            onClick={() => {
+              setIsLogoutModalOpen(true);
             }}
             title="Log Out"
             className="p-1.5 rounded-lg text-muted hover:text-rose-400 hover:bg-hover transition-colors shrink-0"
@@ -76,7 +77,6 @@ export const SidebarFooter = ({ isCollapsed }: FooterProps) => {
           </button>
         </div>
       )}
-
 
       <ConfirmModal
         isOpen={isLogoutModalOpen}

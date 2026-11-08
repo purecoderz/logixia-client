@@ -1,7 +1,11 @@
 import type { EnrolInfo } from "./CohortCard";
 
 const formatNaira = (n: number) =>
-  new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(n);
+  new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+    maximumFractionDigits: 0,
+  }).format(n);
 
 interface Props {
   cohort: EnrolInfo;
@@ -36,13 +40,19 @@ export function EnrolCard({ cohort, totalWeeks, onAction }: Props) {
 
   return (
     <div className="rounded-xl border border-line bg-surface p-6">
-      <p className="text-3xl font-semibold text-foreground">{formatNaira(cohort.price)}</p>
-      <p className="mt-1 text-[13px] text-muted">One-time payment for all {totalWeeks} weeks</p>
+      <p className="text-3xl font-semibold text-foreground">
+        {formatNaira(cohort.price)}
+      </p>
+      <p className="mt-1 text-[13px] text-muted">
+        One-time payment for all {totalWeeks} weeks
+      </p>
 
       {hasSeats && (
         <>
           <div className="mt-5 flex justify-between font-mono text-xs">
-            <span>{taken} of {total} seats taken</span>
+            <span>
+              {taken} of {total} seats taken
+            </span>
             <span className={isFull ? "text-muted" : "text-success"}>
               {isFull ? "Full" : `${left} left`}
             </span>
@@ -57,9 +67,12 @@ export function EnrolCard({ cohort, totalWeeks, onAction }: Props) {
       )}
 
       <dl className="mt-5 grid grid-cols-[1fr_auto] gap-x-4 gap-y-2.5 text-[13px]">
-        <dt className="text-muted">Starts</dt><dd className="text-foreground">{cohort.startsOn}</dd>
-        <dt className="text-muted">Duration</dt><dd className="text-foreground">{totalWeeks} weeks</dd>
-        <dt className="text-muted">Format</dt><dd className="text-foreground">Weekly live classes</dd>
+        <dt className="text-muted">Starts</dt>
+        <dd className="text-foreground">{cohort.startsOn}</dd>
+        <dt className="text-muted">Duration</dt>
+        <dd className="text-foreground">{totalWeeks} weeks</dd>
+        <dt className="text-muted">Format</dt>
+        <dd className="text-foreground">Weekly live classes</dd>
       </dl>
 
       <button
@@ -76,12 +89,17 @@ export function EnrolCard({ cohort, totalWeeks, onAction }: Props) {
   );
 }
 
-export function MobileEnrolBar({ cohort, onAction }: Omit<Props, "totalWeeks">) {
+export function MobileEnrolBar({
+  cohort,
+  onAction,
+}: Omit<Props, "totalWeeks">) {
   const { isFull, cta } = useEnrol(cohort);
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-20 flex items-center justify-between gap-4 border-t border-line bg-input/95 px-4 py-3 backdrop-blur lg:hidden">
-      <span className="text-lg font-semibold text-foreground">{formatNaira(cohort.price)}</span>
+      <span className="text-lg font-semibold text-foreground">
+        {formatNaira(cohort.price)}
+      </span>
       <button
         onClick={() => onAction?.()}
         className={`min-h-11 rounded-lg px-5 text-sm font-medium ${

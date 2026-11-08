@@ -15,9 +15,9 @@ export function Hero() {
         </h1>
 
         <p className="mt-4 max-w-md text-sm leading-relaxed text-muted md:text-base">
-          Join a live cohort with an instructor, or pick a ready-made course
-          and learn at your own pace. Write and run real code right here on
-          the platform, no setup needed.
+          Join a live cohort with an instructor, or pick a ready-made course and
+          learn at your own pace. Write and run real code right here on the
+          platform, no setup needed.
         </p>
 
         <div className="mt-6 flex flex-wrap gap-3">
@@ -44,9 +44,15 @@ export function Hero() {
         </Link>
 
         <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-xs text-muted">
-          <span><b className="text-foreground">12 weeks</b> live cohort</span>
-          <span><b className="text-foreground">72+</b> lessons</span>
-          <span><b className="text-foreground">₦15,000</b> to start</span>
+          <span>
+            <b className="text-foreground">12 weeks</b> live cohort
+          </span>
+          <span>
+            <b className="text-foreground">72+</b> lessons
+          </span>
+          <span>
+            <b className="text-foreground">₦15,000</b> to start
+          </span>
         </div>
       </div>
 
@@ -68,7 +74,7 @@ export function Hero() {
         </div>
 
         <pre className="overflow-x-auto p-4 text-xs leading-relaxed text-body md:text-sm">
-{`def start_learning(name):
+          {`def start_learning(name):
     print(f"Welcome, {name}!")
     return "Let's build something"
 
@@ -76,7 +82,9 @@ start_learning("you")`}
         </pre>
 
         <div className="border-t border-line bg-input px-4 py-3">
-          <p className="text-[11px] uppercase tracking-wider text-muted">Output</p>
+          <p className="text-[11px] uppercase tracking-wider text-muted">
+            Output
+          </p>
           <p className="mt-1 text-sm text-success">Welcome, you!</p>
         </div>
       </div>

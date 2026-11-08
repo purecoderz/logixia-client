@@ -3,8 +3,10 @@ import { ProgressBar } from "../../../../components/ui/ProgressBar";
 
 export function SeatsSummary({ cohort: c }: { cohort: InstructorCohort }) {
   const full = c.seatsTotal > 0 && c.seatsTaken >= c.seatsTotal;
-  const pct = c.seatsTotal > 0 ? Math.round((c.seatsTaken / c.seatsTotal) * 100) : 0;
-  const lowFill = !full && pct < 50 && (c.status === "open" || c.status === "starting-soon");
+  const pct =
+    c.seatsTotal > 0 ? Math.round((c.seatsTaken / c.seatsTotal) * 100) : 0;
+  const lowFill =
+    !full && pct < 50 && (c.status === "open" || c.status === "starting-soon");
 
   return (
     <div>
@@ -20,7 +22,9 @@ export function SeatsSummary({ cohort: c }: { cohort: InstructorCohort }) {
           label="Seats filled"
         />
       </div>
-      <p className={`text-xs ${lowFill ? "text-warning" : "text-muted"}`}>{pct}% filled</p>
+      <p className={`text-xs ${lowFill ? "text-warning" : "text-muted"}`}>
+        {pct}% filled
+      </p>
     </div>
   );
 }

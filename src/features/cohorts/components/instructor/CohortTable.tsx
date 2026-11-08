@@ -18,7 +18,10 @@ export function CohortTable({ cohorts, ...actions }: CohortTableProps) {
       header: "Cohort",
       cell: (c) => (
         <>
-          <Link to={`/cohort/${c.id}`} className="block max-w-xs font-semibold text-foreground hover:text-accent hover:underline">
+          <Link
+            to={`/instructor/cohort/${c.id}`}
+            className="block max-w-xs font-semibold text-foreground hover:text-accent hover:underline"
+          >
             {c.name}
           </Link>
           <p className="mt-0.5 max-w-xs text-xs text-muted">{c.course}</p>
@@ -30,7 +33,11 @@ export function CohortTable({ cohorts, ...actions }: CohortTableProps) {
     { header: "Seats", cell: (c) => <SeatsSummary cohort={c} /> },
     {
       header: "Revenue",
-      cell: (c) => <span className="font-medium">{formatNaira(c.seatsTaken * c.price)}</span>,
+      cell: (c) => (
+        <span className="font-medium">
+          {formatNaira(c.seatsTaken * c.price)}
+        </span>
+      ),
     },
     {
       header: "Actions",

@@ -12,7 +12,14 @@ export function ProgressRing({ pct, color, label }: ProgressRingProps) {
     <div className="flex flex-col items-center gap-2">
       <div className="relative size-[76px]">
         <svg viewBox="0 0 72 72" className="size-full -rotate-90" aria-hidden>
-          <circle cx="36" cy="36" r={r} fill="none" stroke="var(--app-hover)" strokeWidth="7" />
+          <circle
+            cx="36"
+            cy="36"
+            r={r}
+            fill="none"
+            stroke="var(--app-hover)"
+            strokeWidth="7"
+          />
           <circle
             cx="36"
             cy="36"

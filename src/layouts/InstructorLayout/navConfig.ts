@@ -1,20 +1,8 @@
-import {
-  BookOpen,
-  CalendarDays,
-  ClipboardCheck,
-  GraduationCap,
-  Home,
-  Settings,
-  UserPlus,
-  Users,
-  type LucideIcon,
-} from "lucide-react";
-
 export interface InstructorNavItem {
   id: string;
   label: string;
   path: string;
-  icon: LucideIcon;
+  icon: string;
   badge?: string;
   children?: { id: string; label: string; path: string }[];
 }
@@ -28,12 +16,12 @@ export const instructorNav: InstructorNavSection[] = [
   {
     title: "Academic & Teaching",
     items: [
-      { id: "overview", label: "Overview", path: "/instructor", icon: Home },
+      { id: "overview", label: "Overview", path: "/instructor", icon: "🏠" },
       {
         id: "courses",
         label: "Courses",
         path: "/instructor/courses",
-        icon: BookOpen,
+        icon: "📚",
         children: [
           {
             id: "all-courses",
@@ -51,7 +39,7 @@ export const instructorNav: InstructorNavSection[] = [
         id: "cohorts",
         label: "Cohorts",
         path: "/instructor/cohorts",
-        icon: Users,
+        icon: "🎓",
         children: [
           {
             id: "all-cohorts",
@@ -64,6 +52,11 @@ export const instructorNav: InstructorNavSection[] = [
             path: "/instructor/cohorts/new",
           },
           {
+            id: "manage-tasks",
+            label: "Manage Tasks",
+            path: "/instructor/cohorts/tasks",
+          },
+          {
             id: "manage-students",
             label: "Manage Students",
             path: "/instructor/cohorts/members",
@@ -74,13 +67,13 @@ export const instructorNav: InstructorNavSection[] = [
         id: "plan",
         label: "Classroom Plan",
         path: "/instructor/plan",
-        icon: CalendarDays,
+        icon: "📅",
       },
       {
         id: "tasks",
         label: "Tasks",
         path: "/instructor/tasks",
-        icon: ClipboardCheck,
+        icon: "📋",
         children: [
           {
             id: "all-tasks",
@@ -98,13 +91,13 @@ export const instructorNav: InstructorNavSection[] = [
         id: "roster",
         label: "Student Roster",
         path: "/instructor/students",
-        icon: GraduationCap,
+        icon: "👥",
       },
       {
         id: "register",
         label: "Register Student",
         path: "/instructor/students/new",
-        icon: UserPlus,
+        icon: "📝",
       },
     ],
   },
@@ -115,7 +108,7 @@ export const instructorNav: InstructorNavSection[] = [
         id: "settings",
         label: "Settings",
         path: "/instructor/settings",
-        icon: Settings,
+        icon: "⚙️",
       },
     ],
   },

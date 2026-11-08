@@ -1,0 +1,12 @@
+.public-footer {
+  --footer-background: #0b0f15;
+  color-scheme: dark;
+}
+body[data-app-theme="light"] .public-footer {
+  --footer-background: #102337;
+}
+.public-footer a:focus-visible {
+  outline: 2px solid #22d3ee;
+  outline-offset: 5px;
+  border-radius: 3px;
+}

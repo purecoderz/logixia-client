@@ -11,15 +11,19 @@ export function useAddLesson(courseId: string) {
       CourseService.addLesson(moduleId, title),
     onSuccess: (lesson, { moduleId }) => {
       // Show the new lesson straight away, in its module...
-      queryClient.setQueryData<CourseOutline>(courseKeys.outline(courseId), (old) =>
-        old
-          ? {
-              ...old,
-              modules: old.modules.map((m) =>
-                m.id === moduleId ? { ...m, lessons: [...m.lessons, lesson] } : m,
-              ),
-            }
-          : old,
+      queryClient.setQueryData<CourseOutline>(
+        courseKeys.outline(courseId),
+        (old) =>
+          old
+            ? {
+                ...old,
+                modules: old.modules.map((m) =>
+                  m.id === moduleId
+                    ? { ...m, lessons: [...m.lessons, lesson] }
+                    : m,
+                ),
+              }
+            : old,
       );
       // ...then refresh in the background so the checklist catches up
       void queryClient.invalidateQueries({ queryKey: courseKeys.all });

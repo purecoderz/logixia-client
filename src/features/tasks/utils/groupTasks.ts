@@ -8,7 +8,10 @@ export interface TaskQuery {
 }
 
 /** The tasks of the chosen module (or every module), straight from the outline we already loaded. */
-export function groupTasks(outline: CourseOutline, query: TaskQuery): TaskGroup[] {
+export function groupTasks(
+  outline: CourseOutline,
+  query: TaskQuery,
+): TaskGroup[] {
   const q = query.q.trim().toLowerCase();
 
   return outline.modules.flatMap((m, mi) => {
@@ -19,7 +22,9 @@ export function groupTasks(outline: CourseOutline, query: TaskQuery): TaskGroup[
         .filter(
           (t) =>
             (query.type === "" || t.type === query.type) &&
-            (q === "" || t.title.toLowerCase().includes(q) || l.title.toLowerCase().includes(q)),
+            (q === "" ||
+              t.title.toLowerCase().includes(q) ||
+              l.title.toLowerCase().includes(q)),
         )
         .map((t) => ({
           id: t.id,
@@ -31,6 +36,8 @@ export function groupTasks(outline: CourseOutline, query: TaskQuery): TaskGroup[
         })),
     );
 
-    return [{ moduleId: m.id, moduleNumber: mi + 1, moduleTitle: m.title, rows }];
+    return [
+      { moduleId: m.id, moduleNumber: mi + 1, moduleTitle: m.title, rows },
+    ];
   });
 }

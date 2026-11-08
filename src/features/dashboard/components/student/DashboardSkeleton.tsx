@@ -5,9 +5,17 @@ function Bone({ className = "" }: { className?: string }) {
   return <div className={`animate-pulse rounded-lg bg-hover ${className}`} />;
 }
 
-function SkeletonCard({ children, className = "" }: { children: ReactNode; className?: string }) {
+function SkeletonCard({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
   return (
-    <div className={`rounded-2xl border border-line bg-surface p-5 ${className}`}>
+    <div
+      className={`rounded-2xl border border-line bg-surface p-5 ${className}`}
+    >
       <div className="mb-4 flex items-center justify-between">
         <Bone className="h-4 w-24" />
         <Bone className="h-3 w-12" />

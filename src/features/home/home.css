@@ -1,0 +1,47 @@
+/* A light-specific surface palette, scoped to the public homepage. */
+body[data-app-theme="light"] [data-public-home="true"] {
+  --home-highlight: #0e7490;
+  --app-canvas: #f8fafb;
+  --app-surface: #ffffff;
+  --app-input: #f3f7f9;
+  --app-fg: #152c3c;
+  --app-body: #405768;
+  --app-muted: #5f7180;
+  --app-border: #e1e9ee;
+  --app-border-strong: #d6e2e8;
+  --app-accent: #0e7490;
+  --app-accent-hover: #155e75;
+  --app-hover: #e9f0f3;
+  --app-success: #087953;
+  --app-warning: #925a0b;
+  background-image: radial-gradient(
+    ellipse at 85% 12%,
+    #e7f3f5 0,
+    transparent 38%
+  );
+}
+
+body[data-app-theme="light"] [data-public-home="true"] > header {
+  background: rgb(255 255 255 / 85%);
+}
+
+body[data-app-theme="light"] [data-public-home="true"] .home-preview {
+  border-color: #d2e1e8;
+  box-shadow:
+    0 20px 60px -20px rgb(29 73 91 / 20%),
+    0 2px 8px rgb(29 73 91 / 4%);
+}
+
+body[data-app-theme="light"] [data-public-home="true"] .home-glow {
+  opacity: 0.25;
+}
+
+body[data-app-theme="light"] [data-public-home="true"] .home-panel {
+  border-color: #e1e9ee;
+  box-shadow: 0 6px 24px -12px rgb(29 73 91 / 12%);
+}
+
+body[data-app-theme="light"] [data-public-home="true"] .home-invitation {
+  background: #edf6f4;
+  border-color: #d6e9e3;
+}

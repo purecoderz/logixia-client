@@ -9,13 +9,19 @@ interface TimelineRowProps {
   trailing?: ReactNode;
 }
 
-export function TimelineRow({ node, title, to, badge, trailing }: TimelineRowProps) {
+export function TimelineRow({
+  node,
+  title,
+  to,
+  badge,
+  trailing,
+}: TimelineRowProps) {
   return (
     <Link
-      to={to?to:""}
+      to={to ? to : ""}
       className="group -mx-2 flex items-center gap-3 rounded-lg px-2 py-2 outline-none hover:bg-surface focus-visible:ring-2 focus-visible:ring-accent"
     >
-      <span className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#1f2a44] text-xs text-body group-hover:bg-[#2a3a5e]">
+      <span className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#4aa134] text-xs text-body group-hover:bg-[#378668]">
         {node}
       </span>
 

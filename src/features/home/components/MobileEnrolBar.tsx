@@ -6,7 +6,9 @@ export function MobileEnrolBar() {
     <div className="fixed inset-x-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-30 flex items-center justify-between gap-3 border-t border-line bg-input px-4 py-3 lg:hidden">
       <div>
         <p className="text-sm font-medium text-foreground">{cohort.price}</p>
-        <p className="text-[11px] text-muted">{seatsLeft} seats left · starts {cohort.startDate}</p>
+        <p className="text-[11px] text-muted">
+          {seatsLeft} seats left · starts {cohort.startDate}
+        </p>
       </div>
       <Link
         to="/cohorts/register"

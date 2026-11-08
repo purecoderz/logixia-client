@@ -14,7 +14,12 @@ const fills: Record<Tone, string> = {
   success: "bg-emerald-400",
 };
 
-export function ProgressBar({ value, max = 100, tone = "default", label }: ProgressBarProps) {
+export function ProgressBar({
+  value,
+  max = 100,
+  tone = "default",
+  label,
+}: ProgressBarProps) {
   const pct = max > 0 ? Math.min(100, Math.max(0, (value / max) * 100)) : 0;
 
   return (

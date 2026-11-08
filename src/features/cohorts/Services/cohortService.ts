@@ -1,17 +1,17 @@
 import type { CreateCohortInput } from "../types/create";
 import { apiErrorFrom } from "@/lib/apiError";
 
-
 import { CohortUtils } from "../utils/Cohorts";
 import { apiFetch } from "../../../lib/http";
-import type { Cohort, InstructorCohort, InstructorCohortStatus } from "../types/types";
+import type {
+  Cohort,
+  InstructorCohort,
+  InstructorCohortStatus,
+} from "../types/types";
 
 // Types
 export type CohortStatus =
-  | "open"
-  | "starting-soon"
-  | "in-progress"
-  | "completed";
+  "open" | "starting-soon" | "in-progress" | "completed";
 
 export interface RawCohort {
   id: number;
@@ -52,8 +52,6 @@ async function handleError(response: Response): Promise<never> {
   throw await apiErrorFrom(response);
 }
 
-
-
 // Cohort API Service
 export const CohortService = {
   async update(id: string, patch: Partial<CreateCohortInput>): Promise<void> {
@@ -93,8 +91,9 @@ export const CohortService = {
       : [CohortUtils.transform(rawData)];
   },
 
-  // TODO: change the path if your instructor route is named differently
-  async getInstructorCohorts(path: string = "/instructor/cohorts"): Promise<InstructorCohort[]> {
+  async getInstructorCohorts(
+    path: string = "/instructor/cohorts",
+  ): Promise<InstructorCohort[]> {
     const response = await apiFetch(path);
     if (!response.ok) return handleError(response);
 

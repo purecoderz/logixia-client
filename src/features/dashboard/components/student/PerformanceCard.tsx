@@ -3,13 +3,18 @@ import { DashboardCard, EmptyState, SeeAllLink } from "./DashboardCard";
 import type { Assignment } from "@/features/assignments/services/assignmentService";
 import { byDue } from "@/features/assignments/utils/assignments";
 
-
-export function PerformanceCard({ assignments }: { assignments: Assignment[] }) {
+export function PerformanceCard({
+  assignments,
+}: {
+  assignments: Assignment[];
+}) {
   const { bars, earned, total, maxXp } = useMemo(() => {
     const bars = [...assignments].sort(byDue).slice(-6);
     return {
       bars,
-      earned: assignments.filter((a) => a.uiStatus === "done").reduce((s, a) => s + a.xp, 0),
+      earned: assignments
+        .filter((a) => a.uiStatus === "done")
+        .reduce((s, a) => s + a.xp, 0),
       total: assignments.reduce((s, a) => s + a.xp, 0),
       maxXp: Math.max(...bars.map((b) => b.xp), 1),
     };
@@ -23,11 +28,14 @@ export function PerformanceCard({ assignments }: { assignments: Assignment[] }) 
       </div>
 
       {bars.length === 0 ? (
-        <EmptyState>No assignments yet.</EmptyState>
+        <EmptyState>No tasks yet.</EmptyState>
       ) : (
         <div className="flex h-36 items-stretch justify-between gap-3">
           {bars.map((b) => (
-            <div key={b.id} className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
+            <div
+              key={b.id}
+              className="flex min-w-0 flex-1 flex-col items-center gap-1.5"
+            >
               <span className="text-[11px] text-muted">{b.xp}</span>
               <div className="flex w-full flex-1 items-end justify-center">
                 <div

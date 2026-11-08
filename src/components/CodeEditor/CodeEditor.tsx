@@ -1,3 +1,6 @@
+import { githubLight } from "@uiw/codemirror-theme-github";
+import { useTheme } from "../../features/theme/ThemeProvider";
+import { lightEditorTheme } from "./lightEditorTheme";
 // CodeEditor.tsx
 import { useEffect, useMemo, useRef } from "react";
 import CodeMirror, { type ReactCodeMirrorRef } from "@uiw/react-codemirror";
@@ -10,7 +13,11 @@ import { usePythonIntelligence } from "./hooks/usePythonIntelligence";
 export const editorTheme = EditorView.theme(
   {
     "&": { height: "100%", backgroundColor: "#1c2128" },
-    ".cm-gutters": { backgroundColor: "#1c2128", color: "#6e7681", border: "none" },
+    ".cm-gutters": {
+      backgroundColor: "#1c2128",
+      color: "#6e7681",
+      border: "none",
+    },
 
     // CHANGED: stronger current-line highlight
     ".cm-activeLine": { backgroundColor: "#bd93f933" },
@@ -34,7 +41,9 @@ export const editorTheme = EditorView.theme(
       borderRadius: "6px",
       border: "2px solid #1e1e1e",
     },
-    ".cm-scroller::-webkit-scrollbar-thumb:hover": { backgroundColor: "#6272a4" },
+    ".cm-scroller::-webkit-scrollbar-thumb:hover": {
+      backgroundColor: "#6272a4",
+    },
     ".cm-scroller::-webkit-scrollbar-corner": { background: "transparent" },
 
     // hover tooltip
@@ -116,7 +125,7 @@ export const editorTheme = EditorView.theme(
       fontWeight: "700",
     },
   },
-  { dark: true }
+  { dark: true },
 );
 
 // moved here from CodeEditorMobile
@@ -147,16 +156,20 @@ export function CodeEditor({
   followLine,
   isLive = false,
 }: CodeEditorProps) {
+  const { theme } = useTheme();
+  const currentEditorTheme = theme === "light" ? lightEditorTheme : editorTheme;
   const intelligence = usePythonIntelligence(language);
 
   const extensions = useMemo(
     () => [
-      Prec.highest(isMobile ? [editorTheme, mobileTheme] : editorTheme),
+      Prec.highest(
+        isMobile ? [currentEditorTheme, mobileTheme] : currentEditorTheme,
+      ),
       ...(isMobile ? [EditorView.lineWrapping] : []),
       LANGUAGE_EXTENSIONS[language],
       ...intelligence,
     ],
-    [isMobile, language, intelligence],
+    [isMobile, language, intelligence, currentEditorTheme],
   );
 
   const cm = useRef<ReactCodeMirrorRef>(null);
@@ -184,7 +197,7 @@ export function CodeEditor({
     <CodeMirror
       ref={cm}
       value={value}
-      theme={dracula}
+      theme={theme === "light" ? githubLight : dracula}
       className="h-full"
       readOnly={readOnly}
       editable={!(readOnly && isMobile)}
@@ -200,14 +213,17 @@ export function CodeEditor({
         if (readOnly) return;
         // Only compute line number if actively live streaming
         const line = isLive
-          ? viewUpdate.state.doc.lineAt(viewUpdate.state.selection.main.head).number
+          ? viewUpdate.state.doc.lineAt(viewUpdate.state.selection.main.head)
+              .number
           : undefined;
         onChange(val, line);
       }}
       onUpdate={(update) => {
         if (!onCursorLine || readOnly) return;
         if (update.docChanged || update.selectionSet) {
-          onCursorLine(update.state.doc.lineAt(update.state.selection.main.head).number);
+          onCursorLine(
+            update.state.doc.lineAt(update.state.selection.main.head).number,
+          );
         }
       }}
     />

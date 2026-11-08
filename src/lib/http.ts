@@ -19,7 +19,13 @@ function tryRefresh(): Promise<RefreshResult> {
     })
       // "denied" = the server answered and said this session is over.
       // "failed" = server error or no connection: that says nothing about the session.
-      .then((r): RefreshResult => (r.ok ? "ok" : r.status === 401 || r.status === 403 ? "denied" : "failed"))
+      .then((r): RefreshResult =>
+        r.ok
+          ? "ok"
+          : r.status === 401 || r.status === 403
+            ? "denied"
+            : "failed",
+      )
       .catch((): RefreshResult => "failed")
       .finally(() => {
         refreshPromise = null;
@@ -42,7 +48,10 @@ export function expire() {
   window.dispatchEvent(new Event(AUTH_EXPIRED_EVENT));
 }
 
-export async function apiFetch(path: string, init: RequestInit = {}): Promise<Response> {
+export async function apiFetch(
+  path: string,
+  init: RequestInit = {},
+): Promise<Response> {
   const url = path.startsWith("http") ? path : `${BASE_URL}${path}`;
   const options: RequestInit = { credentials: "include", ...init };
 

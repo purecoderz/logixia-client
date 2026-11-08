@@ -39,8 +39,12 @@ export const AlertModal: React.FC<AlertModalProps> = ({
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="space-y-2">
-          <h3 className="text-base font-bold text-foreground font-mono leading-snug">{title}</h3>
-          <p className="text-xs text-muted leading-relaxed font-sans">{message}</p>
+          <h3 className="text-base font-bold text-foreground font-mono leading-snug">
+            {title}
+          </h3>
+          <p className="text-xs text-muted leading-relaxed font-sans">
+            {message}
+          </p>
         </div>
 
         <div className="flex justify-end">

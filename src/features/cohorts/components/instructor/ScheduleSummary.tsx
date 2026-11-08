@@ -2,10 +2,13 @@ import type { InstructorCohort } from "../../types/types";
 import { formatDateRange } from "../../../../utils/format";
 import { ProgressBar } from "../../../../components/ui/ProgressBar";
 
-
 export function ScheduleSummary({ cohort: c }: { cohort: InstructorCohort }) {
   if (c.status !== "in-progress") {
-    return <p className="text-sm font-medium">{formatDateRange(c.startDate, c.endDate)}</p>;
+    return (
+      <p className="text-sm font-medium">
+        {formatDateRange(c.startDate, c.endDate)}
+      </p>
+    );
   }
 
   return (
@@ -14,7 +17,11 @@ export function ScheduleSummary({ cohort: c }: { cohort: InstructorCohort }) {
         Week {c.currentWeek} of {c.totalWeeks}
       </p>
       <div className="my-1.5">
-        <ProgressBar value={c.currentWeek ?? 0} max={c.totalWeeks} label="Course progress" />
+        <ProgressBar
+          value={c.currentWeek ?? 0}
+          max={c.totalWeeks}
+          label="Course progress"
+        />
       </div>
       <p className="text-xs text-muted">
         {formatDateRange(c.startDate, c.endDate)}

@@ -5,8 +5,12 @@ export function HostCohortBanner({ onNotify }: { onNotify?: () => void }) {
     <div className="flex items-center gap-3 rounded-xl border border-dashed border-line p-4">
       <Users size={28} className="shrink-0 text-accent" aria-hidden />
       <div className="flex-1">
-        <p className="text-sm text-foreground">Coming soon: host your own cohort</p>
-        <p className="text-xs text-muted">Teachers will be able to run cohorts on Logixia.</p>
+        <p className="text-sm text-foreground">
+          Coming soon: host your own cohort
+        </p>
+        <p className="text-xs text-muted">
+          Teachers will be able to run cohorts on Logixia.
+        </p>
       </div>
       <button
         onClick={onNotify}

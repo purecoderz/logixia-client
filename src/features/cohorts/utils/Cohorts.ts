@@ -1,6 +1,13 @@
-
-import type { Cohort, InstructorCohort, InstructorCohortStatus } from "../types/types";
-import type { CohortStatus, RawCohort, RawInstructorCohort } from "../Services/cohortService";
+import type {
+  Cohort,
+  InstructorCohort,
+  InstructorCohortStatus,
+} from "../types/types";
+import type {
+  CohortStatus,
+  RawCohort,
+  RawInstructorCohort,
+} from "../Services/cohortService";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -28,7 +35,11 @@ export const CohortUtils = {
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   },
 
-  getStatus(startStr: string, endStr: string, today = startOfToday()): CohortStatus {
+  getStatus(
+    startStr: string,
+    endStr: string,
+    today = startOfToday(),
+  ): CohortStatus {
     const start = parseDate(startStr);
     const end = parseDate(endStr);
     if (!start || !end) return "open";
@@ -51,7 +62,10 @@ export const CohortUtils = {
     const totalDays = daysBetween(start, end) + 1; // both days count
     const totalWeeks = Math.max(1, Math.round(totalDays / 7));
     const elapsed = daysBetween(start, today);
-    const currentWeek = Math.max(1, Math.min(Math.floor(elapsed / 7) + 1, totalWeeks));
+    const currentWeek = Math.max(
+      1,
+      Math.min(Math.floor(elapsed / 7) + 1, totalWeeks),
+    );
     return { currentWeek, totalWeeks };
   },
 
@@ -79,7 +93,11 @@ export const CohortUtils = {
       name: item.name,
       subtitle: item.subtitle ?? "Learn to code live",
       startsOn: CohortUtils.formatStartsOn(item.start_date),
-      durationLabel: CohortUtils.getDurationLabel(item.start_date, item.end_date, status),
+      durationLabel: CohortUtils.getDurationLabel(
+        item.start_date,
+        item.end_date,
+        status,
+      ),
       seatsTaken: item.seats_taken ?? 0,
       // API sends `seats`; `seats_total` kept as a fallback for older responses
       seatsTotal: item.seats ?? item.seats_total ?? 20,
@@ -90,14 +108,22 @@ export const CohortUtils = {
   // Prefer a recognized server status; otherwise derive it from publication and dates.
   transformForInstructor(item: RawInstructorCohort): InstructorCohort {
     const statuses: Record<string, InstructorCohortStatus> = {
-      draft: "draft", open: "open", completed: "completed",
-      starting_soon: "starting-soon", "starting-soon": "starting-soon",
-      in_progress: "in-progress", "in-progress": "in-progress",
+      draft: "draft",
+      open: "open",
+      completed: "completed",
+      starting_soon: "starting-soon",
+      "starting-soon": "starting-soon",
+      in_progress: "in-progress",
+      "in-progress": "in-progress",
     };
-    const normalized = item.status && Object.hasOwn(statuses, item.status) ? statuses[item.status] : undefined;
-    const status: InstructorCohortStatus = item.is_published === false
-      ? "draft"
-      : normalized ?? CohortUtils.getStatus(item.start_date, item.end_date);
+    const normalized =
+      item.status && Object.hasOwn(statuses, item.status)
+        ? statuses[item.status]
+        : undefined;
+    const status: InstructorCohortStatus =
+      item.is_published === false
+        ? "draft"
+        : (normalized ?? CohortUtils.getStatus(item.start_date, item.end_date));
     const progress =
       status === "in-progress"
         ? CohortUtils.getWeekProgress(item.start_date, item.end_date)

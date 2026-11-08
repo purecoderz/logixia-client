@@ -9,7 +9,13 @@ interface LessonRowProps {
   sample?: boolean;
 }
 
-export function LessonRow({ title, duration, locked, to, sample }: LessonRowProps) {
+export function LessonRow({
+  title,
+  duration,
+  locked,
+  to,
+  sample,
+}: LessonRowProps) {
   return (
     <TimelineRow
       node={<Play size={12} fill="currentColor" />}

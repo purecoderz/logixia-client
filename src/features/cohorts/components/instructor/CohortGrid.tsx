@@ -2,7 +2,6 @@ import type { CohortActionProps } from "./CohortActions";
 import type { InstructorCohort } from "../../types/types";
 import { InstructorCohortCard } from "./InstructorCohortCard";
 
-
 interface CohortGridProps extends CohortActionProps {
   cohorts: InstructorCohort[];
 }

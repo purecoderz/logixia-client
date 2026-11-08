@@ -13,7 +13,6 @@ export interface Session {
 const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
 
-
 function makeMockSessions(): Session[] {
   const now = Date.now();
 

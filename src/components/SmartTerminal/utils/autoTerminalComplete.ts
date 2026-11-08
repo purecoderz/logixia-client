@@ -1,7 +1,5 @@
-
 import { FileManagement, type FsNode } from "@/features/workspace/utils/File";
 import { commands } from "./terminalCommands";
-
 
 // =================================================================
 //                   AUTO COMPLETION FOR TERMINALS Text

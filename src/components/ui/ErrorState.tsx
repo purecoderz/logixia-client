@@ -17,10 +17,12 @@ interface ErrorStateProps {
 const icons: Record<ErrorKind, string> = {
   server: "M12 3.5l9 15.5H3L12 3.5zM12 10v4M12 17v.1",
   request: "M12 3.5l9 15.5H3L12 3.5zM12 10v4M12 17v.1",
-  offline: "M2 8.5a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 19.5v.1M3 3l18 18",
+  offline:
+    "M2 8.5a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 19.5v.1M3 3l18 18",
   auth: "M5 11h14v9H5zM8 11V8a4 4 0 0 1 8 0v3",
   forbidden: "M5 11h14v9H5zM8 11V8a4 4 0 0 1 8 0v3",
-  notFound: "M4.5 11a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0zM16 16l5 5M9 9.5c.3-1 1.2-1.5 2-1.5 1.2 0 2 .8 2 1.8 0 1.5-2 1.5-2 3",
+  notFound:
+    "M4.5 11a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0zM16 16l5 5M9 9.5c.3-1 1.2-1.5 2-1.5 1.2 0 2 .8 2 1.8 0 1.5-2 1.5-2 3",
 };
 
 const tones: Record<ErrorKind, string> = {
@@ -44,8 +46,20 @@ export function ErrorState({
   const page = variant === "page";
 
   const icon = (
-    <span className={`inline-flex shrink-0 items-center justify-center rounded-full ${page ? "size-14" : "size-10"} ${tones[copy.kind]}`}>
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <span
+      className={`inline-flex shrink-0 items-center justify-center rounded-full ${page ? "size-14" : "size-10"} ${tones[copy.kind]}`}
+    >
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
         <path d={icons[copy.kind]} />
       </svg>
     </span>
@@ -53,7 +67,11 @@ export function ErrorState({
 
   const actions = (
     <div className={`flex flex-wrap gap-2 ${page ? "justify-center" : ""}`}>
-      {copy.retryable && onRetry && <Button variant={page ? "primary" : "ghost"} onClick={onRetry}>Try again</Button>}
+      {copy.retryable && onRetry && (
+        <Button variant={page ? "primary" : "ghost"} onClick={onRetry}>
+          Try again
+        </Button>
+      )}
       {page &&
         (homeTo ? (
           <Link
@@ -72,7 +90,9 @@ export function ErrorState({
 
   const details = copy.details && (
     <details className="text-sm text-muted">
-      <summary className="inline-flex min-h-11 cursor-pointer items-center">Show details</summary>
+      <summary className="inline-flex min-h-11 cursor-pointer items-center">
+        Show details
+      </summary>
       <code className="block rounded-lg border border-line bg-input px-3 py-2.5 text-left font-mono text-xs text-body">
         {copy.details}
       </code>
@@ -81,10 +101,15 @@ export function ErrorState({
 
   if (page) {
     return (
-      <div role="alert" className="mx-auto flex max-w-lg flex-col items-center gap-3.5 rounded-xl border border-line bg-surface-muted/30 px-6 py-14 text-center">
+      <div
+        role="alert"
+        className="mx-auto flex max-w-lg flex-col items-center gap-3.5 rounded-xl border border-line bg-surface-muted/30 px-6 py-14 text-center"
+      >
         {icon}
         <h2 className="text-xl font-semibold text-foreground">{copy.title}</h2>
-        <p className="max-w-sm text-sm leading-relaxed text-muted">{copy.text}</p>
+        <p className="max-w-sm text-sm leading-relaxed text-muted">
+          {copy.text}
+        </p>
         {actions}
         {details}
       </div>
@@ -92,7 +117,10 @@ export function ErrorState({
   }
 
   return (
-    <div role="alert" className="flex items-start gap-3.5 rounded-xl border border-line bg-surface-muted/30 p-5">
+    <div
+      role="alert"
+      className="flex items-start gap-3.5 rounded-xl border border-line bg-surface-muted/30 p-5"
+    >
       {icon}
       <div className="space-y-2">
         <p className="font-semibold text-foreground">{copy.title}</p>

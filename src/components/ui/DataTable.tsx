@@ -26,12 +26,22 @@ export function DataTable<T>({
 }: DataTableProps<T>) {
   return (
     <div className="overflow-x-auto rounded-xl border border-line bg-surface-muted/30">
-      <table className="w-full border-collapse text-sm text-body" style={{ minWidth }}>
+      <table
+        className="w-full border-collapse text-sm text-body"
+        style={{ minWidth }}
+      >
         <thead className="border-b border-line bg-input/60">
           <tr>
             {columns.map((col) => (
-              <th key={col.header} className="px-5 py-3 text-left text-xs font-semibold text-muted">
-                {col.hideHeader ? <span className="sr-only">{col.header}</span> : col.header}
+              <th
+                key={col.header}
+                className="px-5 py-3 text-left text-xs font-semibold text-muted"
+              >
+                {col.hideHeader ? (
+                  <span className="sr-only">{col.header}</span>
+                ) : (
+                  col.header
+                )}
               </th>
             ))}
           </tr>
@@ -39,7 +49,10 @@ export function DataTable<T>({
         <tbody className="divide-y divide-line">
           {rows.length === 0 ? (
             <tr>
-              <td colSpan={columns.length} className="px-5 py-12 text-center text-muted">
+              <td
+                colSpan={columns.length}
+                className="px-5 py-12 text-center text-muted"
+              >
                 {emptyMessage}
               </td>
             </tr>

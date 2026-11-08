@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+@custom-variant dark (&:where([data-app-theme="dark"], [data-app-theme="dark"] *));
+
 /* Semantic colors default to the existing dark palette outside themed app layouts. */
 :root {
   --app-selection: #264f78;
@@ -21,7 +23,9 @@
   --app-warning: #fcd34d;
   --app-danger: #fca5a5;
 }
-body[data-app-theme="dark"] { color-scheme: dark; }
+body[data-app-theme="dark"] {
+  color-scheme: dark;
+}
 body[data-app-theme="light"] {
   color-scheme: light;
   --app-selection: #dbeafe;
@@ -61,7 +65,6 @@ body[data-app-theme="light"] {
   --color-danger: var(--app-danger);
 }
 
-
 /* The instructor shell owns scrolling. Prevent wheel/touch overscroll from
    moving the document beyond it; student and standalone routes keep their rules. */
 html:has([data-instructor-layout]),
@@ -69,7 +72,6 @@ body:has([data-instructor-layout]) {
   overflow: hidden;
   overscroll-behavior: none;
 }
-
 
 @keyframes fadeIn {
   from {
@@ -141,4 +143,59 @@ input:-webkit-autofill:focus {
   --tw-prose-pre-bg: var(--app-input);
   --tw-prose-th-borders: var(--app-border);
   --tw-prose-td-borders: var(--app-border);
+}
+
+/* Animate only incoming public content; navigation remains stable. */
+@keyframes publicPageEnter {
+  from {
+    transform: translateY(4px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+.public-page-enter {
+  animation: publicPageEnter 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .public-page-enter {
+    animation: none;
+  }
+}
+
+/* Carry the public header into the workspace, then move it out of view. */
+@keyframes playgroundHeaderExit {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+.playground-departing-header {
+  animation: playgroundHeaderExit 650ms cubic-bezier(0.65, 0, 0.35, 1) 100ms
+    both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .playground-departing-header {
+    display: none;
+    animation: none;
+  }
+}
+
+@keyframes playgroundHeaderReturn {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+.playground-returning-header {
+  animation: playgroundHeaderReturn 650ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .playground-returning-header {
+    animation: none;
+  }
 }

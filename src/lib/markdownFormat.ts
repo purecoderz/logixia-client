@@ -1,4 +1,12 @@
-export type FormatAction = "bold" | "italic" | "code" | "codeBlock" | "heading" | "bulletList" | "numberedList" | "link";
+export type FormatAction =
+  | "bold"
+  | "italic"
+  | "code"
+  | "codeBlock"
+  | "heading"
+  | "bulletList"
+  | "numberedList"
+  | "link";
 
 export interface EditState {
   value: string;
@@ -6,7 +14,11 @@ export interface EditState {
   end: number; // selection end
 }
 
-function wrapInline(s: EditState, marker: string, placeholder: string): EditState {
+function wrapInline(
+  s: EditState,
+  marker: string,
+  placeholder: string,
+): EditState {
   const { value, start, end } = s;
   const selected = value.slice(start, end);
   const before = value.slice(0, start);
@@ -15,13 +27,18 @@ function wrapInline(s: EditState, marker: string, placeholder: string): EditStat
   // The markers sit just outside the selection: remove them
   if (selected && before.endsWith(marker) && after.startsWith(marker)) {
     return {
-      value: before.slice(0, -marker.length) + selected + after.slice(marker.length),
+      value:
+        before.slice(0, -marker.length) + selected + after.slice(marker.length),
       start: start - marker.length,
       end: end - marker.length,
     };
   }
   // The selection itself includes the markers: remove them
-  if (selected.length >= marker.length * 2 && selected.startsWith(marker) && selected.endsWith(marker)) {
+  if (
+    selected.length >= marker.length * 2 &&
+    selected.startsWith(marker) &&
+    selected.endsWith(marker)
+  ) {
     const inner = selected.slice(marker.length, -marker.length);
     return { value: before + inner + after, start, end: start + inner.length };
   }
@@ -46,7 +63,11 @@ function lineRange(value: string, start: number, end: number) {
 const PREFIX = {
   heading: { same: /^## /, strip: /^#{1,6} /, make: () => "## " },
   bulletList: { same: /^[-*] /, strip: /^([-*]|\d+\.) /, make: () => "- " },
-  numberedList: { same: /^\d+\. /, strip: /^([-*]|\d+\.) /, make: (n: number) => `${n}. ` },
+  numberedList: {
+    same: /^\d+\. /,
+    strip: /^([-*]|\d+\.) /,
+    make: (n: number) => `${n}. `,
+  },
 } as const;
 
 function toggleLinePrefix(s: EditState, kind: keyof typeof PREFIX): EditState {
@@ -59,7 +80,12 @@ function toggleLinePrefix(s: EditState, kind: keyof typeof PREFIX): EditState {
   if (filled.length === 0) {
     // an empty line: just start the list or heading here
     const cursor = from + make(1).length;
-    return { value: value.slice(0, from) + make(1) + lines.join("\n") + value.slice(to), start: cursor, end: cursor };
+    return {
+      value:
+        value.slice(0, from) + make(1) + lines.join("\n") + value.slice(to),
+      start: cursor,
+      end: cursor,
+    };
   }
 
   const allHave = filled.every((l) => same.test(l));
@@ -73,7 +99,11 @@ function toggleLinePrefix(s: EditState, kind: keyof typeof PREFIX): EditState {
     })
     .join("\n");
 
-  return { value: value.slice(0, from) + block + value.slice(to), start: from, end: from + block.length };
+  return {
+    value: value.slice(0, from) + block + value.slice(to),
+    start: from,
+    end: from + block.length,
+  };
 }
 
 function codeBlock(s: EditState): EditState {
@@ -85,7 +115,8 @@ function codeBlock(s: EditState): EditState {
   const open = `${lead}\`\`\`\n`;
   const bodyStart = start + open.length;
   return {
-    value: value.slice(0, start) + open + body + "\n```" + trail + value.slice(end),
+    value:
+      value.slice(0, start) + open + body + "\n```" + trail + value.slice(end),
     start: bodyStart,
     end: bodyStart + body.length,
   };
@@ -99,7 +130,11 @@ function link(s: EditState): EditState {
   const next = value.slice(0, start) + inserted + value.slice(end);
   // with text selected, select "url" so it can be typed over; otherwise select the placeholder text
   return selected
-    ? { value: next, start: start + text.length + 3, end: start + text.length + 6 }
+    ? {
+        value: next,
+        start: start + text.length + 3,
+        end: start + text.length + 6,
+      }
     : { value: next, start: start + 1, end: start + 1 + text.length };
 }
 

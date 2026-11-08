@@ -16,7 +16,8 @@ export function PlaygroundBanner() {
               Not ready to commit? Just start coding.
             </p>
             <p className="mt-0.5 text-xs text-muted">
-              Open the playground, write code in your browser and run it instantly.
+              Open the playground, write code in your browser and run it
+              instantly.
             </p>
           </div>
         </div>

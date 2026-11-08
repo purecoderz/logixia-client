@@ -1,7 +1,7 @@
-import React from 'react';
-import type { NavSection } from '../../navConfig';
-import { SidebarNavItem } from './SidebarNavItem';
-import { useLocation } from 'react-router-dom';
+import React from "react";
+import type { NavSection } from "../../navConfig";
+import { SidebarNavItem } from "./SidebarNavItem";
+import { useLocation } from "react-router-dom";
 
 interface SidebarSectionProps {
   section: NavSection;
@@ -12,8 +12,7 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
   section,
   isCollapsed,
 }) => {
-
-  const {pathname} = useLocation()
+  const { pathname } = useLocation();
 
   return (
     <div className="space-y-1">

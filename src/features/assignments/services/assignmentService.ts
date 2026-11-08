@@ -1,3 +1,4 @@
+import { apiErrorFrom } from "../../../lib/apiError";
 import { apiFetch } from "../../../lib/http";
 
 // What the API returns
@@ -35,24 +36,21 @@ export function getUiStatus(
 
 export class NoCohortError extends Error {
   constructor() {
-    super("You need to join a cohort in order to view assignments");
+    super("You need to join a cohort in order to view tasks");
     this.name = "NoCohortError";
   }
 }
 
 export const AssignmentService = {
-  getAssignments: async (): Promise<Assignment[]> => {
+  getAssignments: async (selectedCohortId?: number): Promise<Assignment[]> => {
     const id = localStorage.getItem("activeCohortId");
-    const cohortId = id ? JSON.parse(id) : null;
+    const cohortId = selectedCohortId ?? (id ? JSON.parse(id) : null);
 
     if (!cohortId) throw new NoCohortError();
 
-    const response = await apiFetch(`/cohorts/${cohortId}/assignments`);
+    const response = await apiFetch(`/cohorts/${cohortId}/tasks`);
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(error.detail ?? "Failed to load assignments");
-    }
+    if (!response.ok) throw await apiErrorFrom(response);
 
     const raw: RawAssignment[] = await response.json();
     const now = Date.now();
@@ -66,4 +64,50 @@ export const AssignmentService = {
     await new Promise((r) => setTimeout(r, 600)); // replace with a real POST later
     console.log("submit", assignmentId, files);
   },
+
+  getTask: async (id: string): Promise<AssignmentTask> => {
+    const response = await apiFetch(`/cohort-tasks/${id}`);
+    if (!response.ok) throw await apiErrorFrom(response);
+    const data = await response.json();
+    if (
+      !data ||
+      typeof data.title !== "string" ||
+      typeof data.instructions !== "string" ||
+      typeof data.due_date !== "string" ||
+      !isFileMap(data.starter_files)
+    )
+      throw new Error("The task response is invalid.");
+    return { ...data, xp: typeof data.xp === "number" ? data.xp : 0 };
+  },
 };
+
+export interface AssignmentTask {
+  id: number;
+  title: string;
+  instructions: string;
+  due_date: string;
+  xp: number;
+  starter_files: Record<string, string>;
+}
+
+export function isFileMap(value: unknown): value is Record<string, string> {
+  return (
+    !!value &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    Object.entries(value).every(
+      ([path, content]) =>
+        typeof content === "string" &&
+        !!path &&
+        !path.startsWith("/") &&
+        !path.includes("\\") &&
+        path
+          .split("/")
+          .every((part) => !!part && part !== "." && part !== ".."),
+    )
+  );
+}
+
+
+
+

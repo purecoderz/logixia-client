@@ -107,7 +107,9 @@ export function InstructorProfile({ instructor }: { instructor: Instructor }) {
               className={`flex flex-col px-4 first:pl-0 ${i === 2 ? "hidden sm:flex" : ""}`}
             >
               <dt className="order-2 text-[13px] text-muted">{h.label}</dt>
-              <dd className="order-1 text-lg font-semibold text-foreground">{h.value}</dd>
+              <dd className="order-1 text-lg font-semibold text-foreground">
+                {h.value}
+              </dd>
             </div>
           ))}
         </dl>

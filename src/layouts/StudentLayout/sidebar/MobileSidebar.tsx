@@ -1,10 +1,10 @@
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { GUEST_NAV_SECTIONS, STUDENT_NAV_SECTIONS } from '../navConfig';
-import { SidebarHeader } from './components/SidebarHeader';
-import { SidebarSection } from './components/SidebarSection';
-import { SidebarFooter } from './components/SidebarFooter';
-import { useAuth } from '../../../features/auth/context/AuthContext';
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { GUEST_NAV_SECTIONS, STUDENT_NAV_SECTIONS } from "../navConfig";
+import { SidebarHeader } from "./components/SidebarHeader";
+import { SidebarSection } from "./components/SidebarSection";
+import { SidebarFooter } from "./components/SidebarFooter";
+import { useAuth } from "../../../features/auth/context/AuthContext";
 
 interface MobileSidebarProps {
   isOpen: boolean;
@@ -26,15 +26,15 @@ export const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
     if (!isOpen) return;
 
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === "Escape") onClose();
     };
-    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener("keydown", onKeyDown);
 
     const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
 
     return () => {
-      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = prevOverflow;
     };
   }, [isOpen, onClose]);
@@ -43,14 +43,14 @@ export const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
 
   return (
     <div
-      className={`fixed inset-0 z-50 md:hidden ${isOpen ? '' : 'pointer-events-none'}`}
+      className={`fixed inset-0 z-50 md:hidden ${isOpen ? "" : "pointer-events-none"}`}
       aria-hidden={!isOpen}
     >
       {/* Backdrop */}
       <div
         onClick={onClose}
         className={`absolute inset-0 bg-black/60 transition-opacity duration-300 ${
-          isOpen ? 'opacity-100' : 'opacity-0'
+          isOpen ? "opacity-100" : "opacity-0"
         }`}
       />
 
@@ -60,7 +60,7 @@ export const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
         aria-modal="true"
         aria-label="Navigation"
         className={`absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col border-r border-line bg-surface text-body shadow-2xl transition-transform duration-300 select-none ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
+          isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {isLoading ? (
@@ -68,14 +68,15 @@ export const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
         ) : (
           <>
             {/* The « button doubles as the close button */}
-            <SidebarHeader
-              isCollapsed={false}
-              onBrandClick={onClose}
-            />
+            <SidebarHeader isCollapsed={false} onBrandClick={onClose} />
 
             <div className="custom-scrollbar flex-1 space-y-6 overflow-y-auto px-3 py-4">
               {navSections.map((section, idx) => (
-                <SidebarSection key={idx} section={section} isCollapsed={false} />
+                <SidebarSection
+                  key={idx}
+                  section={section}
+                  isCollapsed={false}
+                />
               ))}
             </div>
 

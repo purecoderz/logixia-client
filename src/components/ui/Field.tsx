@@ -11,7 +11,14 @@ interface FieldProps {
   children: ReactNode;
 }
 
-export function Field({ label, htmlFor, hint, error, action, children }: FieldProps) {
+export function Field({
+  label,
+  htmlFor,
+  hint,
+  error,
+  action,
+  children,
+}: FieldProps) {
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between gap-3">
@@ -39,6 +46,10 @@ export function fieldProps(id: string, error?: string, hasHint = false) {
   return {
     id,
     "aria-invalid": error ? true : undefined,
-    "aria-describedby": error ? `${id}-error` : hasHint ? `${id}-hint` : undefined,
+    "aria-describedby": error
+      ? `${id}-error`
+      : hasHint
+        ? `${id}-hint`
+        : undefined,
   } as const;
 }

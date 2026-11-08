@@ -7,22 +7,35 @@ export interface AccountSettings {
   email: string;
   bio: string;
 }
-export type ProfilePatch = Partial<Pick<AccountSettings, "fullname" | "username" | "bio">>;
-export interface PasswordChange { current_password: string; new_password: string }
+export type ProfilePatch = Partial<
+  Pick<AccountSettings, "fullname" | "username" | "bio">
+>;
+export interface PasswordChange {
+  current_password: string;
+  new_password: string;
+}
 
 export const SettingsService = {
   async get(): Promise<AccountSettings> {
-    const response = await apiFetch("/user/settings");
+    const response = await apiFetch("/user");
     if (!response.ok) throw await apiErrorFrom(response);
     return response.json();
   },
   async update(patch: ProfilePatch): Promise<AccountSettings> {
-    const response = await apiFetch("/user/settings", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) });
+    const response = await apiFetch("/user", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(patch),
+    });
     if (!response.ok) throw await apiErrorFrom(response);
     return response.json();
   },
   async changePassword(input: PasswordChange): Promise<void> {
-    const response = await apiFetch("/user/password", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+    const response = await apiFetch("/user/password", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
     if (!response.ok) throw await apiErrorFrom(response);
   },
 };

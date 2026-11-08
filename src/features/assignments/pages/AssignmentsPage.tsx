@@ -1,3 +1,7 @@
+import { useActiveCohort } from "../../cohorts/hooks/useActiveCohort";
+import { ActiveCohortRequired } from "../../cohorts/components/students/ActiveCohortRequired";
+import { Spinner } from "../../../components/ui/Spinner";
+import { ErrorState } from "../../../components/ui/ErrorState";
 // pages/Assignments/AssignmentsPage.tsx
 import { useMemo, useState } from "react";
 import { CalendarClock, CheckCircle2, Zap } from "lucide-react";
@@ -12,9 +16,10 @@ import { useNavigate } from "react-router-dom";
 import { NoCohortError } from "../services/assignmentService";
 
 const hero = {
-  eyebrow: "Assignments",
+  eyebrow: "Tasks",
   title: "Put your learning to work",
-  description: "See what's due, pick up where you left off, and earn XP for every task you finish.",
+  description:
+    "See what's due, pick up where you left off, and earn XP for every task you finish.",
   facts: [
     { icon: CalendarClock, label: "Deadlines at a glance" },
     { icon: CheckCircle2, label: "Checked automatically" },
@@ -23,8 +28,14 @@ const hero = {
 };
 
 export function AssignmentsPage() {
+  const membership = useActiveCohort();
   const [query, setQuery] = useState("");
-  const { data: assignments = [], isLoading, error } = useAssignments();
+  const {
+    data: assignments = [],
+    isLoading,
+    error,
+    refetch,
+  } = useAssignments();
 
   const navigate = useNavigate();
   const [dismissed, setDismissed] = useState(false);
@@ -34,17 +45,49 @@ export function AssignmentsPage() {
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return assignments;
-    return assignments.filter((a) => `${a.title} ${a.type}`.toLowerCase().includes(q));
+    return assignments.filter((a) =>
+      `${a.title} ${a.type}`.toLowerCase().includes(q),
+    );
   }, [query, assignments]);
+
+  if (membership.isPending)
+    return (
+      <p role="status" className="flex items-center gap-2 text-sm text-muted">
+        <Spinner />
+        Loading your cohorts…
+      </p>
+    );
+  if (membership.error)
+    return (
+      <ErrorState
+        what="your cohorts"
+        error={membership.error}
+        onRetry={() => void membership.refetch()}
+      />
+    );
+  if (!membership.activeCohort)
+    return (
+      <ActiveCohortRequired
+        cohorts={membership.cohorts}
+        onSelect={membership.selectCohort}
+      />
+    );
 
   return (
     <div className="space-y-4">
-      {error && !noCohort && <p className="text-danger">{error.message}</p>}
-      <SearchBar value={query} onChange={setQuery} placeholder="Search assignments" />
+      {error && !noCohort && (
+        <ErrorState
+          what="your tasks"
+          error={error}
+          onRetry={() => void refetch()}
+          variant="section"
+        />
+      )}
+      <SearchBar value={query} onChange={setQuery} placeholder="Search tasks" />
       <GlobalHero {...hero} />
 
       {isLoading ? (
-        <CardGridSkeleton label="Loading assignments" />
+        <CardGridSkeleton label="Loading tasks" />
       ) : (
         !error && <AssignmentsView assignments={matches} />
       )}
@@ -52,12 +95,12 @@ export function AssignmentsPage() {
       <AlertModal
         isOpen={noCohort && !dismissed}
         title="No active cohort"
-        message="Join a cohort to see your assignments."
+        message="Join a cohort to see your tasks."
         buttonText="Browse cohorts"
         variant="warning"
         onClose={() => {
           setDismissed(true);
-          navigate("/cohorts"); // your real route
+          navigate("/student/cohorts");
         }}
       />
     </div>

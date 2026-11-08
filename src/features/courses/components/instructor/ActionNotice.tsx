@@ -27,7 +27,8 @@ export function ActionNotice({ notice, onDismiss }: ActionNoticeProps) {
   }, [notice, onDismiss]);
 
   const error = notice?.kind === "error";
-  const button = "min-h-11 rounded-lg px-2 text-sm font-semibold hover:bg-hover";
+  const button =
+    "min-h-11 rounded-lg px-2 text-sm font-semibold hover:bg-hover";
 
   return (
     <div role="status" aria-live="polite">
@@ -42,7 +43,10 @@ export function ActionNotice({ notice, onDismiss }: ActionNoticeProps) {
         >
           <span className="min-w-48 flex-1">{notice.message}</span>
           {notice.link && (
-            <Link to={notice.link.to} className={`${button} inline-flex items-center underline`}>
+            <Link
+              to={notice.link.to}
+              className={`${button} inline-flex items-center underline`}
+            >
               {notice.link.label}
             </Link>
           )}

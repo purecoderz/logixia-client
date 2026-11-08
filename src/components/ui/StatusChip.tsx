@@ -8,7 +8,13 @@ const tones: Record<Tone, string> = {
   draft: "border border-dashed border-line-strong text-body",
 };
 
-export function StatusChip({ tone, children }: { tone: Tone; children: string }) {
+export function StatusChip({
+  tone,
+  children,
+}: {
+  tone: Tone;
+  children: string;
+}) {
   return (
     <span
       className={`inline-block whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold ${tones[tone]}`}

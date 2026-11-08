@@ -13,7 +13,15 @@ interface ConfirmDialogProps {
 }
 
 /** A confirm box built on the browser's own <dialog>: it traps focus, closes on Escape and dims the page. */
-export function ConfirmDialog({ open, title, message, confirmLabel, busy = false, onConfirm, onCancel }: ConfirmDialogProps) {
+export function ConfirmDialog({
+  open,
+  title,
+  message,
+  confirmLabel,
+  busy = false,
+  onConfirm,
+  onCancel,
+}: ConfirmDialogProps) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const messageId = useId();

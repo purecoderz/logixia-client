@@ -1,0 +1,13 @@
+@keyframes appLoadingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.app-loading-ring {
+  animation: appLoadingSpin 1.2s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-loading-ring {
+    animation: none;
+  }
+}

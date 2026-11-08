@@ -16,7 +16,10 @@ export function toCohortView(data: ApiCohortDetails): CohortView {
   return {
     headline: data.name,
     summary: data.description,
-    outcomes: (data.skills ?? []).map((s) => ({ title: s.title, text: s.description })),
+    outcomes: (data.skills ?? []).map((s) => ({
+      title: s.title,
+      text: s.description,
+    })),
     weeks,
     totalWeeks: weeks.length, // assumes one module = one week
     totalLessons: weeks.reduce((n, w) => n + w.lessons.length, 0),

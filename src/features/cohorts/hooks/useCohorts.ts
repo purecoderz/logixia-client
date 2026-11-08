@@ -34,7 +34,8 @@ export function useUpdateCohortPublication() {
   return useMutation({
     mutationFn: ({ id, isPublished }: { id: string; isPublished: boolean }) =>
       CohortService.updatePublication(id, isPublished),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: cohortKeys.all }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: cohortKeys.all }),
   });
 }
 
@@ -42,20 +43,28 @@ export function useCreateCohort() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: CreateCohortInput) => CohortService.create(input),
-    onSuccess: () => Promise.all([
-      queryClient.invalidateQueries({ queryKey: cohortKeys.all }),
-      queryClient.invalidateQueries({ queryKey: courseKeys.all }),
-    ]),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: cohortKeys.all }),
+        queryClient.invalidateQueries({ queryKey: courseKeys.all }),
+      ]),
   });
 }
 
 export function useUpdateCohort() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, patch }: { id: string; patch: Partial<CreateCohortInput> }) => CohortService.update(id, patch),
-    onSuccess: () => Promise.all([
-      queryClient.invalidateQueries({ queryKey: cohortKeys.all }),
-      queryClient.invalidateQueries({ queryKey: courseKeys.all }),
-    ]),
+    mutationFn: ({
+      id,
+      patch,
+    }: {
+      id: string;
+      patch: Partial<CreateCohortInput>;
+    }) => CohortService.update(id, patch),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: cohortKeys.all }),
+        queryClient.invalidateQueries({ queryKey: courseKeys.all }),
+      ]),
   });
 }

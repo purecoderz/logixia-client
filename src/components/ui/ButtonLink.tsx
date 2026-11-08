@@ -13,7 +13,11 @@ const variants = {
 };
 
 /** A link that looks like a Button, for actions that go to another page. */
-export function ButtonLink({ to, variant = "primary", children }: ButtonLinkProps) {
+export function ButtonLink({
+  to,
+  variant = "primary",
+  children,
+}: ButtonLinkProps) {
   return (
     <Link
       to={to}

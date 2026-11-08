@@ -24,3 +24,4 @@ diagram*
 *.sln
 *.sw?
 docs*
+tests*

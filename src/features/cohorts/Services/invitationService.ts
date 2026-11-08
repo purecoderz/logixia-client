@@ -18,10 +18,18 @@ export interface AcceptedInvitation {
 
 export const InvitationService = {
   async preview(token: string): Promise<InvitationPreview> {
-    const response = await apiFetch(`/invitations/preview?${new URLSearchParams({ token })}`, { cache: "no-store", referrerPolicy: "no-referrer" });
+    const response = await apiFetch(
+      `/invitations/preview?${new URLSearchParams({ token })}`,
+      { cache: "no-store", referrerPolicy: "no-referrer" },
+    );
     if (!response.ok) throw await apiErrorFrom(response);
     const body: InvitationPreview = await response.json();
-    if (!body.cohort_name || !body.email || !["owing", "waived"].includes(body.access) || !Number.isFinite(Date.parse(body.expires_at))) {
+    if (
+      !body.cohort_name ||
+      !body.email ||
+      !["owing", "waived"].includes(body.access) ||
+      !Number.isFinite(Date.parse(body.expires_at))
+    ) {
       throw new Error("Invalid invitation preview");
     }
     return body;

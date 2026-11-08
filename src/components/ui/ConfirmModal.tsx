@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -6,7 +6,7 @@ interface ConfirmModalProps {
   message: string;
   confirmText?: string;
   cancelText?: string;
-  variant?: 'danger' | 'warning' | 'info';
+  variant?: "danger" | "warning" | "info";
   isLoading?: boolean;
   onConfirm: () => void;
   onClose: () => void;
@@ -14,11 +14,11 @@ interface ConfirmModalProps {
 
 export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   isOpen,
-  title = 'Are you sure?',
+  title = "Are you sure?",
   message,
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
-  variant = 'danger',
+  confirmText = "Confirm",
+  cancelText = "Cancel",
+  variant = "danger",
   isLoading = false,
   onConfirm,
   onClose,
@@ -26,15 +26,14 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   if (!isOpen) return null;
 
   const variantStyles = {
-    danger: 'bg-rose-600 hover:bg-rose-700 text-white',
-    warning: 'bg-amber-600 hover:bg-amber-700 text-white',
-    info: 'bg-[#1f6feb] hover:bg-[#388bfd] text-white',
+    danger: "bg-rose-600 hover:bg-rose-700 text-white",
+    warning: "bg-amber-600 hover:bg-amber-700 text-white",
+    info: "bg-[#1f6feb] hover:bg-[#388bfd] text-white",
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
       <div className="w-full max-w-md bg-surface border border-line rounded-2xl p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-150">
-        
         {/* Header & Message */}
         <div className="space-y-2">
           <h3 className="text-base font-bold text-foreground font-mono leading-snug">

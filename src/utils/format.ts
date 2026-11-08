@@ -6,7 +6,10 @@ export function formatNaira(amount: number) {
   return `₦${amount}`;
 }
 
-const day = new Intl.DateTimeFormat("en-NG", { month: "short", day: "numeric" });
+const day = new Intl.DateTimeFormat("en-NG", {
+  month: "short",
+  day: "numeric",
+});
 
 /** "Oct 1 – Dec 20" */
 export function formatDateRange(start?: string, end?: string) {

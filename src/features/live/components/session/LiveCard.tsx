@@ -7,7 +7,12 @@ interface LiveSessionCardProps {
   meetingUrl: string;
 }
 
-export function LiveSessionCard({ title, cohort, instructor, meetingUrl }: LiveSessionCardProps) {
+export function LiveSessionCard({
+  title,
+  cohort,
+  instructor,
+  meetingUrl,
+}: LiveSessionCardProps) {
   return (
     <div className="rounded-xl border border-[#238636]/40 bg-surface p-5">
       <div className="mb-3 flex items-center gap-2 text-xs font-semibold tracking-wide text-success">

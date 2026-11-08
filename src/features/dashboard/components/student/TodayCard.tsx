@@ -7,7 +7,11 @@ export function TodayCard({ assignments }: { assignments: Assignment[] }) {
   return (
     <DashboardCard
       title="Today"
-      action={<span className="text-xs text-muted">{assignments.length} due today</span>}
+      action={
+        <span className="text-xs text-muted">
+          {assignments.length} due today
+        </span>
+      }
     >
       {assignments.length === 0 ? (
         <EmptyState>Nothing due today.</EmptyState>
@@ -19,10 +23,12 @@ export function TodayCard({ assignments }: { assignments: Assignment[] }) {
                 {formatTime(new Date(a.due_date))}
               </span>
               <Link
-                to={`/assignments/${a.id}`}
+                to={`/tasks/${a.id}`}
                 className="min-w-0 flex-1 rounded-xl border-l-4 border-[#d29922] bg-input p-3 transition-colors hover:bg-hover"
               >
-                <p className="truncate text-sm font-semibold text-foreground">{a.title}</p>
+                <p className="truncate text-sm font-semibold text-foreground">
+                  {a.title}
+                </p>
                 <p className="mt-0.5 text-xs text-muted">+{a.xp} XP</p>
               </Link>
             </li>

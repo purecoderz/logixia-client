@@ -9,7 +9,13 @@ interface TagInputProps {
   maxTags?: number;
 }
 
-export function TagInput({ id, value, onChange, placeholder, maxTags = 20 }: TagInputProps) {
+export function TagInput({
+  id,
+  value,
+  onChange,
+  placeholder,
+  maxTags = 20,
+}: TagInputProps) {
   const [draft, setDraft] = useState("");
 
   function add(raw: string) {
@@ -32,7 +38,10 @@ export function TagInput({ id, value, onChange, placeholder, maxTags = 20 }: Tag
   return (
     <div className={`${groupClass} flex-wrap gap-2 p-2`}>
       {value.map((tag) => (
-        <span key={tag} className="inline-flex items-center gap-1 rounded-md bg-surface-muted py-1 pr-1 pl-2.5 text-sm text-body">
+        <span
+          key={tag}
+          className="inline-flex items-center gap-1 rounded-md bg-surface-muted py-1 pr-1 pl-2.5 text-sm text-body"
+        >
           {tag}
           <button
             type="button"
@@ -40,7 +49,16 @@ export function TagInput({ id, value, onChange, placeholder, maxTags = 20 }: Tag
             onClick={() => onChange(value.filter((t) => t !== tag))}
             className="inline-flex size-6 items-center justify-center rounded text-muted hover:bg-hover hover:text-foreground"
           >
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              aria-hidden="true"
+            >
               <path d="M2 2l8 8M10 2l-8 8" />
             </svg>
           </button>

@@ -5,7 +5,7 @@ import { friendlyMessage } from "../../../../lib/apiError";
 import { Field, fieldProps } from "../../../../components/ui/Field";
 import { FormError } from "../../../../components/ui/FormError";
 import { inputClass } from "../../../../components/ui/formStyles";
-import { Markdown } from "../../../../components/ui/Markdown";
+import { MarkdownRenderer } from "../../../../components/ui/Markdown";
 import { MarkdownEditor } from "../../../../components/ui/MarkdownEditor";
 import { PrefixInput } from "../../../../components/ui/PrefixInput";
 import { TagInput } from "../../../../components/ui/TagInput";
@@ -19,7 +19,11 @@ import {
 import { formatPrice } from "../../utils/formatPrice";
 import { formatPriceInput, parsePrice } from "../../utils/priceInput";
 import { slugify } from "../../utils/slugify";
-import { getSaleChecklist, hasErrors, validateCourseForm } from "../../utils/validateCourseForm";
+import {
+  getSaleChecklist,
+  hasErrors,
+  validateCourseForm,
+} from "../../utils/validateCourseForm";
 
 export type SubmitAction = "draft" | "builder" | "save";
 
@@ -29,18 +33,36 @@ interface CreateCourseFormProps {
   initialValues?: CourseFormValues;
   /** A published course can't change its web address. */
   slugLocked?: boolean;
-  onSubmit: (values: CourseFormValues, action: SubmitAction) => Promise<CourseFormErrors | void>;
+  onSubmit: (
+    values: CourseFormValues,
+    action: SubmitAction,
+  ) => Promise<CourseFormErrors | void>;
   onCancel: () => void;
 }
 
 // Order the fields appear in, so we can focus the first one with a problem
-const FIELD_ORDER: CourseFormField[] = ["title", "slug", "languageId", "description", "skills", "price"];
+const FIELD_ORDER: CourseFormField[] = [
+  "title",
+  "slug",
+  "languageId",
+  "description",
+  "skills",
+  "price",
+];
 
 const sectionClass = "space-y-5 border-b border-line p-6";
 
-export function CreateCourseForm({ languages, initialValues, slugLocked = false, onSubmit, onCancel }: CreateCourseFormProps) {
+export function CreateCourseForm({
+  languages,
+  initialValues,
+  slugLocked = false,
+  onSubmit,
+  onCancel,
+}: CreateCourseFormProps) {
   const editing = initialValues !== undefined;
-  const [values, setValues] = useState<CourseFormValues>(initialValues ?? emptyCourseForm);
+  const [values, setValues] = useState<CourseFormValues>(
+    initialValues ?? emptyCourseForm,
+  );
   const [errors, setErrors] = useState<CourseFormErrors>({});
   const [slugTouched, setSlugTouched] = useState(editing);
   const [attempted, setAttempted] = useState(false);
@@ -85,7 +107,9 @@ export function CreateCourseForm({ languages, initialValues, slugLocked = false,
         if (first) document.getElementById(first)?.focus();
       }
     } catch (error) {
-      setFormError(friendlyMessage(error, "Couldn't save the course. Please try again."));
+      setFormError(
+        friendlyMessage(error, "Couldn't save the course. Please try again."),
+      );
     } finally {
       setSaving(false);
     }
@@ -101,7 +125,7 @@ export function CreateCourseForm({ languages, initialValues, slugLocked = false,
         noValidate
         onSubmit={(e) => {
           e.preventDefault();
-          void submit(editing ? "save" : "draft");;
+          void submit(editing ? "save" : "draft");
         }}
         className="rounded-xl border border-line bg-surface-muted/30"
       >
@@ -117,7 +141,9 @@ export function CreateCourseForm({ languages, initialValues, slugLocked = false,
               value={values.title}
               onChange={(e) => {
                 const title = e.target.value;
-                change(slugTouched ? { title } : { title, slug: slugify(title) });
+                change(
+                  slugTouched ? { title } : { title, slug: slugify(title) },
+                );
               }}
               className={inputClass}
             />
@@ -141,12 +167,18 @@ export function CreateCourseForm({ languages, initialValues, slugLocked = false,
               value={values.slug}
               onChange={(e) => {
                 setSlugTouched(true);
-                change({ slug: e.target.value.toLowerCase().replace(/\s+/g, "-") });
+                change({
+                  slug: e.target.value.toLowerCase().replace(/\s+/g, "-"),
+                });
               }}
             />
           </Field>
 
-          <Field label="Language" htmlFor="languageId" error={errors.languageId}>
+          <Field
+            label="Language"
+            htmlFor="languageId"
+            error={errors.languageId}
+          >
             <Select
               {...fieldProps("languageId", errors.languageId)}
               value={values.languageId}
@@ -155,7 +187,10 @@ export function CreateCourseForm({ languages, initialValues, slugLocked = false,
               searchable
               placeholder="Choose a language"
               searchPlaceholder="Search languages…"
-              options={languages.map((l) => ({ value: String(l.id), label: l.name }))}
+              options={languages.map((l) => ({
+                value: String(l.id),
+                label: l.name,
+              }))}
             />
           </Field>
 
@@ -171,8 +206,13 @@ export function CreateCourseForm({ languages, initialValues, slugLocked = false,
 
         <section className={sectionClass}>
           <div>
-            <h2 className="text-base font-semibold text-foreground">What students will learn</h2>
-            <p className="mt-1 text-sm text-muted">Short skills, one at a time. They appear as tags on the course page.</p>
+            <h2 className="text-base font-semibold text-foreground">
+              What students will learn
+            </h2>
+            <p className="mt-1 text-sm text-muted">
+              Short skills, one at a time. They appear as tags on the course
+              page.
+            </p>
           </div>
           <Field label="Skills" htmlFor="skills" error={errors.skills}>
             <TagInput
@@ -186,13 +226,21 @@ export function CreateCourseForm({ languages, initialValues, slugLocked = false,
 
         <section className={sectionClass}>
           <div>
-            <h2 className="text-base font-semibold text-foreground">Self-paced price</h2>
+            <h2 className="text-base font-semibold text-foreground">
+              Self-paced price
+            </h2>
             <p className="mt-1 text-sm text-muted">
-              What a student pays to take this course on their own. Cohorts have their own price.
+              What a student pays to take this course on their own. Cohorts have
+              their own price.
             </p>
           </div>
           <div className="max-w-64">
-            <Field label="Price" htmlFor="price" error={errors.price} hint="Leave empty if this course is only taught through cohorts. Enter 0 for a free course.">
+            <Field
+              label="Price"
+              htmlFor="price"
+              error={errors.price}
+              hint="Leave empty if this course is only taught through cohorts. Enter 0 for a free course."
+            >
               <PrefixInput
                 {...fieldProps("price", errors.price, true)}
                 leading="₦"
@@ -208,11 +256,15 @@ export function CreateCourseForm({ languages, initialValues, slugLocked = false,
         <div className="flex flex-wrap items-center justify-between gap-4 p-6">
           {formError && (
             <div className="w-full">
-              <FormError message={formError} onDismiss={() => setFormError(null)} />
+              <FormError
+                message={formError}
+                onDismiss={() => setFormError(null)}
+              />
             </div>
           )}
           <p className="max-w-xs text-sm text-muted">
-            Saves as a draft. Add modules and lessons next, or create a cohort on it right away.
+            Saves as a draft. Add modules and lessons next, or create a cohort
+            on it right away.
           </p>
           <div className="flex flex-wrap gap-2">
             <Button variant="ghost" onClick={onCancel} disabled={saving}>
@@ -228,27 +280,39 @@ export function CreateCourseForm({ languages, initialValues, slugLocked = false,
         </div>
       </form>
 
-      <aside aria-label="Preview and checklist" className="space-y-4 lg:sticky lg:top-6">
+      <aside
+        aria-label="Preview and checklist"
+        className="space-y-4 lg:sticky lg:top-6"
+      >
         <div className="rounded-xl border border-line bg-surface-muted/30 p-5">
-          <p className="mb-3 text-xs font-semibold text-muted">How students will see it</p>
+          <p className="mb-3 text-xs font-semibold text-muted">
+            How students will see it
+          </p>
           <div className="space-y-3 rounded-xl border border-line bg-input p-4">
             <span className="inline-block rounded-full bg-sky-500/15 px-2.5 py-0.5 text-xs font-semibold text-accent">
               {language?.name ?? "Language"}
             </span>
-            <p className={`text-base font-semibold leading-snug ${values.title.trim() ? "text-foreground" : "text-muted"}`}>
+            <p
+              className={`text-base font-semibold leading-snug ${values.title.trim() ? "text-foreground" : "text-muted"}`}
+            >
               {values.title.trim() || "Your course title"}
             </p>
             {values.description.trim() ? (
               <div className="max-h-36 overflow-hidden">
-                <Markdown>{values.description}</Markdown>
+                <MarkdownRenderer content={values.description}/>
               </div>
             ) : (
-              <p className="text-sm text-muted">Your description appears here.</p>
+              <p className="text-sm text-muted">
+                Your description appears here.
+              </p>
             )}
             {values.skills.length > 0 && (
               <div className="flex flex-wrap gap-1.5">
                 {values.skills.slice(0, 2).map((s) => (
-                  <span key={s} className="rounded-md bg-surface-muted px-2 py-0.5 text-xs text-body">
+                  <span
+                    key={s}
+                    className="rounded-md bg-surface-muted px-2 py-0.5 text-xs text-body"
+                  >
                     {s}
                   </span>
                 ))}
@@ -261,10 +325,15 @@ export function CreateCourseForm({ languages, initialValues, slugLocked = false,
             )}
             <p className="border-t border-line pt-3 text-[15px] font-semibold text-foreground">
               {price === null ? (
-                <span className="text-sm font-normal text-muted">Taught through cohorts</span>
+                <span className="text-sm font-normal text-muted">
+                  Taught through cohorts
+                </span>
               ) : (
                 <>
-                  {formatPrice(price)} <span className="text-xs font-normal text-muted">self-paced</span>
+                  {formatPrice(price)}{" "}
+                  <span className="text-xs font-normal text-muted">
+                    self-paced
+                  </span>
                 </>
               )}
             </p>
@@ -272,12 +341,16 @@ export function CreateCourseForm({ languages, initialValues, slugLocked = false,
         </div>
 
         <div className="rounded-xl border border-line bg-surface-muted/30 p-5">
-          <p className="mb-3 text-xs font-semibold text-muted">Before you can sell it self-paced</p>
+          <p className="mb-3 text-xs font-semibold text-muted">
+            Before you can sell it self-paced
+          </p>
           <ul className="space-y-3 text-sm text-body">
             {checklist.map((item) => (
               <li key={item.key} className="flex items-center gap-2.5">
                 <CheckIcon done={item.done} />
-                <span className={item.done ? "" : "text-muted"}>{item.label}</span>
+                <span className={item.done ? "" : "text-muted"}>
+                  {item.label}
+                </span>
               </li>
             ))}
             <li className="flex items-center gap-2.5 text-muted">
@@ -296,11 +369,31 @@ export function CreateCourseForm({ languages, initialValues, slugLocked = false,
 
 function CheckIcon({ done }: { done: boolean }) {
   return done ? (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#34d399" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-label="Done" role="img">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="#34d399"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-label="Done"
+      role="img"
+    >
       <path d="M3 8.5l3.2 3L13 4.5" />
     </svg>
   ) : (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#6b7280" strokeWidth="1.8" aria-label="Not done" role="img">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="#6b7280"
+      strokeWidth="1.8"
+      aria-label="Not done"
+      role="img"
+    >
       <circle cx="8" cy="8" r="5.5" />
     </svg>
   );

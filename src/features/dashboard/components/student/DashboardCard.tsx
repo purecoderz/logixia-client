@@ -13,7 +13,9 @@ export function DashboardCard({
   className?: string;
 }) {
   return (
-    <section className={`rounded-2xl border border-line bg-surface p-5 ${className}`}>
+    <section
+      className={`student-card rounded-2xl border border-line bg-surface p-5 ${className}`}
+    >
       <header className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-sm font-semibold text-foreground">{title}</h2>
         {action}
@@ -23,7 +25,7 @@ export function DashboardCard({
   );
 }
 
-export function SeeAllLink({ to = "/assignments" }: { to?: string }) {
+export function SeeAllLink({ to = "/tasks" }: { to?: string }) {
   return (
     <Link
       to={to}

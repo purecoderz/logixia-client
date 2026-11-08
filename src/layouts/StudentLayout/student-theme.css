@@ -1,0 +1,46 @@
+/* A layered blue-grey palette for the student shell; the fullscreen workspace
+   defines its own palette and does not inherit these overrides. */
+body[data-app-theme="light"] [data-student-shell] {
+  --student-chart-success: #149873;
+  --student-chart-active: #1687a5;
+  --student-chart-warning: #b78120;
+  --student-chart-danger: #cf5463;
+}
+body[data-app-theme="light"] [data-student-sidebar] {
+  --app-surface: #e4edf2;
+  --app-input: #f3f8fa;
+  --app-hover: #d3e2ea;
+}
+body[data-app-theme="light"] [data-student-topbar] {
+  --app-surface: #edf4f7;
+  --app-input: #e3edf2;
+  box-shadow: 0 1px 8px rgb(25 60 78 / 4%);
+}
+body[data-app-theme="light"] [data-student-content] {
+  background-image: radial-gradient(
+    ellipse at 90% 0%,
+    #dceef0 0,
+    transparent 45%
+  );
+}
+body[data-app-theme="light"]
+  [data-student-content]
+  :is(.student-card, .student-catalog-card, article) {
+  box-shadow: 0 4px 18px -10px rgb(25 60 78 / 14%);
+}
+body[data-app-theme="light"] [data-student-content] .student-dashboard-hero {
+  background: linear-gradient(115deg, #d9ecee, #e7eff6);
+  border-color: #bcd8de;
+}
+body[data-app-theme="light"] [data-student-content] .student-review-button {
+  background: #0e7490;
+  color: #ffffff;
+}
+body[data-app-theme="light"]
+  [data-student-content]
+  .student-review-button:hover {
+  background: #155e75;
+}
+body[data-app-theme="light"] [data-student-bottom] {
+  background: #e7f0f4;
+}

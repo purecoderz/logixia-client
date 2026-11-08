@@ -3,10 +3,10 @@ import type { Participant } from "../../hooks/useLiveRoom";
 
 interface ParticipantsListProps {
   participants: Participant[];
-  canGrant?: boolean;                    // NEW: true for the teacher
-  writerId?: string | null;              // NEW: who holds the pen now
-  onGrant?: (userId: string) => void;    // NEW
-  onRevoke?: () => void;                 // NEW
+  canGrant?: boolean; // NEW: true for the teacher
+  writerId?: string | null; // NEW: who holds the pen now
+  onGrant?: (userId: string) => void; // NEW
+  onRevoke?: () => void; // NEW
 }
 
 export function ParticipantsList({
@@ -17,7 +17,8 @@ export function ParticipantsList({
   onRevoke,
 }: ParticipantsListProps) {
   const sorted = [...participants].sort((a, b) => {
-    if (a.handRaised && b.handRaised) return (a.raisedAt ?? 0) - (b.raisedAt ?? 0);
+    if (a.handRaised && b.handRaised)
+      return (a.raisedAt ?? 0) - (b.raisedAt ?? 0);
     if (a.handRaised) return -1;
     if (b.handRaised) return 1;
     return 0;
@@ -34,7 +35,10 @@ export function ParticipantsList({
           const isWriter = p.id === writerId;
 
           return (
-            <li key={p.id} className="flex items-center justify-between gap-2 text-sm">
+            <li
+              key={p.id}
+              className="flex items-center justify-between gap-2 text-sm"
+            >
               <span className="truncate">{p.name}</span>
 
               <div className="flex shrink-0 items-center gap-1.5">
@@ -44,8 +48,8 @@ export function ParticipantsList({
                   </span>
                 )}
 
-                {isWriter && (
-                  canGrant ? (
+                {isWriter &&
+                  (canGrant ? (
                     <button
                       type="button"
                       onClick={onRevoke}
@@ -58,11 +62,11 @@ export function ParticipantsList({
                     <span className="rounded bg-[#238636] px-1.5 py-0.5 text-[11px] font-bold text-white">
                       Writing
                     </span>
-                  )
-                )}
+                  ))}
 
-                {p.handRaised && !isWriter && (
-                  canGrant ? (
+                {p.handRaised &&
+                  !isWriter &&
+                  (canGrant ? (
                     <button
                       type="button"
                       onClick={() => onGrant?.(p.id)}
@@ -75,8 +79,7 @@ export function ParticipantsList({
                     <span className="rounded bg-[#d29922] px-1.5 py-0.5 text-[11px] font-bold text-[#0d1117]">
                       #{queue.indexOf(p) + 1} Hand raised
                     </span>
-                  )
-                )}
+                  ))}
               </div>
             </li>
           );

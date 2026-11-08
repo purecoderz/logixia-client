@@ -1,0 +1,24 @@
+/* Shared light-mode foundations for student and instructor application shells. */
+body[data-app-theme="light"]
+  :is(
+    [data-student-shell],
+    [data-instructor-layout],
+    [data-learning-shell-overlay]
+  ) {
+  --app-canvas: #eaf1f5;
+  --app-surface: #f6f9fb;
+  --app-muted-surface: #dfe9ef;
+  --app-input: #edf3f6;
+  --app-hover: #dce8ee;
+  --app-fg: #183446;
+  --app-body: #365263;
+  --app-muted: #597383;
+  --app-border: #d0dfe7;
+  --app-border-strong: #a8bfcd;
+  --app-accent: #0e7490;
+  --app-accent-hover: #155e75;
+  --app-on-accent: #ffffff;
+  --app-success: #087953;
+  --app-warning: #95600d;
+  --app-danger: #bc3545;
+}

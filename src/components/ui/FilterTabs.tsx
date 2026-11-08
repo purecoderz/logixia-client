@@ -4,7 +4,11 @@ interface FilterTabsProps<T extends string> {
   onChange: (value: T) => void;
 }
 
-export function FilterTabs<T extends string>({ options, value, onChange }: FilterTabsProps<T>) {
+export function FilterTabs<T extends string>({
+  options,
+  value,
+  onChange,
+}: FilterTabsProps<T>) {
   return (
     <div role="tablist" className="flex flex-wrap gap-2">
       {options.map((o) => {

@@ -9,7 +9,11 @@ const bone = "rounded-md bg-surface-muted motion-safe:animate-pulse";
 
 function LessonSkeleton() {
   return (
-    <div role="status" aria-label="Loading the lesson" className="space-y-6 p-6">
+    <div
+      role="status"
+      aria-label="Loading the lesson"
+      className="space-y-6 p-6"
+    >
       <span className="sr-only">Loading the lesson…</span>
       <div className={`${bone} h-3.5 w-64`} />
       <div className={`${bone} h-9 w-96 max-w-full`} />
@@ -53,5 +57,12 @@ export default function LessonEditorPage() {
   }
 
   // `key` gives each lesson its own editor, so moving to the next lesson starts clean
-  return <LessonEditorView key={lessonId} courseId={courseId} lesson={lesson.data!} outline={outline.data!} />;
+  return (
+    <LessonEditorView
+      key={lessonId}
+      courseId={courseId}
+      lesson={lesson.data!}
+      outline={outline.data!}
+    />
+  );
 }

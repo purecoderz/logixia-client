@@ -11,23 +11,30 @@ export function useShowBottomNav() {
 
 const tabs = [
   { to: "/", label: "Home", icon: Home, end: true },
-  { to: "/cohorts", label: "Programs", icon: GraduationCap },
-  { to: "/courses", label: "courses", icon: BookOpen },
+  { to: "/student/cohorts", label: "Programs", icon: GraduationCap },
+  { to: "/student/courses", label: "courses", icon: BookOpen },
   { to: "/playground", label: "Playground", icon: Terminal },
 ];
 
 interface BottomNavProps {
   onMoreClick: () => void;
+  forceVisible?: boolean;
 }
 
-export function BottomNav({ onMoreClick }: BottomNavProps) {
+export function BottomNav({
+  onMoreClick,
+  forceVisible = false,
+}: BottomNavProps) {
   const show = useShowBottomNav();
-  if (!show) return null;
+  if (!show && !forceVisible) return null;
 
   const base = "flex flex-1 flex-col items-center gap-1 py-2 text-[10px]";
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] md:hidden">
+    <nav
+      data-student-bottom
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] md:hidden"
+    >
       <div className="flex">
         {tabs.map(({ to, label, icon: Icon, end }) => (
           <NavLink

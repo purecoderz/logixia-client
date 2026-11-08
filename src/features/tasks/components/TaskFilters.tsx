@@ -38,14 +38,32 @@ export function TaskFilters(p: TaskFiltersProps) {
           <label htmlFor="task-course" className={labelClass}>
             Course
           </label>
-          <Select id="task-course" value={p.courseId} onChange={p.onCourse} options={p.courses} searchable searchPlaceholder="Search courses…" />
+          <Select
+            id="task-course"
+            value={p.courseId}
+            onChange={p.onCourse}
+            options={p.courses}
+            searchable
+            searchPlaceholder="Search courses…"
+          />
         </div>
 
         <div>
           <label htmlFor="task-module" className={labelClass}>
             Module
           </label>
-          <Select id="task-module" value={p.moduleId} disabled={p.modules.length === 0} onChange={p.onModule} searchable searchPlaceholder="Search modules…" options={[{ value: "all", label: "All modules in this course" }, ...p.modules]} />
+          <Select
+            id="task-module"
+            value={p.moduleId}
+            disabled={p.modules.length === 0}
+            onChange={p.onModule}
+            searchable
+            searchPlaceholder="Search modules…"
+            options={[
+              { value: "all", label: "All modules in this course" },
+              ...p.modules,
+            ]}
+          />
         </div>
 
         <div>
@@ -74,7 +92,9 @@ export function TaskFilters(p: TaskFiltersProps) {
                 aria-pressed={active}
                 onClick={() => p.onType(t.value)}
                 className={`inline-flex min-h-11 items-center border-b-2 px-3.5 text-sm font-semibold transition-colors ${
-                  active ? "border-accent text-accent" : "border-transparent text-muted hover:text-body"
+                  active
+                    ? "border-accent text-accent"
+                    : "border-transparent text-muted hover:text-body"
                 }`}
               >
                 {t.label}
@@ -83,7 +103,11 @@ export function TaskFilters(p: TaskFiltersProps) {
           })}
         </div>
         {p.hasFilters && (
-          <button type="button" onClick={p.onClear} className="mb-1 min-h-11 rounded-lg px-3 text-sm font-semibold text-accent hover:bg-surface-muted">
+          <button
+            type="button"
+            onClick={p.onClear}
+            className="mb-1 min-h-11 rounded-lg px-3 text-sm font-semibold text-accent hover:bg-surface-muted"
+          >
             Clear filters
           </button>
         )}

@@ -14,16 +14,24 @@ export function toFormValues(c: CourseForEdit): CourseFormValues {
   };
 }
 
-const sameList = (a: string[], b: string[]) => a.length === b.length && a.every((x, i) => x === b[i]);
+const sameList = (a: string[], b: string[]) =>
+  a.length === b.length && a.every((x, i) => x === b[i]);
 
 /** Only what the instructor actually changed. */
-export function toCoursePatch(before: CourseFormValues, after: CourseFormValues): CoursePatch {
+export function toCoursePatch(
+  before: CourseFormValues,
+  after: CourseFormValues,
+): CoursePatch {
   const patch: CoursePatch = {};
-  if (after.title.trim() !== before.title.trim()) patch.title = after.title.trim();
+  if (after.title.trim() !== before.title.trim())
+    patch.title = after.title.trim();
   if (after.slug !== before.slug) patch.slug = after.slug;
-  if (after.description.trim() !== before.description.trim()) patch.description = after.description.trim();
-  if (after.languageId !== before.languageId) patch.language_id = Number(after.languageId);
+  if (after.description.trim() !== before.description.trim())
+    patch.description = after.description.trim();
+  if (after.languageId !== before.languageId)
+    patch.language_id = Number(after.languageId);
   if (!sameList(before.skills, after.skills)) patch.skills = after.skills;
-  if (parsePrice(after.price) !== parsePrice(before.price)) patch.price = parsePrice(after.price);
+  if (parsePrice(after.price) !== parsePrice(before.price))
+    patch.price = parsePrice(after.price);
   return patch;
 }

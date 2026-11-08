@@ -3,7 +3,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import AudioService from "../services/audioService";
 
 type ListenState = "connecting" | "live" | "blocked" | "failed";
-export type AudioStatus = "idle" | "connecting" | "live" | "blocked" | "problem";
+export type AudioStatus =
+  "idle" | "connecting" | "live" | "blocked" | "problem";
 
 interface Options {
   sessionId: number;
@@ -16,7 +17,13 @@ interface Options {
 const MAX_TRIES = 6;
 const pathFor = (sessionId: number, userId: string) => `${sessionId}-${userId}`;
 
-export function useRoomAudio({ sessionId, myId, speakers, canSpeak, sendMic }: Options) {
+export function useRoomAudio({
+  sessionId,
+  myId,
+  speakers,
+  canSpeak,
+  sendMic,
+}: Options) {
   const [micOn, setMicOn] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [states, setStates] = useState<Record<string, ListenState>>({});
@@ -81,8 +88,10 @@ export function useRoomAudio({ sessionId, myId, speakers, canSpeak, sendMic }: O
         (connState) => {
           if (!current()) return;
           if (connState === "failed") retryLater(id, el);
-          else if (connState === "disconnected") mark(id, "connecting"); // may recover by itself
-          else if (connState === "connected" && el.srcObject && !el.paused) mark(id, "live");
+          else if (connState === "disconnected")
+            mark(id, "connecting"); // may recover by itself
+          else if (connState === "connected" && el.srcObject && !el.paused)
+            mark(id, "live");
         },
       );
     } catch {
@@ -117,7 +126,9 @@ export function useRoomAudio({ sessionId, myId, speakers, canSpeak, sendMic }: O
     const values = Object.values(states);
     if (values.includes("blocked") && !values.includes("failed")) {
       players.current.forEach((el, id) => {
-        el.play().then(() => mark(id, "live")).catch(() => {});
+        el.play()
+          .then(() => mark(id, "live"))
+          .catch(() => {});
       });
       return;
     }

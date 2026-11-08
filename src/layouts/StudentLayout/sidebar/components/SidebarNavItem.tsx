@@ -1,6 +1,6 @@
-import React from 'react';
-import type { NavItem } from '../../navConfig';
-import { Link } from 'react-router-dom';
+import React from "react";
+import type { NavItem } from "../../navConfig";
+import { Link } from "react-router-dom";
 
 interface SidebarNavItemProps {
   item: NavItem;
@@ -18,11 +18,13 @@ export const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
       to={item.path}
       title={isCollapsed ? item.label : undefined}
       aria-label={item.label}
-      className={`group relative flex w-full items-center rounded-xl py-2.5 font-mono text-xs font-medium transition-all ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'
-        } ${isActive
-          ? 'border border-line bg-input text-foreground shadow-sm'
-          : 'text-muted hover:bg-hover/60 hover:text-foreground'
-        }`}
+      className={`group relative flex w-full items-center rounded-xl py-2.5 font-mono text-xs font-medium transition-all ${
+        isCollapsed ? "justify-center px-0" : "gap-3 px-3"
+      } ${
+        isActive
+          ? "border border-line bg-input text-foreground shadow-sm"
+          : "text-muted hover:bg-hover/60 hover:text-foreground"
+      }`}
     >
       {/* Icon + Live Pulse Indicator */}
       <div className="relative flex items-center justify-center shrink-0">
@@ -38,19 +40,13 @@ export const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
           <span className="truncate">{item.label}</span>
           {item.badge && (
             <span
-              className={`text-[9px] px-1.5 py-0.5 rounded border font-mono tracking-tight shrink-0 ml-2 ${item.badgeStyle || 'bg-surface-muted/50 text-body border-line'
-                }`}
+              className={`text-[9px] px-1.5 py-0.5 rounded border font-mono tracking-tight shrink-0 ml-2 ${
+                item.badgeStyle || "bg-surface-muted/50 text-body border-line"
+              }`}
             >
               {item.badge}
             </span>
           )}
-        </div>
-      )}
-
-      {/* Collapsed Tooltip */}
-      {isCollapsed && (
-        <div className="absolute left-full ml-3 px-2.5 py-1.5 bg-input border border-line text-foreground text-xs rounded-md shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 font-mono">
-          {item.label}
         </div>
       )}
     </Link>

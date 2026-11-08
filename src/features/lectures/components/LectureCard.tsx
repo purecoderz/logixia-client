@@ -1,6 +1,9 @@
+import { ArrowUpRight, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
-import type { Tutorial, TutorialLevel } from "../../../pages/Lectures/LecturesService";
-
+import type {
+  Tutorial,
+  TutorialLevel,
+} from "../../../pages/Lectures/LecturesService";
 
 const LEVELS: Record<TutorialLevel, { label: string; bars: number }> = {
   beginner: { label: "Beginner", bars: 1 },
@@ -31,7 +34,7 @@ function formatPrice(price: number) {
   if (price === 0) return "Free";
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD", // change to your currency
+    currency: "USD",
     minimumFractionDigits: Number.isInteger(price) ? 0 : 2,
   }).format(price);
 }
@@ -42,36 +45,35 @@ export function LectureCard({ tutorial }: { tutorial: Tutorial }) {
   return (
     <Link
       to={`/tutorials/${tutorial.slug}`}
-      className="group flex flex-col overflow-hidden rounded-lg border border-line bg-input transition-colors hover:border-[#3fb950]/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      className="student-catalog-card group flex flex-col overflow-hidden rounded-xl border border-line bg-surface transition-colors hover:border-line-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
     >
-      {/* Editor-window header */}
-      <div className="flex items-center gap-1.5 border-b border-[#21262d] bg-surface px-3 py-2">
-        <span className="size-2 rounded-full bg-surface-muted transition-colors group-hover:bg-[#f85149]" />
-        <span className="size-2 rounded-full bg-surface-muted transition-colors group-hover:bg-[#d29922]" />
-        <span className="size-2 rounded-full bg-surface-muted transition-colors group-hover:bg-[#3fb950]" />
-        <span className="ml-2 truncate font-mono text-xs text-muted">
-          {tutorial.slug}
+      <div className="flex items-center justify-between gap-3 px-6 pt-6">
+        <span className="flex size-11 items-center justify-center rounded-xl border border-line bg-input text-cyan-500">
+          <BookOpen size={22} />
         </span>
+        <LevelMeter level={tutorial.level} />
       </div>
 
       {/* Body */}
-      <div className="flex flex-1 flex-col p-4">
-        <h3 className="text-base font-semibold tracking-tight text-foreground">
+      <div className="flex flex-1 flex-col p-6">
+        <h3 className="text-xl font-semibold tracking-tight text-foreground">
           {tutorial.name}
         </h3>
-        <p className="mt-1 line-clamp-2 text-[13px] leading-relaxed text-muted">
+        <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted">
           {tutorial.subtitle}
         </p>
-        <p className="mt-3 text-[13px] text-muted">
+        <p className="mt-5 mb-6 text-xs text-muted">
           by <span className="text-body">{tutorial.instructor.name}</span>
         </p>
 
-        <div className="mt-auto flex items-center justify-between border-t border-[#21262d] pt-3 mt-4">
-          <LevelMeter level={tutorial.level} />
+        <div className="mt-auto flex items-center justify-between gap-3 border-t border-line pt-5">
           <span
             className={`text-sm font-semibold ${isFree ? "text-success" : "text-foreground"}`}
           >
             {formatPrice(tutorial.price)}
+          </span>
+          <span className="inline-flex items-center gap-2 text-sm font-semibold text-success">
+            View course <ArrowUpRight size={16} />
           </span>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Field, fieldProps } from "./Field";
 import { inputClass } from "./formStyles";
-import { Markdown } from "./Markdown";
+import { MarkdownRenderer } from "./Markdown";
 
 interface MarkdownEditorProps {
   id: string;
@@ -34,9 +34,10 @@ export function MarkdownEditor({
       role="tab"
       aria-selected={mode === m}
       onClick={() => setMode(m)}
-      className={`min-h-11 rounded-lg px-3.5 text-sm font-semibold transition-colors ${
-        mode === m ? "bg-surface-muted text-foreground" : "text-muted hover:text-body"
-      }`}
+      className={`min-h-11 rounded-lg px-3.5 text-sm font-semibold transition-colors ${mode === m
+          ? "bg-surface-muted text-foreground"
+          : "text-muted hover:text-body"
+        }`}
     >
       {text}
     </button>
@@ -61,14 +62,26 @@ export function MarkdownEditor({
         value={value}
         rows={rows}
         onChange={(e) => onChange(e.target.value)}
-        className={mode === "write" ? `${inputClass} resize-y leading-6` : "hidden"}
+        className={
+          mode === "write" ? `${inputClass} resize-y leading-6` : "hidden"
+        }
       />
       {mode === "preview" && (
-        <div role="tabpanel" className="min-h-32 rounded-lg border border-line bg-input p-3">
-          {value.trim() ? (
-            <Markdown allowImages={allowImages}>{value}</Markdown>
-          ) : (
-            <p className="text-sm text-muted">Nothing to preview yet.</p>
+        <div
+          role="tabpanel"
+          className="min-h-32 rounded-lg border border-line bg-input p-3"
+        >
+          {mode === "preview" && (
+            <div
+              role="tabpanel"
+              className="min-h-32 rounded-lg border border-line bg-input p-3"
+            >
+              {value.trim() ? (
+                <MarkdownRenderer content={value} />
+              ) : (
+                <p className="text-sm text-muted">Nothing to preview yet.</p>
+              )}
+            </div>
           )}
         </div>
       )}

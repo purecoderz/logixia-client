@@ -1,0 +1,48 @@
+/* Keep the original brand panel's depth while the form follows light mode. */
+body[data-app-theme="light"] .auth-brand-panel {
+  color-scheme: dark;
+  --app-surface: #161b22;
+  --app-input: #0d1117;
+  --app-hover: #30363d;
+  --app-fg: #f0f6fc;
+  --app-body: #c9d1d9;
+  --app-muted: #8b949e;
+  --app-border: #30363d;
+  --app-accent: #58a6ff;
+  --app-danger: #ff7b72;
+  --app-warning: #d2a8ff;
+  --app-success: #6ee7b7;
+}
+body[data-app-theme="light"] .auth-form-panel {
+  background-color: #f8fafb;
+  background-image: radial-gradient(
+    ellipse at 85% 12%,
+    #e7f3f5 0,
+    transparent 65%
+  );
+  --app-input: #f8fafb;
+  --app-surface: #edf4f5;
+  --app-fg: #152c3c;
+  --app-body: #405768;
+  --app-muted: #5f7180;
+  --app-border: #cedae2;
+  --app-accent: #0e7490;
+}
+
+.password-hints-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition:
+    grid-template-rows 280ms ease,
+    visibility 280ms;
+}
+.password-hints-collapse.is-open {
+  grid-template-rows: 1fr;
+  visibility: visible;
+}
+@media (prefers-reduced-motion: reduce) {
+  .password-hints-collapse {
+    transition: none;
+  }
+}

@@ -20,7 +20,7 @@ type Position = { right: number; top?: number; bottom?: number };
  * The "three dots" menu. The list is drawn on the page itself (a portal), so a table that
  * scrolls sideways can't clip it, and it flips upward near the bottom of the screen.
  */
-export function ActionMenu({id, label, items, disabled }: ActionMenuProps) {
+export function ActionMenu({ id, label, items, disabled }: ActionMenuProps) {
   const [open, setOpen] = useState(false);
   const [position, setPosition] = useState<Position | null>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -32,10 +32,13 @@ export function ActionMenu({id, label, items, disabled }: ActionMenuProps) {
     if (!trigger) return;
     const r = trigger.getBoundingClientRect();
     const height = items.length * 44 + 8;
-    const flipUp = window.innerHeight - r.bottom < height + 8 && r.top > height + 8;
+    const flipUp =
+      window.innerHeight - r.bottom < height + 8 && r.top > height + 8;
     setPosition({
       right: Math.max(8, window.innerWidth - r.right),
-      ...(flipUp ? { bottom: window.innerHeight - r.top + 4 } : { top: r.bottom + 4 }),
+      ...(flipUp
+        ? { bottom: window.innerHeight - r.top + 4 }
+        : { top: r.bottom + 4 }),
     });
     setOpen(true);
   }
@@ -45,7 +48,10 @@ export function ActionMenu({id, label, items, disabled }: ActionMenuProps) {
     if (returnFocus) triggerRef.current?.focus();
   }
 
-  const menuItems = () => Array.from(menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? []);
+  const menuItems = () =>
+    Array.from(
+      menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [],
+    );
 
   // focus the first item when it opens
   useEffect(() => {
@@ -57,7 +63,11 @@ export function ActionMenu({id, label, items, disabled }: ActionMenuProps) {
     if (!open) return;
     const away = (e: MouseEvent) => {
       const target = e.target as Node;
-      if (!menuRef.current?.contains(target) && !triggerRef.current?.contains(target)) setOpen(false);
+      if (
+        !menuRef.current?.contains(target) &&
+        !triggerRef.current?.contains(target)
+      )
+        setOpen(false);
     };
     const dismiss = () => setOpen(false);
     document.addEventListener("mousedown", away);
@@ -109,7 +119,13 @@ export function ActionMenu({id, label, items, disabled }: ActionMenuProps) {
         onKeyDown={onTriggerKeyDown}
         className="inline-flex size-11 items-center justify-center rounded-lg border border-line text-body hover:bg-surface-muted disabled:pointer-events-none disabled:opacity-50"
       >
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+          aria-hidden="true"
+        >
           <circle cx="3" cy="8" r="1.5" />
           <circle cx="8" cy="8" r="1.5" />
           <circle cx="13" cy="8" r="1.5" />

@@ -2,7 +2,14 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
-import { Hand, MessageSquare, Mic, MicOff, Power, Terminal } from "lucide-react";
+import {
+  Hand,
+  MessageSquare,
+  Mic,
+  MicOff,
+  Power,
+  Terminal,
+} from "lucide-react";
 import { useMediaQuery } from "../../../hooks/useMediaQuery";
 import { useLiveRoom } from "../hooks/useLiveRoom";
 import { AlertModal } from "../../../components/ui/AlertModal";
@@ -18,16 +25,14 @@ import { FloatingTerminal } from "../components/classroom/FloatingTerminal";
 import { CodeWorkspace } from "@/features/workspace/Workspace";
 import { Drawer } from "@/features/workspace/components/ui/Drawer";
 
-
 function explainClose(code: string | null, reason: string): string {
   if (reason === "Not a member") return "You're not part of this class.";
-  if (reason === "Class has not started") return "The class hasn't started yet. Try again soon.";
+  if (reason === "Class has not started")
+    return "The class hasn't started yet. Try again soon.";
   if (reason === "Class ended") return "The class has ended.";
   if (code === "1006") return "Connection lost. Check your network.";
   return reason || "Disconnected.";
 }
-
-
 
 export function LiveRoomPage() {
   const { id } = useParams<{ id: string }>();
@@ -51,7 +56,10 @@ export function LiveRoomPage() {
   });
   const showTerminal = room.ready && !room.canWrite;
 
-  const [terminalOpen, setTerminalOpen] = useLocalStorage<boolean>("room:terminal-open", true);
+  const [terminalOpen, setTerminalOpen] = useLocalStorage<boolean>(
+    "room:terminal-open",
+    true,
+  );
 
   // Built once, shown in the sidebar on desktop and in the drawer on mobile
   const roomPanels = (
@@ -92,7 +100,9 @@ export function LiveRoomPage() {
           <span className="truncate text-sm font-semibold text-white md:text-base">
             Docker Images Deep Dive
           </span>
-          <span className="shrink-0 text-[11px] font-bold tracking-wider text-[#3fb950]">LIVE</span>
+          <span className="shrink-0 text-[11px] font-bold tracking-wider text-[#3fb950]">
+            LIVE
+          </span>
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
@@ -108,38 +118,49 @@ export function LiveRoomPage() {
           )}
 
           <AudioStatusButton status={audio.status} onClick={audio.fix} />
-          {
-            showTerminal && (
-              <button
-                type="button"
-                onClick={() => setTerminalOpen((open) => !open)}
-                aria-pressed={terminalOpen}
-                aria-label={terminalOpen ? "Hide instructor's terminal" : "Show instructor's terminal"}
-                className={`flex h-10 min-w-10 items-center justify-center gap-2 rounded-md border px-3 text-sm font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#58a6ff] md:px-4 ${terminalOpen
+          {showTerminal && (
+            <button
+              type="button"
+              onClick={() => setTerminalOpen((open) => !open)}
+              aria-pressed={terminalOpen}
+              aria-label={
+                terminalOpen
+                  ? "Hide instructor's terminal"
+                  : "Show instructor's terminal"
+              }
+              className={`flex h-10 min-w-10 items-center justify-center gap-2 rounded-md border px-3 text-sm font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#58a6ff] md:px-4 ${
+                terminalOpen
                   ? "border-[#58a6ff]/60 text-[#58a6ff]"
                   : "border-[#30363d] text-[#c9d1d9] hover:bg-[#21262d]"
-                  }`}
-              >
-                <Terminal size={18} aria-hidden />
-                <span className="hidden md:inline">Terminal</span>
-              </button>
-            )
-
-          }
-
-
+              }`}
+            >
+              <Terminal size={18} aria-hidden />
+              <span className="hidden md:inline">Terminal</span>
+            </button>
+          )}
 
           {room.canSpeak && (
             <button
               type="button"
               onClick={audio.toggleMic}
               aria-pressed={audio.micOn}
-              aria-label={audio.micOn ? "Turn microphone off" : "Turn microphone on"}
-              className={`flex h-10 min-w-10 items-center justify-center gap-2 rounded-md px-3 text-sm font-bold md:px-4 ${audio.micOn ? "bg-[#238636] text-white" : "border border-[#30363d] text-[#c9d1d9] hover:bg-[#21262d]"
-                }`}
+              aria-label={
+                audio.micOn ? "Turn microphone off" : "Turn microphone on"
+              }
+              className={`flex h-10 min-w-10 items-center justify-center gap-2 rounded-md px-3 text-sm font-bold md:px-4 ${
+                audio.micOn
+                  ? "bg-[#238636] text-white"
+                  : "border border-[#30363d] text-[#c9d1d9] hover:bg-[#21262d]"
+              }`}
             >
-              {audio.micOn ? <Mic size={18} aria-hidden /> : <MicOff size={18} aria-hidden />}
-              <span className="hidden md:inline">{audio.micOn ? "Mic on" : "Mic off"}</span>
+              {audio.micOn ? (
+                <Mic size={18} aria-hidden />
+              ) : (
+                <MicOff size={18} aria-hidden />
+              )}
+              <span className="hidden md:inline">
+                {audio.micOn ? "Mic on" : "Mic off"}
+              </span>
             </button>
           )}
 
@@ -149,11 +170,20 @@ export function LiveRoomPage() {
               onClick={room.toggleHand}
               aria-pressed={room.handRaised}
               aria-label={room.handRaised ? "Lower hand" : "Raise hand"}
-              className={`flex h-10 min-w-10 items-center justify-center gap-2 rounded-md px-3 text-sm font-bold md:px-4 ${room.handRaised ? "bg-[#30363d] text-white" : "bg-[#d29922] text-[#0d1117]"
-                }`}
+              className={`flex h-10 min-w-10 items-center justify-center gap-2 rounded-md px-3 text-sm font-bold md:px-4 ${
+                room.handRaised
+                  ? "bg-[#30363d] text-white"
+                  : "bg-[#d29922] text-[#0d1117]"
+              }`}
             >
-              <Hand size={18} fill={room.handRaised ? "currentColor" : "none"} aria-hidden />
-              <span className="hidden md:inline">{room.handRaised ? "Lower hand" : "Raise hand"}</span>
+              <Hand
+                size={18}
+                fill={room.handRaised ? "currentColor" : "none"}
+                aria-hidden
+              />
+              <span className="hidden md:inline">
+                {room.handRaised ? "Lower hand" : "Raise hand"}
+              </span>
             </button>
           )}
 
@@ -170,7 +200,10 @@ export function LiveRoomPage() {
           )}
         </div>
         {audio.error && (
-          <p role="alert" className="shrink-0 bg-[#161b22] px-4 py-1 text-xs text-[#f85149]">
+          <p
+            role="alert"
+            className="shrink-0 bg-[#161b22] px-4 py-1 text-xs text-[#f85149]"
+          >
             {audio.error}
           </p>
         )}
@@ -199,7 +232,13 @@ export function LiveRoomPage() {
           {!isMobile && (
             <>
               <PanelResizeHandle className="w-1 bg-[#21262d] transition-colors hover:bg-[#58a6ff]/60" />
-              <Panel id="sidebar" order={2} defaultSize={22} minSize={15} maxSize={40}>
+              <Panel
+                id="sidebar"
+                order={2}
+                defaultSize={22}
+                minSize={15}
+                maxSize={40}
+              >
                 <aside className="flex h-full flex-col gap-2 bg-[#161b22] p-2">
                   {roomPanels}
                 </aside>
@@ -215,7 +254,6 @@ export function LiveRoomPage() {
         </Drawer>
       )}
 
-
       <ConfirmModal
         isOpen={endOpen}
         title="End class"
@@ -229,7 +267,6 @@ export function LiveRoomPage() {
         onClose={() => setEndOpen(false)}
       />
 
-
       <AlertModal
         isOpen={closeMessage !== null && !dismissed}
         title="Disconnected"
@@ -241,18 +278,14 @@ export function LiveRoomPage() {
           navigate(-1);
         }}
       />
-      {
-        showTerminal && (
-          <FloatingTerminal
-            open={terminalOpen && showTerminal}
-            onClose={() => setTerminalOpen(false)}
-            isMobile={isMobile}
-            lines={room.terminalLines}
-          />
-
-        )
-      }
-
+      {showTerminal && (
+        <FloatingTerminal
+          open={terminalOpen && showTerminal}
+          onClose={() => setTerminalOpen(false)}
+          isMobile={isMobile}
+          lines={room.terminalLines}
+        />
+      )}
     </div>
   );
 }

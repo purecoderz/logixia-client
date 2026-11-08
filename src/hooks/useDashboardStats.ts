@@ -4,7 +4,9 @@ import { byDue, daysUntil } from "../features/assignments/utils/assignments";
 
 export function useDashboardStats(assignments: Assignment[]) {
   return useMemo(() => {
-    const active = assignments.filter((a) => a.uiStatus === "active").sort(byDue);
+    const active = assignments
+      .filter((a) => a.uiStatus === "active")
+      .sort(byDue);
 
     return {
       active,

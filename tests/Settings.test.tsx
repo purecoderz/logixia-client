@@ -1,3 +1,6 @@
+import { MemoryRouter } from "react-router-dom";
+import StudentSettingsPage from "../src/features/settings/pages/StudentSettingsPage";
+import { ThemeProvider } from "../src/features/theme/ThemeProvider";
 import { afterEach, expect, it, vi } from "vitest";
 import { act, cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -9,7 +12,7 @@ import { useInstructorSidebarPreference } from "../src/hooks/useInstructorSideba
 
 const { updateProfile } = vi.hoisted(() => ({updateProfile:vi.fn()}));
 vi.mock("../src/features/auth/context/AuthContext", () => ({useAuth:()=>({profile:{id:"1",username:"ada",email:"ada@example.com"},updateProfile})}));
-vi.mock("../src/features/settings/services/settingsService", () => ({SettingsService:{update:vi.fn(),changePassword:vi.fn()}}));
+vi.mock("../src/features/settings/services/settingsService", () => ({SettingsService:{get:vi.fn(),update:vi.fn(),changePassword:vi.fn()}}));
 afterEach(() => {cleanup(); vi.clearAllMocks(); localStorage.clear();});
 const initial={fullname:"Ada Okafor",username:"ada",email:"ada@example.com",bio:"Python instructor"};
 
@@ -58,4 +61,18 @@ it("syncs the settings switch and sidebar preference without a reload", async ()
  expect(localStorage.getItem("instructorSidebarCollapsed")).toBe("true");
  act(()=>{localStorage.setItem("instructorSidebarCollapsed","false");window.dispatchEvent(new StorageEvent("storage",{key:"instructorSidebarCollapsed"}));});
  expect(screen.getByRole("button",{name:"Settings"}).getAttribute("aria-pressed")).toBe("false");
+});
+
+it("loads student profile settings and switches between account sections", async () => {
+ vi.mocked(SettingsService.get).mockResolvedValue(initial);
+ const user = userEvent.setup();
+ render(<QueryClientProvider client={new QueryClient({defaultOptions:{queries:{retry:false}}})}><MemoryRouter><ThemeProvider><StudentSettingsPage /></ThemeProvider></MemoryRouter></QueryClientProvider>);
+ expect(await screen.findByLabelText("Username")).toBeTruthy();
+ expect(screen.getByText("Update how you appear to instructors and other learners.")).toBeTruthy();
+ await user.click(screen.getByRole("button", {name:"Password", exact:true}));
+ expect(screen.getByLabelText("Current password")).toBeTruthy();
+ await user.click(screen.getByRole("button", {name:"Display", exact:true}));
+ expect(screen.getByRole("heading", {name:"Display preferences"})).toBeTruthy();
+ expect(screen.getByLabelText("Theme")).toBeTruthy();
+ expect(screen.queryByRole("switch")).toBeNull();
 });

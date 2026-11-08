@@ -1,6 +1,5 @@
 import { TimelineRow } from "./TimelineRow";
 
-
 interface RoadmapRowProps {
   step: number;
   title: string;

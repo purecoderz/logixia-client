@@ -23,7 +23,11 @@ export function useAccessVoice(canWrite: boolean, enabled: boolean) {
 
     if (previous.current !== canWrite) {
       previous.current = canWrite;
-      speak(canWrite ? "You have been granted the permission to speek and write." : "Your writing access has been removed.");
+      speak(
+        canWrite
+          ? "You have been granted the permission to speek and write."
+          : "Your writing access has been removed.",
+      );
     }
   }, [canWrite, enabled]);
 

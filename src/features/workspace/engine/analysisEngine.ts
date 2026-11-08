@@ -49,7 +49,7 @@ export function createAnalysisEngine() {
         worker.postMessage({ type: "complete", id, code, line, col });
       });
     },
-    
+
     async hover(code: string, line: number, col: number) {
       await ready;
       return new Promise<HoverInfo | null>((resolve) => {

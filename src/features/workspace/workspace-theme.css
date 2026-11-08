@@ -1,0 +1,24 @@
+/* Distinct panel surfaces give the light IDE depth without stark white. */
+body[data-app-theme="light"] .workspace-shell {
+  --app-canvas: #dfe8ed;
+  --app-surface: #edf3f6;
+  --app-muted-surface: #e3edf2;
+  --app-input: #f4f8fa;
+  --app-hover: #dce8ee;
+  --app-fg: #183446;
+  --app-body: #365263;
+  --app-muted: #5b7485;
+  --app-border: #c7d8e2;
+  --app-border-strong: #9db9c9;
+  --app-accent: #0e7490;
+  --app-accent-hover: #155e75;
+  --app-selection: #cde6ef;
+}
+body[data-app-theme="light"] .workspace-shell > header {
+  background: #e8f0f4;
+  box-shadow: 0 1px 4px rgb(25 60 78 / 5%);
+}
+
+body[data-app-theme="light"] .workspace-editor {
+  --app-input: #f6f5f0;
+}

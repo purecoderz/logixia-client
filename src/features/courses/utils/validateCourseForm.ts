@@ -10,21 +10,26 @@ export function validateCourseForm(v: CourseFormValues): CourseFormErrors {
   const title = v.title.trim();
   if (!title) errors.title = "Give the course a title.";
   else if (title.length < 3) errors.title = "Use at least 3 characters.";
-  else if (title.length > 100) errors.title = "Keep the title under 100 characters.";
+  else if (title.length > 100)
+    errors.title = "Keep the title under 100 characters.";
 
   if (!v.slug) errors.slug = "A web address is needed.";
   else if (!SLUG_PATTERN.test(v.slug)) {
     errors.slug = "Use lowercase letters, numbers and single dashes only.";
   }
 
-  if (!v.languageId) errors.languageId = "Choose the language this course teaches.";
+  if (!v.languageId)
+    errors.languageId = "Choose the language this course teaches.";
 
-  if (v.description.length > 5000) errors.description = "Keep the description under 5000 characters.";
+  if (v.description.length > 5000)
+    errors.description = "Keep the description under 5000 characters.";
 
-  if (v.skills.some((s) => s.length > 40)) errors.skills = "Keep each skill under 40 characters.";
+  if (v.skills.some((s) => s.length > 40))
+    errors.skills = "Keep each skill under 40 characters.";
 
   // Empty is allowed: it means the course is only taught through cohorts
-  if (v.price.trim() !== "" && parsePrice(v.price) === null) errors.price = "Use numbers only, like 50,000.";
+  if (v.price.trim() !== "" && parsePrice(v.price) === null)
+    errors.price = "Use numbers only, like 50,000.";
 
   return errors;
 }
@@ -40,8 +45,16 @@ export interface ChecklistItem {
 /** What the side panel shows. The "module with a lesson" item is added by the builder later. */
 export function getSaleChecklist(v: CourseFormValues): ChecklistItem[] {
   return [
-    { key: "title", label: "Title and web address", done: v.title.trim().length >= 3 && SLUG_PATTERN.test(v.slug) },
-    { key: "description", label: "Description", done: v.description.trim().length > 0 },
+    {
+      key: "title",
+      label: "Title and web address",
+      done: v.title.trim().length >= 3 && SLUG_PATTERN.test(v.slug),
+    },
+    {
+      key: "description",
+      label: "Description",
+      done: v.description.trim().length > 0,
+    },
     { key: "language", label: "Language", done: v.languageId !== "" },
     { key: "skills", label: "At least 3 skills", done: v.skills.length >= 3 },
   ];

@@ -9,7 +9,14 @@ interface CourseCardProps {
   to: string;
 }
 
-export function CourseCard({ title, meta, price, filename, code, to }: CourseCardProps) {
+export function CourseCard({
+  title,
+  meta,
+  price,
+  filename,
+  code,
+  to,
+}: CourseCardProps) {
   return (
     <div className="overflow-hidden rounded-xl border border-line bg-surface">
       <div className="bg-input">
@@ -19,7 +26,9 @@ export function CourseCard({ title, meta, price, filename, code, to }: CourseCar
           <span className="h-2 w-2 rounded-full bg-[#3fb950]" />
           <span className="ml-1.5 text-[11px] text-muted">{filename}</span>
         </div>
-        <pre className="overflow-x-auto px-3 py-2.5 text-xs leading-relaxed text-body">{code}</pre>
+        <pre className="overflow-x-auto px-3 py-2.5 text-xs leading-relaxed text-body">
+          {code}
+        </pre>
       </div>
 
       <div className="border-t border-line p-3.5">
@@ -27,7 +36,10 @@ export function CourseCard({ title, meta, price, filename, code, to }: CourseCar
         <p className="mt-0.5 mb-3 text-xs text-muted">{meta}</p>
         <div className="flex items-center justify-between">
           <span className="text-sm text-foreground">{price}</span>
-          <Link to={to} className="rounded-lg bg-[#238636] px-3 py-1.5 text-xs font-medium text-white">
+          <Link
+            to={to}
+            className="rounded-lg bg-[#238636] px-3 py-1.5 text-xs font-medium text-white"
+          >
             Buy
           </Link>
         </div>

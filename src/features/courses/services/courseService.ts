@@ -191,9 +191,12 @@ export const CourseService = {
     throw await apiErrorFrom(response);
   },
 
-
-    /** The server picks the position (last). Only a title and a type are sent. */
-  async addTask(lessonId: number, title: string, type: TaskKind): Promise<OutlineTask> {
+  /** The server picks the position (last). Only a title and a type are sent. */
+  async addTask(
+    lessonId: number,
+    title: string,
+    type: TaskKind,
+  ): Promise<OutlineTask> {
     const response = await apiFetch(tasksPath(lessonId), {
       method: "POST",
       headers: { "Content-Type": "application/json" },

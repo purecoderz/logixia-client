@@ -1,10 +1,6 @@
 // Instructor-side cohort. Kept separate from the student `Cohort` card type.
 export type InstructorCohortStatus =
-  | "draft"
-  | "open"
-  | "starting-soon"
-  | "in-progress"
-  | "completed";
+  "draft" | "open" | "starting-soon" | "in-progress" | "completed";
 
 export interface InstructorCohort {
   id: string;
@@ -24,15 +20,16 @@ export interface InstructorCohort {
 }
 
 export interface Cohort {
-    id: string;
-    status: CohortStatus;
-    name: string;
-    subtitle: string;
-    startsOn: string;
-    durationLabel: string; // "12 weeks" or "Week 6 of 12"
-    seatsTaken: number;
-    seatsTotal: number;
-    price: number;
+  id: string;
+  status: CohortStatus;
+  name: string;
+  subtitle: string;
+  startsOn: string;
+  durationLabel: string; // "12 weeks" or "Week 6 of 12"
+  seatsTaken: number;
+  seatsTotal: number;
+  price: number;
 }
 
-export type CohortStatus = "open" | "starting-soon" | "in-progress" | "completed";
+export type CohortStatus =
+  "open" | "starting-soon" | "in-progress" | "completed";

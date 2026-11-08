@@ -7,7 +7,11 @@ interface AddModuleFormProps {
   onAdded: (moduleId: number) => void;
 }
 
-export function AddModuleForm({ courseId, moduleCount, onAdded }: AddModuleFormProps) {
+export function AddModuleForm({
+  courseId,
+  moduleCount,
+  onAdded,
+}: AddModuleFormProps) {
   const add = useAddModule(courseId);
   return (
     <AddItemForm

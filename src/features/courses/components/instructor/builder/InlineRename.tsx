@@ -12,7 +12,12 @@ interface InlineRenameProps {
 }
 
 /** A title turned into a text box. Enter saves, Escape cancels, clicking away saves. */
-export function InlineRename({ label, value, onSave, onCancel }: InlineRenameProps) {
+export function InlineRename({
+  label,
+  value,
+  onSave,
+  onCancel,
+}: InlineRenameProps) {
   const [title, setTitle] = useState(value);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);

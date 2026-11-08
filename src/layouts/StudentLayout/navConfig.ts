@@ -81,10 +81,10 @@ export const STUDENT_NAV_SECTIONS: NavSection[] = [
         path: "/lessons",
       },
       {
-        id: "assignments",
-        label: "Assignments",
+        id: "tasks",
+        label: "Tasks",
         icon: "📋",
-        path: "/assignments",
+        path: "/tasks",
       },
       {
         id: "session-history",
@@ -105,16 +105,16 @@ export const STUDENT_NAV_SECTIONS: NavSection[] = [
     items: [
       {
         id: "reg-cohort",
-        label: "Register Cohort",
+        label: "Cohort Registration",
         icon: "📝",
-        path: "/cohorts",
+        path: "/register/cohorts",
       },
 
       {
         id: "my-cohort",
         label: "My Cohort",
         icon: "💻",
-        path: "/user/cohorts",
+        path: "/student/cohorts",
       },
     ],
   },
@@ -144,7 +144,18 @@ export const STUDENT_NAV_SECTIONS: NavSection[] = [
         id: "courses-catalog",
         label: "Courses Catalog",
         icon: "📚",
-        path: "courses",
+        path: "/student/courses",
+      },
+    ],
+  },
+  {
+    title: "ACCOUNT",
+    items: [
+      {
+        id: "settings",
+        label: "Profile settings",
+        icon: "⚙️",
+        path: "/settings",
       },
     ],
   },

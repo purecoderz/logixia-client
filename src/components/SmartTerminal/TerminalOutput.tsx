@@ -17,10 +17,13 @@ export function TerminalOutput({ lines }: { lines: TerminalLine[] }) {
       ref={box}
       role="log"
       aria-label="Terminal output"
-      className="min-h-0 flex-1 overflow-y-auto bg-[#161b22] px-3 py-2 font-mono text-xs"
+      className="min-h-0 flex-1 overflow-y-auto bg-surface px-3 py-2 font-mono text-xs"
     >
       {lines.map((line, i) => (
-        <div key={i} className={`whitespace-pre-wrap break-words ${COLORS[line.kind]}`}>
+        <div
+          key={i}
+          className={`whitespace-pre-wrap break-words ${COLORS[line.kind]}`}
+        >
           {line.kind === "command" ? `$ ${line.text}` : line.text}
         </div>
       ))}

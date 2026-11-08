@@ -8,7 +8,10 @@ export default function InstructorCoursesPage() {
 
   if (isPending) return <ListPageSkeleton label="Loading your courses" />;
 
-  if (isError) return <ErrorState what="your courses" error={error} onRetry={() => refetch()} />;
+  if (isError)
+    return (
+      <ErrorState what="your courses" error={error} onRetry={() => refetch()} />
+    );
 
   return <InstructorCoursesView courses={data} />;
 }

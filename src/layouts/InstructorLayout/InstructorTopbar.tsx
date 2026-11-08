@@ -4,7 +4,10 @@ import { Bell, Menu, Search } from "lucide-react";
 
 export function InstructorTopbar({ onMenu }: { onMenu: () => void }) {
   return (
-    <header className="flex h-16 min-w-0 shrink-0 items-center gap-2 sm:gap-3 border-b border-line bg-surface px-4 md:px-6">
+    <header
+      data-instructor-topbar
+      className="flex h-16 min-w-0 shrink-0 items-center gap-2 sm:gap-3 border-b border-line bg-surface px-4 md:px-6"
+    >
       <button
         type="button"
         onClick={onMenu}
@@ -20,7 +23,11 @@ export function InstructorTopbar({ onMenu }: { onMenu: () => void }) {
       </div>
 
       <div className="relative hidden w-40 shrink-0 sm:block md:w-64">
-        <Search size={16} aria-hidden className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+        <Search
+          size={16}
+          aria-hidden
+          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted"
+        />
         <input
           type="search"
           placeholder="Search"

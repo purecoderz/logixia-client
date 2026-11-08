@@ -19,7 +19,12 @@ export function CourseGrid({ courses, busyId, handlers }: CourseGridProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {courses.map((c) => (
-        <InstructorCourseCard key={c.id} course={c} busy={busyId === c.id} handlers={handlers} />
+        <InstructorCourseCard
+          key={c.id}
+          course={c}
+          busy={busyId === c.id}
+          handlers={handlers}
+        />
       ))}
     </div>
   );

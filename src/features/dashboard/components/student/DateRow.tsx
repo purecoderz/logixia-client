@@ -2,8 +2,6 @@ import type { Assignment } from "@/features/assignments/services/assignmentServi
 import { formatTime } from "@/features/assignments/utils/assignments";
 import { Link } from "react-router-dom";
 
-
-
 const LATE = {
   missed: { label: "Missed", color: "text-danger" },
   incomplete: { label: "Incomplete", color: "text-warning" },
@@ -11,11 +9,14 @@ const LATE = {
 
 export function DateRow({ a }: { a: Assignment }) {
   const d = new Date(a.due_date);
-  const late = a.uiStatus === "missed" || a.uiStatus === "incomplete" ? LATE[a.uiStatus] : null;
+  const late =
+    a.uiStatus === "missed" || a.uiStatus === "incomplete"
+      ? LATE[a.uiStatus]
+      : null;
 
   return (
     <Link
-      to={`/assignments/${a.id}`}
+      to={`/tasks/${a.id}`}
       className="flex items-center gap-3 rounded-xl bg-input p-3 transition-colors hover:bg-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
     >
       <span className="flex size-11 shrink-0 flex-col items-center justify-center rounded-lg bg-surface leading-none">
@@ -25,7 +26,9 @@ export function DateRow({ a }: { a: Assignment }) {
         </span>
       </span>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-foreground">{a.title}</p>
+        <p className="truncate text-sm font-semibold text-foreground">
+          {a.title}
+        </p>
         <p className={`mt-0.5 text-xs ${late?.color ?? "text-muted"}`}>
           {late?.label ?? formatTime(d)}
         </p>

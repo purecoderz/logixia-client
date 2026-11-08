@@ -1,0 +1,24 @@
+/* Shared light palette comes from features/theme/learning-shell.css. */
+body[data-app-theme="light"] [data-instructor-sidebar] {
+  --app-surface: #e4edf2;
+  --app-input: #f3f8fa;
+  --app-hover: #d3e2ea;
+}
+body[data-app-theme="light"] [data-instructor-topbar] {
+  --app-surface: #edf4f7;
+  --app-input: #e3edf2;
+  box-shadow: 0 1px 8px rgb(25 60 78 / 4%);
+}
+body[data-app-theme="light"] [data-instructor-layout] main {
+  background-image: radial-gradient(
+    ellipse at 90% 0%,
+    #dceef0 0,
+    transparent 45%
+  );
+}
+body[data-app-theme="light"]
+  [data-instructor-layout]
+  main
+  :is(article, .student-card) {
+  box-shadow: 0 4px 18px -10px rgb(25 60 78 / 14%);
+}

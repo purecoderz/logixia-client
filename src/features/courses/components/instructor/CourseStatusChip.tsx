@@ -7,7 +7,11 @@ const chips: Record<InstructorCourseStatus, { tone: Tone; label: string }> = {
   archived: { tone: "neutral", label: "Archived" },
 };
 
-export function CourseStatusChip({ status }: { status: InstructorCourseStatus }) {
+export function CourseStatusChip({
+  status,
+}: {
+  status: InstructorCourseStatus;
+}) {
   const { tone, label } = chips[status];
   return <StatusChip tone={tone}>{label}</StatusChip>;
 }

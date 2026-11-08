@@ -2,12 +2,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { LayoutGrid, List } from "lucide-react";
 
-import type { Assignment, AssignmentStatus } from "../services/assignmentService";
+import type {
+  Assignment,
+  AssignmentStatus,
+} from "../services/assignmentService";
 
 import { AssignmentCard } from "./AssignmentCard";
 import { AssignmentsTable } from "./AssignmentTable";
 import { FilterTabs } from "@/components/ui/FilterTabs";
-
 
 type Filter = "all" | AssignmentStatus;
 type View = "grid" | "table";
@@ -20,10 +22,14 @@ const RANK: Record<AssignmentStatus, number> = {
 };
 const VIEW_KEY = "assignments-view";
 
-export function AssignmentsView({ assignments }: { assignments: Assignment[] }) {
+export function AssignmentsView({
+  assignments,
+}: {
+  assignments: Assignment[];
+}) {
   const [filter, setFilter] = useState<Filter>("active");
   const [view, setView] = useState<View>(() =>
-    localStorage.getItem(VIEW_KEY) === "table" ? "table" : "grid"
+    localStorage.getItem(VIEW_KEY) === "table" ? "table" : "grid",
   );
 
   useEffect(() => {
@@ -37,7 +43,10 @@ export function AssignmentsView({ assignments }: { assignments: Assignment[] }) 
       { value: "all" as Filter, label: `All ${assignments.length}` },
       { value: "active" as Filter, label: `Active ${count("active")}` },
       { value: "done" as Filter, label: `Done ${count("done")}` },
-      { value: "incomplete" as Filter, label: `Incomplete ${count("incomplete")}` },
+      {
+        value: "incomplete" as Filter,
+        label: `Incomplete ${count("incomplete")}`,
+      },
       { value: "missed" as Filter, label: `Missed ${count("missed")}` },
     ];
   }, [assignments]);
@@ -49,14 +58,16 @@ export function AssignmentsView({ assignments }: { assignments: Assignment[] }) 
         .sort(
           (x, y) =>
             RANK[x.uiStatus] - RANK[y.uiStatus] ||
-            new Date(x.due_date).getTime() - new Date(y.due_date).getTime()
+            new Date(x.due_date).getTime() - new Date(y.due_date).getTime(),
         ),
-    [assignments, filter]
+    [assignments, filter],
   );
 
   const toggle = (v: View) =>
     `flex items-center justify-center px-2.5 py-1.5 transition-colors ${
-      view === v ? "bg-surface text-foreground" : "text-muted hover:text-foreground"
+      view === v
+        ? "bg-surface text-foreground"
+        : "text-muted hover:text-foreground"
     }`;
 
   return (
@@ -91,7 +102,7 @@ export function AssignmentsView({ assignments }: { assignments: Assignment[] }) 
       </div>
 
       {!visible.length ? (
-        <p className="py-10 text-center text-sm text-muted">No assignments here.</p>
+        <p className="py-10 text-center text-sm text-muted">No tasks here.</p>
       ) : view === "grid" ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {visible.map((a) => (

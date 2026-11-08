@@ -1,5 +1,11 @@
 // components/LiveRoom/FloatingTerminal.tsx
-import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type PointerEvent,
+} from "react";
 import { X } from "lucide-react";
 import type { TerminalLine } from "@/components/SmartTerminal/TerminalView";
 import { TerminalOutput } from "@/components/SmartTerminal/TerminalOutput";
@@ -26,17 +32,26 @@ const clamp = (p: Pos): Pos => ({
 function startPosition(): Pos {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null");
-    if (saved && typeof saved.x === "number" && typeof saved.y === "number") return clamp(saved);
+    if (saved && typeof saved.x === "number" && typeof saved.y === "number")
+      return clamp(saved);
   } catch {
     /* fall through to the default */
   }
   // bottom right, above the status bar
-  return clamp({ x: window.innerWidth - WIDTH - 24, y: window.innerHeight - HEIGHT - 64 });
+  return clamp({
+    x: window.innerWidth - WIDTH - 24,
+    y: window.innerHeight - HEIGHT - 64,
+  });
 }
 
-export function FloatingTerminal({ open, onClose, isMobile, lines }: FloatingTerminalProps) {
+export function FloatingTerminal({
+  open,
+  onClose,
+  isMobile,
+  lines,
+}: FloatingTerminalProps) {
   const [pos, setPos] = useState<Pos>(startPosition);
-  const posRef = useRef(pos);            // always the latest position, even inside event handlers
+  const posRef = useRef(pos); // always the latest position, even inside event handlers
   const grab = useRef<Pos | null>(null); // where inside the title bar I picked it up
 
   const move = (next: Pos) => {
@@ -69,7 +84,10 @@ export function FloatingTerminal({ open, onClose, isMobile, lines }: FloatingTer
   const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
     if ((e.target as HTMLElement).closest("button")) return; // the close button isn't a handle
     e.currentTarget.setPointerCapture(e.pointerId);
-    grab.current = { x: e.clientX - posRef.current.x, y: e.clientY - posRef.current.y };
+    grab.current = {
+      x: e.clientX - posRef.current.x,
+      y: e.clientY - posRef.current.y,
+    };
   };
 
   const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
@@ -101,7 +119,9 @@ export function FloatingTerminal({ open, onClose, isMobile, lines }: FloatingTer
   const title = (
     <span className="flex items-center gap-2 text-xs text-[#c9d1d9]">
       Instructor's terminal
-      <span className="rounded bg-[#21262d] px-1.5 py-0.5 text-[10px] text-[#8b949e]">View only</span>
+      <span className="rounded bg-[#21262d] px-1.5 py-0.5 text-[10px] text-[#8b949e]">
+        View only
+      </span>
     </span>
   );
 

@@ -1,7 +1,6 @@
 import { FileManagement, type FsNode } from "@/features/workspace/utils/File";
 import type { TerminalLine } from "../TerminalView";
 
-
 export type CommandResult = {
   lines?: TerminalLine[];
   clear?: boolean;

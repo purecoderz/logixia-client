@@ -1,13 +1,31 @@
 // pages/PLaygroundLayout/hooks/useWorkspace.ts
-import { useLocalStorage } from "../../../hooks/useLocalStorage";
+import {
+  useWorkspaceStorage,
+  type WorkspaceStorage,
+} from "./useWorkspaceStorage";
 import { FileManagement, type FsNode } from "../utils/File";
 import { getLanguage } from "../utils/language";
 
-
-export function useWorkspace(prefix: string) {
-  const [nodes, setNodes] = useLocalStorage<FsNode[]>(`${prefix}:nodes`, []);
-  const [activeFileId, setActiveFileId] = useLocalStorage<string | null>(`${prefix}:active`, null);
-  const [openTabIds, setOpenTabIds] = useLocalStorage<string[]>(`${prefix}:tabs`, []);
+export function useWorkspace(
+  prefix: string,
+  storage: WorkspaceStorage = "local",
+  initialFiles?: Record<string, string>,
+) {
+  const [nodes, setNodes] = useWorkspaceStorage<FsNode[]>(
+    `${prefix}:nodes`,
+    () => (initialFiles ? FileManagement.syncFromPaths([], initialFiles) : []),
+    storage,
+  );
+  const [activeFileId, setActiveFileId] = useWorkspaceStorage<string | null>(
+    `${prefix}:active`,
+    null,
+    storage,
+  );
+  const [openTabIds, setOpenTabIds] = useWorkspaceStorage<string[]>(
+    `${prefix}:tabs`,
+    [],
+    storage,
+  );
 
   const activeFile = nodes.find((n) => n.id === activeFileId);
   const language = activeFile ? getLanguage(activeFile.name) : null;
@@ -16,11 +34,15 @@ export function useWorkspace(prefix: string) {
     .map((id) => nodes.find((n) => n.id === id))
     .filter((n): n is FsNode => !!n);
 
-  const onCreateNode = (parentId: string | null, type: "file" | "folder", name: string) => {
+  const onCreateNode = (
+    parentId: string | null,
+    type: "file" | "folder",
+    name: string,
+  ) => {
     setNodes(
       type === "file"
         ? FileManagement.createFile(nodes, parentId, name)
-        : FileManagement.createFolder(nodes, parentId, name)
+        : FileManagement.createFolder(nodes, parentId, name),
     );
   };
 
@@ -59,13 +81,25 @@ export function useWorkspace(prefix: string) {
     setNodes(FileManagement.updateContent(nodes, id, text));
   };
 
-    // Live rooms: make our nodes match the files the server sent
+  // Live rooms: make our nodes match the files the server sent
   const setLiveNodes = (files: Record<string, string>) =>
-  setNodes((current) => FileManagement.syncFromPaths(current, files));
+    setNodes((current) => FileManagement.syncFromPaths(current, files));
 
   return {
-    nodes, setNodes, setLiveNodes, activeFileId, setActiveFileId, setOpenTabIds,
-    activeFile, language, tabs,
-    onCreateNode, onRenameNode, onDeleteNode, openFile, closeTab, updateContent,
+    nodes,
+    setNodes,
+    setLiveNodes,
+    activeFileId,
+    setActiveFileId,
+    setOpenTabIds,
+    activeFile,
+    language,
+    tabs,
+    onCreateNode,
+    onRenameNode,
+    onDeleteNode,
+    openFile,
+    closeTab,
+    updateContent,
   };
 }

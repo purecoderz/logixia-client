@@ -1,4 +1,11 @@
-import type { CourseOutline, OutlineIssue, OutlineLesson, OutlineModule, OutlineTask, TaskKind } from "../types/outline";
+import type {
+  CourseOutline,
+  OutlineIssue,
+  OutlineLesson,
+  OutlineModule,
+  OutlineTask,
+  TaskKind,
+} from "../types/outline";
 
 export interface RawOutlineModule {
   id: number;
@@ -29,12 +36,19 @@ export interface RawCourseOutline {
   title: string;
   is_published: boolean;
   modules: RawOutlineModule[];
-  issues: { message: string; target_type: "course" | "module" | "lesson"; target_id: number | null }[];
+  issues: {
+    message: string;
+    target_type: "course" | "module" | "lesson";
+    target_id: number | null;
+  }[];
 }
 
 function toIssue(raw: RawCourseOutline["issues"][number]): OutlineIssue {
   if (raw.target_type !== "course" && raw.target_id !== null) {
-    return { message: raw.message, target: { kind: raw.target_type, id: raw.target_id } };
+    return {
+      message: raw.message,
+      target: { kind: raw.target_type, id: raw.target_id },
+    };
   }
   return { message: raw.message, target: { kind: "course" } };
 }
@@ -55,7 +69,13 @@ export interface RawCreatedLesson {
 
 /** A lesson that was just created starts with no text and no tasks. */
 export function toNewLesson(l: RawCreatedLesson): OutlineLesson {
-  return { id: l.id, title: l.title, order: l.lesson_order, hasContent: false, tasks: [] };
+  return {
+    id: l.id,
+    title: l.title,
+    order: l.lesson_order,
+    hasContent: false,
+    tasks: [],
+  };
 }
 
 /** A module that was just created has no lessons yet, so we don't need the server to say so. */

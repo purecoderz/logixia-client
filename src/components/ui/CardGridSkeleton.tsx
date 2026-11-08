@@ -2,12 +2,12 @@
 import { Skeleton } from "./Skeleton";
 
 interface CardGridSkeletonProps {
-  count?: number;          // how many placeholder cards
-  filters?: boolean;       // show the chip row + view toggle
-  chips?: number;          // how many chips in that row
-  progress?: boolean;      // show the progress bar line
-  label?: string;          // screen reader text
-  className?: string;      // grid classes, to match each page's real grid
+  count?: number; // how many placeholder cards
+  filters?: boolean; // show the chip row + view toggle
+  chips?: number; // how many chips in that row
+  progress?: boolean; // show the progress bar line
+  label?: string; // screen reader text
+  className?: string; // grid classes, to match each page's real grid
 }
 
 function CardSkeleton({ progress }: { progress: boolean }) {
@@ -19,7 +19,9 @@ function CardSkeleton({ progress }: { progress: boolean }) {
       </div>
       <Skeleton className="mt-4 h-5 w-3/5" />
       {progress && <Skeleton className="mt-8 h-1.5 w-full rounded-full" />}
-      <div className={`${progress ? "mt-4" : "mt-8"} flex items-center justify-between`}>
+      <div
+        className={`${progress ? "mt-4" : "mt-8"} flex items-center justify-between`}
+      >
         <Skeleton className="h-3 w-28" />
         <Skeleton className="h-8 w-8 rounded-full" />
       </div>

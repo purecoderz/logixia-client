@@ -9,13 +9,13 @@ import { SaveIndicator } from "./courseEditor/SaveIndicator";
 import { MarkdownSplitEditor } from "./courseEditor/MarkdownSplitEditor";
 import { PageBreadcrumbs } from "@/components/ui/BreadCrumbs";
 
-
 interface Draft {
   title: string;
   content: string;
 }
 
-const sameDraft = (a: Draft, b: Draft) => a.title === b.title && a.content === b.content;
+const sameDraft = (a: Draft, b: Draft) =>
+  a.title === b.title && a.content === b.content;
 const hasTitle = (d: Draft) => d.title.trim() !== "";
 
 interface LessonEditorViewProps {
@@ -26,11 +26,19 @@ interface LessonEditorViewProps {
   autosaveDelay?: number;
 }
 
-export function LessonEditorView({ courseId, lesson, outline, autosaveDelay }: LessonEditorViewProps) {
+export function LessonEditorView({
+  courseId,
+  lesson,
+  outline,
+  autosaveDelay,
+}: LessonEditorViewProps) {
   const navigate = useNavigate();
   const update = useUpdateLesson(courseId, String(lesson.id));
 
-  const [initial] = useState<Draft>(() => ({ title: lesson.title, content: lesson.content }));
+  const [initial] = useState<Draft>(() => ({
+    title: lesson.title,
+    content: lesson.content,
+  }));
   const [title, setTitle] = useState(initial.title);
   const [content, setContent] = useState(initial.content);
   const draft = useMemo(() => ({ title, content }), [title, content]);
@@ -52,10 +60,18 @@ export function LessonEditorView({ courseId, lesson, outline, autosaveDelay }: L
   // Where this lesson sits in the course, from the outline we already have
   const where = useMemo(() => {
     const all = outline.modules.flatMap((m, mi) =>
-      m.lessons.map((l, li) => ({ lesson: l, moduleNumber: mi + 1, lessonNumber: li + 1 })),
+      m.lessons.map((l, li) => ({
+        lesson: l,
+        moduleNumber: mi + 1,
+        lessonNumber: li + 1,
+      })),
     );
     const index = all.findIndex((x) => x.lesson.id === lesson.id);
-    return { current: all[index], previous: all[index - 1], next: all[index + 1] };
+    return {
+      current: all[index],
+      previous: all[index - 1],
+      next: all[index + 1],
+    };
   }, [outline, lesson.id]);
 
   /** Save first, then go. If the save fails, stay here so nothing is lost. */
@@ -103,7 +119,11 @@ export function LessonEditorView({ courseId, lesson, outline, autosaveDelay }: L
             className="w-full border-0 border-b border-transparent bg-transparent px-0 pb-1.5 text-xl font-semibold tracking-tight text-foreground placeholder:text-gray-600 hover:border-line focus:border-accent focus:outline-none aria-[invalid=true]:border-red-400 sm:text-2xl"
           />
           {titleMissing && (
-            <p id="lesson-title-error" role="alert" className="mt-1 text-xs text-danger">
+            <p
+              id="lesson-title-error"
+              role="alert"
+              className="mt-1 text-xs text-danger"
+            >
               Give the lesson a title. Nothing is saved until it has one.
             </p>
           )}
@@ -114,9 +134,17 @@ export function LessonEditorView({ courseId, lesson, outline, autosaveDelay }: L
         </div>
       </header>
 
-      <MarkdownSplitEditor id="lesson-content" label="Lesson content" value={content} onChange={setContent} />
+      <MarkdownSplitEditor
+        id="lesson-content"
+        label="Lesson content"
+        value={content}
+        onChange={setContent}
+      />
 
-      <nav aria-label="Lessons" className="flex flex-wrap justify-between gap-3">
+      <nav
+        aria-label="Lessons"
+        className="flex flex-wrap justify-between gap-3"
+      >
         {where.previous ? (
           <Link
             to={lessonEditorPath(courseId, where.previous.lesson.id)}
@@ -124,7 +152,9 @@ export function LessonEditorView({ courseId, lesson, outline, autosaveDelay }: L
             className="min-h-11 max-w-xs rounded-lg px-3 py-2 text-sm text-body hover:bg-surface"
           >
             <span className="block text-xs text-muted">← Previous</span>
-            <span className="block truncate font-semibold">{where.previous.lesson.title}</span>
+            <span className="block truncate font-semibold">
+              {where.previous.lesson.title}
+            </span>
           </Link>
         ) : (
           <span />
@@ -136,7 +166,9 @@ export function LessonEditorView({ courseId, lesson, outline, autosaveDelay }: L
             className="min-h-11 max-w-xs rounded-lg px-3 py-2 text-right text-sm text-body hover:bg-surface"
           >
             <span className="block text-xs text-muted">Next →</span>
-            <span className="block truncate font-semibold">{where.next.lesson.title}</span>
+            <span className="block truncate font-semibold">
+              {where.next.lesson.title}
+            </span>
           </Link>
         )}
       </nav>

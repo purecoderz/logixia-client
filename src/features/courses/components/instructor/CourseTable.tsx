@@ -19,7 +19,10 @@ export function CourseTable({ courses, busyId, handlers }: CourseTableProps) {
       header: "Course",
       cell: (c) => (
         <>
-          <Link to={builderPath(c.id)} className="block max-w-xs font-semibold text-foreground hover:text-accent hover:underline">
+          <Link
+            to={builderPath(c.id)}
+            className="block max-w-xs font-semibold text-foreground hover:text-accent hover:underline"
+          >
             {c.title}
           </Link>
           <p className="mt-0.5 text-xs text-muted">{c.language}</p>
@@ -27,17 +30,38 @@ export function CourseTable({ courses, busyId, handlers }: CourseTableProps) {
       ),
     },
     { header: "Status", cell: (c) => <CourseStatusChip status={c.status} /> },
-    { header: "Lessons", cell: (c) => <span className="font-medium">{c.lessons}</span> },
-    { header: "Cohorts", cell: (c) => <span className="font-medium">{c.cohorts}</span> },
-    { header: "Students", cell: (c) => <span className="font-medium">{c.students}</span> },
-    { header: "Price", cell: (c) => <span className="font-medium">{formatPrice(c.price)}</span> },
-    { header: "Updated", cell: (c) => <span className="text-body">{formatUpdated(c.updatedAt)}</span> },
+    {
+      header: "Lessons",
+      cell: (c) => <span className="font-medium">{c.lessons}</span>,
+    },
+    {
+      header: "Cohorts",
+      cell: (c) => <span className="font-medium">{c.cohorts}</span>,
+    },
+    {
+      header: "Students",
+      cell: (c) => <span className="font-medium">{c.students}</span>,
+    },
+    {
+      header: "Price",
+      cell: (c) => <span className="font-medium">{formatPrice(c.price)}</span>,
+    },
+    {
+      header: "Updated",
+      cell: (c) => (
+        <span className="text-body">{formatUpdated(c.updatedAt)}</span>
+      ),
+    },
     {
       header: "Actions",
       hideHeader: true,
       cell: (c) => (
         <div className="flex justify-end">
-          <CourseActions course={c} busy={busyId === c.id} handlers={handlers} />
+          <CourseActions
+            course={c}
+            busy={busyId === c.id}
+            handlers={handlers}
+          />
         </div>
       ),
     },

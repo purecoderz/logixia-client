@@ -9,7 +9,11 @@ const chips: Record<InstructorCohortStatus, { tone: Tone; label: string }> = {
   completed: { tone: "neutral", label: "Completed" },
 };
 
-export function CohortStatusChip({ status }: { status: InstructorCohortStatus }) {
+export function CohortStatusChip({
+  status,
+}: {
+  status: InstructorCohortStatus;
+}) {
   const { tone, label } = Object.hasOwn(chips, status)
     ? chips[status]
     : { tone: "neutral" as const, label: "Unknown" };

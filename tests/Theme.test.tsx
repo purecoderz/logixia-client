@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ThemeProvider, InstructorThemeProvider, useTheme } from "../src/features/theme/ThemeProvider";
+import { ThemeBoundary, ThemeProvider, InstructorThemeProvider, useTheme } from "../src/features/theme/ThemeProvider";
 import { MemoryRouter, Routes, Route, Link } from "react-router-dom";
 import { ThemeToggle } from "../src/features/theme/ThemeToggle";
 import { InstructorTopbar } from "../src/layouts/InstructorLayout/InstructorTopbar";
@@ -51,15 +51,30 @@ it("preserves the previous instructor preference during migration",()=>{
  expect(document.body.dataset.appTheme).toBe("light");
 });
 
-it.each(["/playground", "/assignments/12", "/live/room"])("leaves %s dark and restores the saved light theme on return",async(path)=>{
+it.each(["/playground", "/tasks/12", "/live/room"])("shares the saved theme with a standalone workspace at %s",async(path)=>{
  localStorage.setItem("appTheme","light");
  function Student(){return <ThemeProvider><ThemeToggle/><Link to={path}>Open coding workspace</Link></ThemeProvider>;}
  function Workspace(){const {theme}=useTheme();return <><output>{theme}</output><Link to="/">Back to student</Link></>;}
- render(<MemoryRouter><Routes><Route path="/" element={<Student/>}/><Route path={path} element={<Workspace/>}/></Routes></MemoryRouter>);
+ render(<MemoryRouter><Routes><Route path="/" element={<Student/>}/><Route path={path} element={<ThemeBoundary><Workspace/></ThemeBoundary>}/></Routes></MemoryRouter>);
  expect(document.body.dataset.appTheme).toBe("light");
  await userEvent.click(screen.getByRole("link",{name:"Open coding workspace"}));
- expect(document.body.hasAttribute("data-app-theme")).toBe(false);
- expect(screen.getByRole("status").textContent).toBe("dark");
+ expect(document.body.dataset.appTheme).toBe("light");
+ expect(screen.getByRole("status").textContent).toBe("light");
  await userEvent.click(screen.getByRole("link",{name:"Back to student"}));
+ expect(document.body.dataset.appTheme).toBe("light");
+});
+
+it("reuses its parent theme and preserves child state when toggled", async () => {
+ const { useState } = await import("react");
+ function Draft() {
+   const [value, setValue] = useState("print('hello')");
+   return <><input aria-label="Code draft" value={value} onChange={event => setValue(event.target.value)} /><ThemeToggle /><Preference /></>;
+ }
+ render(<ThemeProvider><ThemeBoundary><Draft /></ThemeBoundary></ThemeProvider>);
+ const input = screen.getByRole("textbox", { name: "Code draft" }) as HTMLInputElement;
+ await userEvent.type(input, " # edited");
+ await userEvent.click(screen.getByRole("button", { name: "Switch to light theme" }));
+ expect(input.value).toBe("print('hello') # edited");
+ expect(screen.getByRole("status").textContent).toBe("light:light");
  expect(document.body.dataset.appTheme).toBe("light");
 });

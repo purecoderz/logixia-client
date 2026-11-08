@@ -7,5 +7,6 @@ export function useCourseOutline(courseId: string | undefined) {
     queryKey: courseKeys.outline(courseId ?? ""),
     queryFn: () => CourseService.getOutline(courseId ?? ""),
     enabled: Boolean(courseId),
+    staleTime: 5 * 60_000,
   });
 }

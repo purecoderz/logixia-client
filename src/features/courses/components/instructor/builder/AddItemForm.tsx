@@ -1,5 +1,11 @@
 import { Select } from "@/components/ui/Select";
-import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type KeyboardEvent,
+} from "react";
 import { Button } from "../../../../../components/ui/Button";
 import { Spinner } from "../../../../../components/ui/Spinner";
 import { inputClass } from "../../../../../components/ui/formStyles";
@@ -45,18 +51,16 @@ export function AddItemForm({
   const openButtonRef = useRef<HTMLButtonElement>(null);
   const [picked, setPicked] = useState(pick?.options[0]?.value ?? "");
 
-
   const isOpen = opened || existingCount === 0; // with nothing yet, the form is always shown
   const noteId = `${inputId}-note`;
-
-
 
   useEffect(() => {
     if (opened) inputRef.current?.focus();
   }, [opened]);
 
   function messageFor(err: unknown) {
-    if (err instanceof ApiError && err.status === 422) return "That title isn’t valid. Check it and try again.";
+    if (err instanceof ApiError && err.status === 422)
+      return "That title isn’t valid. Check it and try again.";
     return friendlyMessage(err, `Couldn’t add the ${noun}. Please try again.`);
   }
 
@@ -71,7 +75,8 @@ export function AddItemForm({
 
     const clean = title.trim();
     if (!clean) return fail(`Give the ${noun} a title.`);
-    if (clean.length > MAX_TITLE) return fail(`Keep the title under ${MAX_TITLE} characters.`);
+    if (clean.length > MAX_TITLE)
+      return fail(`Keep the title under ${MAX_TITLE} characters.`);
 
     setError(null);
     setAnnouncement("");
@@ -115,18 +120,33 @@ export function AddItemForm({
           onClick={() => setOpened(true)}
           className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-line text-sm font-medium text-muted hover:border-line-strong hover:text-foreground"
         >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            aria-hidden="true"
+          >
             <path d="M8 2v12M2 8h12" />
           </svg>
           {actionLabel ?? `Add ${noun}`}
         </button>
       ) : (
-        <form noValidate onSubmit={submit} className="rounded-xl border border-dashed border-line bg-surface-muted/30 p-4">
+        <form
+          noValidate
+          onSubmit={submit}
+          className="rounded-xl border border-dashed border-line bg-surface-muted/30 p-4"
+        >
           <label htmlFor={inputId} className="sr-only">
             {numberLabel} title
           </label>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="min-w-16 shrink-0 text-xs font-semibold text-muted">{numberLabel}</span>
+            <span className="min-w-16 shrink-0 text-xs font-semibold text-muted">
+              {numberLabel}
+            </span>
             <input
               ref={inputRef}
               id={inputId}
@@ -143,7 +163,13 @@ export function AddItemForm({
 
             {pick && (
               <div className="min-w-40">
-                <Select aria-label={pick.label} value={picked} onChange={setPicked} disabled={saving} options={pick.options} />
+                <Select
+                  aria-label={pick.label}
+                  value={picked}
+                  onChange={setPicked}
+                  disabled={saving}
+                  options={pick.options}
+                />
               </div>
             )}
 
@@ -153,7 +179,7 @@ export function AddItemForm({
                   <Spinner tone="dark" /> Adding…
                 </>
               ) : (
-                actionLabel ?? `Add ${noun}`
+                (actionLabel ?? `Add ${noun}`)
               )}
             </Button>
             {existingCount > 0 && (

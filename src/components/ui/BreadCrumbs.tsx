@@ -1,4 +1,11 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
 import { Link } from "react-router-dom";
 
 export interface Crumb {
@@ -11,13 +18,15 @@ const ItemsContext = createContext<Crumb[]>([]);
 const SetterContext = createContext<((items: Crumb[]) => void) | null>(null);
 
 const sameCrumbs = (a: Crumb[], b: Crumb[]) =>
-  a.length === b.length && a.every((c, i) => c.label === b[i].label && c.to === b[i].to);
+  a.length === b.length &&
+  a.every((c, i) => c.label === b[i].label && c.to === b[i].to);
 
 /** Wrap the topbar and the page area in this, once, in the layout. */
 export function BreadcrumbProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<Crumb[]>([]);
   const set = useCallback(
-    (next: Crumb[]) => setItems((prev) => (sameCrumbs(prev, next) ? prev : next)),
+    (next: Crumb[]) =>
+      setItems((prev) => (sameCrumbs(prev, next) ? prev : next)),
     [],
   );
   return (
@@ -54,11 +63,17 @@ function Trail({ items }: { items: Crumb[] }) {
         <li key={`${c.label}-${i}`} className="flex min-w-0 items-center gap-2">
           {i > 0 && <span aria-hidden="true">/</span>}
           {c.to ? (
-            <Link to={c.to} className="max-w-48 truncate hover:text-body hover:underline">
+            <Link
+              to={c.to}
+              className="max-w-48 truncate hover:text-body hover:underline"
+            >
               {c.label}
             </Link>
           ) : (
-            <span aria-current="page" className="max-w-64 truncate text-foreground">
+            <span
+              aria-current="page"
+              className="max-w-64 truncate text-foreground"
+            >
               {c.label}
             </span>
           )}
@@ -82,8 +97,21 @@ export function TopbarBreadcrumbs() {
         <Trail items={items} />
       </div>
       {parent?.to && (
-        <Link to={parent.to} className="inline-flex min-h-11 items-center gap-1.5 text-sm text-body hover:text-foreground md:hidden">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <Link
+          to={parent.to}
+          className="inline-flex min-h-11 items-center gap-1.5 text-sm text-body hover:text-foreground md:hidden"
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
             <path d="M10 4L6 8l4 4" />
           </svg>
           <span className="max-w-40 truncate">{parent.label}</span>

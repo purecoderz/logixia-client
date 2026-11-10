@@ -1,12 +1,25 @@
+import { useEffect, useRef } from "react";
+
 interface FormErrorProps {
   message: string;
   onDismiss?: () => void;
+  autoFocus?: boolean;
+  focusKey?: number;
 }
 
 /** Red bar for a failed save. */
-export function FormError({ message, onDismiss }: FormErrorProps) {
+export function FormError({ message, onDismiss, autoFocus = false, focusKey = 0 }: FormErrorProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!autoFocus) return;
+    ref.current?.focus({ preventScroll: true });
+    const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    ref.current?.scrollIntoView?.({ behavior: reducedMotion ? "instant" : "smooth", block: "nearest" });
+  }, [autoFocus, focusKey, message]);
   return (
     <div
+      ref={ref}
+      tabIndex={autoFocus ? -1 : undefined}
       role="alert"
       className="flex flex-wrap items-center gap-3 rounded-xl border border-red-400/40 bg-red-400/10 px-4 py-3 text-sm text-danger"
     >

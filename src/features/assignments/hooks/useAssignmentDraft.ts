@@ -20,7 +20,9 @@ export function useAssignment(assignmentId: string) {
         const assignment = await AssignmentService.getTask(assignmentId);
         if (cancelled) return;
         
-        setInitialFiles(assignment.starter_files);
+        if (assignment.type === "code") {
+          setInitialFiles(assignment.starter_files);
+        }
         setTask(assignment);
       } catch (error) {
         if (!cancelled) setLoadError(error);
@@ -35,7 +37,7 @@ export function useAssignment(assignmentId: string) {
   }, [assignmentId, attempt]);
 
   const reset = useCallback(() => {
-    if (!task) return;
+    if (!task || task.type !== "code") return;
     setInitialFiles({ ...task.starter_files });
     setGeneration((value) => value + 1);
   }, [task]);

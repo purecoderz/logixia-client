@@ -24,7 +24,7 @@ export function MarkdownEditor({
   rows = 6,
   hint,
   error,
-  allowImages = false,
+  allowImages: _allowImages = false,
 }: MarkdownEditorProps) {
   const [mode, setMode] = useState<Mode>("write");
 

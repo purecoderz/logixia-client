@@ -17,22 +17,26 @@ export function TodayCard({ assignments }: { assignments: Assignment[] }) {
         <EmptyState>Nothing due today.</EmptyState>
       ) : (
         <ul className="space-y-2">
-          {assignments.map((a) => (
-            <li key={a.id} className="flex items-stretch gap-3">
-              <span className="w-14 shrink-0 pt-3 text-right text-xs text-muted">
-                {formatTime(new Date(a.due_date))}
-              </span>
-              <Link
-                to={`/tasks/${a.id}`}
-                className="min-w-0 flex-1 rounded-xl border-l-4 border-[#d29922] bg-input p-3 transition-colors hover:bg-hover"
-              >
-                <p className="truncate text-sm font-semibold text-foreground">
-                  {a.title}
-                </p>
-                <p className="mt-0.5 text-xs text-muted">+{a.xp} XP</p>
-              </Link>
-            </li>
-          ))}
+          {assignments.map((a) => {
+            const taskUrl =
+              a.type === "quiz" ? `/tasks/${a.id}/quiz` : `/tasks/${a.id}`;
+            return (
+              <li key={a.id} className="flex items-stretch gap-3">
+                <span className="w-14 shrink-0 pt-3 text-right text-xs text-muted">
+                  {formatTime(new Date(a.due_date))}
+                </span>
+                <Link
+                  to={taskUrl}
+                  className="min-w-0 flex-1 rounded-xl border-l-4 border-[#d29922] bg-input p-3 transition-colors hover:bg-hover"
+                >
+                  <p className="truncate text-sm font-semibold text-foreground">
+                    {a.title}
+                  </p>
+                  <p className="mt-0.5 text-xs text-muted">+{a.xp} XP</p>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       )}
     </DashboardCard>

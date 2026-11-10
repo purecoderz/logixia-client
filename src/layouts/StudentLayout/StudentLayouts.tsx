@@ -21,6 +21,7 @@ function StudentLayout() {
   const showBottomNav = useShowBottomNav();
   const { pathname } = useLocation();
   const workspace = pathname === "/playground";
+  const isQuiz = pathname.includes("/tasks/") && pathname.endsWith("/quiz");
   const motion = useNavigationMotion();
   const hidden =
     motion === "student-exit" || (workspace && motion !== "student-enter");
@@ -67,11 +68,11 @@ function StudentLayout() {
           </div>
           <main
             data-student-content
-            className={`min-h-0 flex-1 overflow-y-auto ${workspace ? "invisible" : "bg-canvas text-body"}`}
+            className={`min-h-0 flex-1 ${isQuiz ? "overflow-hidden flex flex-col" : "overflow-y-auto"} ${workspace ? "invisible" : "bg-canvas text-body"}`}
           >
             {!workspace && (
               <div
-                className={`mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8 ${showBottomNav ? "pb-24 md:pb-8" : ""}`}
+                className={`mx-auto w-full max-w-7xl px-4 ${isQuiz ? "flex flex-1 min-h-0 flex-col py-4 sm:px-6 lg:px-8" : "py-8 sm:px-6 lg:px-8"} ${showBottomNav ? "pb-24 md:pb-8" : ""}`}
               >
                 <Outlet />
               </div>

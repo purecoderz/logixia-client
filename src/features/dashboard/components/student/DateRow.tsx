@@ -14,9 +14,11 @@ export function DateRow({ a }: { a: Assignment }) {
       ? LATE[a.uiStatus]
       : null;
 
+  const taskUrl = a.type === "quiz" ? `/tasks/${a.id}/quiz` : `/tasks/${a.id}`;
+
   return (
     <Link
-      to={`/tasks/${a.id}`}
+      to={taskUrl}
       className="flex items-center gap-3 rounded-xl bg-input p-3 transition-colors hover:bg-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
     >
       <span className="flex size-11 shrink-0 flex-col items-center justify-center rounded-lg bg-surface leading-none">

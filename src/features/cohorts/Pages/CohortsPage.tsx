@@ -144,3 +144,6 @@ export function CohortsRegistrationPage() {
     </div>
   );
 }
+
+export { CohortsRegistrationPage as CohortsPage };
+

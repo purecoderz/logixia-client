@@ -150,6 +150,8 @@ export function AssignmentsTable({
         <tbody>
           {rows.map((a) => {
             const d = due(a);
+            const taskUrl =
+              a.type === "quiz" ? `/tasks/${a.id}/quiz` : `/tasks/${a.id}`;
             return (
               <tr
                 key={a.id}
@@ -157,7 +159,7 @@ export function AssignmentsTable({
               >
                 <td className="px-4 py-3">
                   <Link
-                    to={`/tasks/${a.id}`}
+                    to={taskUrl}
                     className="font-medium text-foreground hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                   >
                     {a.title}

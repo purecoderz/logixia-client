@@ -370,3 +370,5 @@ export function useLiveRoom(sessionId: number = 1) {
     closeClass,
   };
 }
+
+export type LiveRoom = ReturnType<typeof useLiveRoom>;

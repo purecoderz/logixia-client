@@ -1,20 +1,24 @@
 import { ErrorState } from "@/components/ui/ErrorState";
 import { NoCohortError } from "@/features/assignments/services/assignmentService";
 import { Link } from "react-router-dom";
-import { ChevronRight, Clock, Code2 } from "lucide-react";
+import { ChevronRight, Clock, Code2, HelpCircle } from "lucide-react";
 
 import { DashboardCard, EmptyState, SeeAllLink } from "./DashboardCard";
 import type { Assignment } from "@/features/assignments/services/assignmentService";
 import { dueText } from "@/features/assignments/utils/assignments";
 
 function DueRow({ a }: { a: Assignment }) {
+  const isQuiz = a.type === "quiz";
+  const taskUrl = isQuiz ? `/tasks/${a.id}/quiz` : `/tasks/${a.id}`;
+  const TypeIcon = isQuiz ? HelpCircle : Code2;
+
   return (
     <Link
-      to={`/tasks/${a.id}`}
+      to={taskUrl}
       className="group flex items-center gap-3 rounded-xl bg-input p-3 transition-colors hover:bg-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
     >
       <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[#1f6feb]/15 text-accent">
-        <Code2 className="size-5" aria-hidden />
+        <TypeIcon className="size-5" aria-hidden />
       </span>
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold text-foreground">

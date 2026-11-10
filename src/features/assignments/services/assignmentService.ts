@@ -65,6 +65,26 @@ export const AssignmentService = {
     console.log("submit", assignmentId, files);
   },
 
+  submitQuiz: async (
+    assignmentId: string,
+    answers: Record<string, string>,
+  ): Promise<void> => {
+    await new Promise((r) => setTimeout(r, 600)); // replace with a real POST later
+    console.log("submit quiz", assignmentId, answers);
+  },
+
+  practiceRun: async (
+    assignmentId: string,
+    files: Record<string, string>,
+  ): Promise<void> => {
+    const response = await apiFetch(`/tasks/${assignmentId}/practice`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ files }),
+    });
+    if (!response.ok) throw await apiErrorFrom(response);
+  },
+
   getTask: async (id: string): Promise<AssignmentTask> => {
     const response = await apiFetch(`/cohort-tasks/${id}`);
     if (!response.ok) throw await apiErrorFrom(response);
@@ -72,23 +92,101 @@ export const AssignmentService = {
     if (
       !data ||
       typeof data.title !== "string" ||
-      typeof data.instructions !== "string" ||
-      typeof data.due_date !== "string" ||
-      !isFileMap(data.starter_files)
+      typeof data.instructions !== "string"
     )
       throw new Error("The task response is invalid.");
-    return { ...data, xp: typeof data.xp === "number" ? data.xp : 0 };
+
+    const type = data.type === "quiz" ? "quiz" : "code";
+    const due_date = typeof data.due_date === "string" ? data.due_date : "";
+    const xp = typeof data.xp === "number" ? data.xp : 0;
+    const status = typeof data.status === "string" ? data.status : null;
+
+    if (type === "quiz") {
+      if (!Array.isArray(data.questions)) {
+        throw new Error("The quiz response is invalid.");
+      }
+      return {
+        ...data,
+        type: "quiz",
+        due_date,
+        xp,
+        status,
+      };
+    }
+
+    if (!isFileMap(data.starter_files)) {
+      throw new Error("The task response is invalid.");
+    }
+    return {
+      ...data,
+      type: "code",
+      due_date,
+      xp,
+      status,
+    };
   },
 };
 
-export interface AssignmentTask {
+export interface AssignmentCodeTask {
   id: number;
   title: string;
+  type: "code";
   instructions: string;
   due_date: string;
   xp: number;
+  status?: string | null;
+  student_code?: unknown;
   starter_files: Record<string, string>;
 }
+
+export interface AssignmentQuizQuestion {
+  id: string;
+  prompt: string;
+  choices: { id: string; text: string }[];
+  correct_choice_id?: string;
+  explanation?: string;
+}
+
+export interface AssignmentQuizTask {
+  id: number;
+  title: string;
+  type: "quiz";
+  instructions: string;
+  due_date: string;
+  xp: number;
+  status?: string | null;
+  student_code?: unknown;
+  questions: AssignmentQuizQuestion[];
+}
+
+export type AssignmentTask = AssignmentCodeTask | AssignmentQuizTask;
+
+async function requireSuccess(response: Response) {
+  if (!response.ok) throw await apiErrorFrom(response);
+}
+
+export const AssignmentDraftService = {
+  async getTask(id: string): Promise<AssignmentTask> {
+    return AssignmentService.getTask(id);
+  },
+  async getDraft(id: string): Promise<Record<string, string> | null> {
+    const response = await apiFetch(`/tasks/${id}/draft`);
+    if (response.status === 204) return null;
+    await requireSuccess(response);
+    const data = await response.json();
+    if (!isFileMap(data?.files))
+      throw new Error("The saved draft response is invalid.");
+    return data.files;
+  },
+  async saveDraft(id: string, files: Record<string, string>): Promise<void> {
+    const response = await apiFetch(`/tasks/${id}/draft`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ files }),
+    });
+    await requireSuccess(response);
+  },
+};
 
 export function isFileMap(value: unknown): value is Record<string, string> {
   return (

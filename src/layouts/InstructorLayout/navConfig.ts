@@ -64,6 +64,12 @@ export const instructorNav: InstructorNavSection[] = [
         ],
       },
       {
+        id: "sessions",
+        label: "Sessions",
+        path: "/instructor/sessions",
+        icon: "📅",
+      },
+      {
         id: "plan",
         label: "Classroom Plan",
         path: "/instructor/plan",

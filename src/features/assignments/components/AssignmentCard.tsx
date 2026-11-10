@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   Clock,
   Code2,
+  HelpCircle,
   Hourglass,
   Zap,
 } from "lucide-react";
@@ -82,10 +83,13 @@ function look(a: Assignment) {
 
 export function AssignmentCard({ a }: { a: Assignment }) {
   const { Icon, label, detail, accent, pill, text, cta } = look(a);
+  const isQuiz = a.type === "quiz";
+  const taskUrl = isQuiz ? `/tasks/${a.id}/quiz` : `/tasks/${a.id}`;
+  const TypeIcon = isQuiz ? HelpCircle : Code2;
 
   return (
     <Link
-      to={`/tasks/${a.id}`}
+      to={taskUrl}
       className="group relative flex min-h-[200px] flex-col overflow-hidden rounded-xl border border-line bg-input p-5 transition-all hover:-translate-y-0.5 hover:border-line-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
     >
       {/* status accent along the top edge */}
@@ -93,7 +97,7 @@ export function AssignmentCard({ a }: { a: Assignment }) {
 
       <div className="flex items-center justify-between gap-3">
         <span className="flex items-center gap-1.5 rounded-md bg-surface px-2 py-1 text-[11px] font-medium capitalize text-muted">
-          <Code2 className="size-3.5" aria-hidden />
+          <TypeIcon className="size-3.5" aria-hidden />
           {a.type}
         </span>
         <span

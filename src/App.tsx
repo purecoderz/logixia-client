@@ -1,3 +1,4 @@
+import InstructorSessionsPage from "./features/live/pages/InstructorSessionsPage";
 import CohortTasksPage from "./features/cohorts/Pages/CohortTasksPage";
 import { LegacyStudentTaskRedirect } from "./features/assignments/pages/LegacyStudentTaskRedirect";
 import StudentSettingsPage from "./features/settings/pages/StudentSettingsPage";
@@ -23,10 +24,11 @@ import { Home } from "./features/home/pages/HomePage";
 import { CohortDetails } from "./features/cohorts/Pages/CohortDetailsPage";
 import { LecturePage } from "./features/lectures/pages/LecturePage";
 import { AssignmentsPage } from "./features/assignments/pages/AssignmentsPage";
-import { LiveSessionsPage } from "./features/live/pages/LiveSessionPage";
+import { StudentSessionsPage } from "./features/live/pages/StudentSessionsPage";
 import { LiveRoomPage } from "./features/live/pages/LiveRoomPage";
 import { PlaygroundPage } from "./features/workspace/pages/Playground";
 import { AssignmentGroundPage } from "./features/assignments/pages/AssignmentGroundPage";
+import { QuizGroundPage } from "./features/assignments/pages/QuizGroundPage";
 import { useAuth } from "./features/auth/context/AuthContext";
 import { StudentDashboardPage } from "./features/dashboard/pages/StudentDashboardPage";
 import { UserProtectedRoute } from "./features/auth/UserProtectedRoute";
@@ -70,6 +72,7 @@ function App() {
             element={<TaskTestPage />}
           />
           <Route path="/live/room" element={<LiveRoomPage />} />
+          <Route path="/live/room/:id" element={<LiveRoomPage />} />
           <Route path="/tasks/:id" element={<AssignmentGroundPage />} />
           <Route
             path="/assignments/:id"
@@ -111,6 +114,7 @@ function App() {
             element={<TaskEditorPage />}
           />
           <Route path="tasks" element={<AllTasksPage />} />
+          <Route element={<UserProtectedRoute />}><Route path="sessions" element={<InstructorSessionsPage />} /></Route>
           <Route element={<UserProtectedRoute />}>
             <Route path="settings" element={<InstructorSettingsPage />} />
           </Route>
@@ -131,9 +135,10 @@ function App() {
             <Route path="/register/cohorts" element={<CohortsRegistrationPage />} />
             <Route path="/student/cohorts" element={<StudentCohortsPage />} />
             <Route path="/student/cohort/:id" element={<CohortDetails />} />
-            <Route path="/live-stream" element={<LiveSessionsPage />} />
+            <Route path="/live-stream" element={<StudentSessionsPage />} />
             <Route path="/lessons" element={<h1>Hello</h1>} />
             <Route path="/tasks" element={<AssignmentsPage />} />
+            <Route path="/tasks/:id/quiz" element={<QuizGroundPage />} />
             <Route
               path="/history"
               element={<h1>This is the history Page</h1>}

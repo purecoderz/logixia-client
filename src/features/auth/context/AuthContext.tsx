@@ -8,14 +8,20 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import type { LoginPayload, User } from "../../../services/authservice";
 import authservices from "../../../services/authservice";
-import { AUTH_EXPIRED_EVENT } from "../../../lib/http";
+import {
+  AUTH_EXPIRED_EVENT,
+  SESSION_INTENT_KEY,
+  markSessionActive,
+  markSessionLoggedOut,
+  wasExplicitlyLoggedOut,
+} from "../../../lib/http";
 
 interface AuthContextType {
   profile: User | null;
-  login: (payload: LoginPayload) => Promise<void>;
+  login: (payload: LoginPayload) => Promise<User | null>;
   isLoading: boolean;
   updateProfile: (changes: Pick<User, "username">) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -29,22 +35,30 @@ function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (payload: LoginPayload) => {
     await authservices.userLogin(payload);
+    markSessionActive();
     const response = await authservices.getCurrentUser();
     setProfile(response);
+    return response;
   };
 
   const updateProfile = (changes: Pick<User, "username">) => {
     setProfile((current) => (current ? { ...current, ...changes } : current));
   };
 
-  const logout = () => {
-    authservices.logout();
+  const logout = async () => {
+    await authservices.logout();
+    markSessionLoggedOut();
     setProfile(null);
     queryClient.clear();
   };
 
   useEffect(() => {
     const checkLogin = async () => {
+      if (wasExplicitlyLoggedOut()) {
+        setProfile(null);
+        setIsLoading(false);
+        return;
+      }
       try {
         const res = await authservices.getCurrentUser();
         setProfile(res);
@@ -65,6 +79,18 @@ function AuthProvider({ children }: { children: ReactNode }) {
     };
     window.addEventListener(AUTH_EXPIRED_EVENT, onExpired);
     return () => window.removeEventListener(AUTH_EXPIRED_EVENT, onExpired);
+  }, [queryClient]);
+
+  useEffect(() => {
+    const syncLogout = (event: StorageEvent) => {
+      if (event.key !== SESSION_INTENT_KEY || event.newValue !== "logged-out") {
+        return;
+      }
+      setProfile(null);
+      queryClient.clear();
+    };
+    window.addEventListener("storage", syncLogout);
+    return () => window.removeEventListener("storage", syncLogout);
   }, [queryClient]);
 
   return (

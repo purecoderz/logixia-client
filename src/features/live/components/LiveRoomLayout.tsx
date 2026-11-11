@@ -1,6 +1,7 @@
+import { PointerSurface } from "../pointers/PointerSurface";
 import { SessionRoomTitle } from "../components/SessionMaterials";
 // pages/LiveRoom/LiveRoomPage.tsx
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import {
@@ -8,6 +9,8 @@ import {
   Mic,
   MicOff,
   Terminal,
+  CheckCircle2,
+  X,
 } from "lucide-react";
 import { useMediaQuery } from "../../../hooks/useMediaQuery";
 import type { LiveRoom } from "../hooks/useLiveRoom";
@@ -36,6 +39,7 @@ export function LiveRoomLayout({ room, sessionId, controls, dialogs }: { room:Li
   const isMobile = useMediaQuery("(max-width: 767px)");
   const [chatOpen, setChatOpen] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const [attendanceNotice, setAttendanceNotice] = useState(false);
   const closeMessage = room.closedReason
     ? explainClose(room.closedCode, room.closedReason)
     : null;
@@ -48,6 +52,13 @@ export function LiveRoomLayout({ room, sessionId, controls, dialogs }: { room:Li
     sendMic: room.sendMic,
   });
   const showTerminal = room.ready && !room.canWrite;
+
+  useEffect(() => {
+    if (!room.attendance) return;
+    setAttendanceNotice(true);
+    const timer = window.setTimeout(() => setAttendanceNotice(false), 8_000);
+    return () => clearTimeout(timer);
+  }, [room.attendance?.taken_at]);
 
   const [terminalOpen, setTerminalOpen] = useLocalStorage<boolean>(
     "room:terminal-open",
@@ -69,7 +80,7 @@ export function LiveRoomLayout({ room, sessionId, controls, dialogs }: { room:Li
         </div>
       </Panel>
 
-      <PanelResizeHandle className="my-0.5 h-1.5 rounded bg-[#21262d] transition-colors hover:bg-[#58a6ff]/60" />
+      <PanelResizeHandle className="my-0.5 h-1.5 rounded bg-hover transition-colors hover:bg-accent/40" />
 
       <Panel defaultSize={70} minSize={20}>
         <div className="flex h-full flex-col">
@@ -80,17 +91,17 @@ export function LiveRoomLayout({ room, sessionId, controls, dialogs }: { room:Li
   );
 
   return (
-    <div className="flex h-dvh flex-col bg-[#161b22] text-[#c9d1d9]">
-      <header className="flex h-13 shrink-0 items-center justify-between gap-2 border-b border-[#30363d] bg-[#161b22] px-3 md:px-4">
+    <div className="flex h-dvh flex-col bg-canvas text-body">
+      <header className="flex h-13 shrink-0 items-center justify-between gap-2 border-b border-line bg-surface px-3 md:px-4">
         <div className="flex min-w-0 items-center gap-2 md:gap-3">
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="shrink-0 rounded-md border border-[#30363d] px-3 py-1 text-sm hover:bg-[#21262d]"
+            className="shrink-0 rounded-md border border-line px-3 py-1 text-sm text-body hover:bg-hover"
           >
             Leave
           </button>
-          <span className="truncate text-sm font-semibold text-white md:text-base">
+          <span className="truncate text-sm font-semibold text-foreground md:text-base">
             <SessionRoomTitle sessionId={sessionId} />
           </span>
           <span className="shrink-0 text-[11px] font-bold tracking-wider text-[#3fb950]">
@@ -104,7 +115,7 @@ export function LiveRoomLayout({ room, sessionId, controls, dialogs }: { room:Li
               type="button"
               onClick={() => setChatOpen(true)}
               aria-label="Open chat and participants"
-              className="flex h-10 min-w-10 items-center justify-center rounded-md border border-[#30363d] text-[#c9d1d9] hover:bg-[#21262d] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#58a6ff]"
+              className="flex h-10 min-w-10 items-center justify-center rounded-md border border-line text-body hover:bg-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
             >
               <MessageSquare size={18} aria-hidden />
             </button>
@@ -121,10 +132,10 @@ export function LiveRoomLayout({ room, sessionId, controls, dialogs }: { room:Li
                   ? "Hide instructor's terminal"
                   : "Show instructor's terminal"
               }
-              className={`flex h-10 min-w-10 items-center justify-center gap-2 rounded-md border px-3 text-sm font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#58a6ff] md:px-4 ${
+              className={`flex h-10 min-w-10 items-center justify-center gap-2 rounded-md border px-3 text-sm font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent md:px-4 ${
                 terminalOpen
-                  ? "border-[#58a6ff]/60 text-[#58a6ff]"
-                  : "border-[#30363d] text-[#c9d1d9] hover:bg-[#21262d]"
+                  ? "border-accent/60 text-accent"
+                  : "border-line text-body hover:bg-hover"
               }`}
             >
               <Terminal size={18} aria-hidden />
@@ -143,7 +154,7 @@ export function LiveRoomLayout({ room, sessionId, controls, dialogs }: { room:Li
               className={`flex h-10 min-w-10 items-center justify-center gap-2 rounded-md px-3 text-sm font-bold md:px-4 ${
                 audio.micOn
                   ? "bg-[#238636] text-white"
-                  : "border border-[#30363d] text-[#c9d1d9] hover:bg-[#21262d]"
+                  : "border border-line text-body hover:bg-hover"
               }`}
             >
               {audio.micOn ? (
@@ -163,23 +174,51 @@ export function LiveRoomLayout({ room, sessionId, controls, dialogs }: { room:Li
         {audio.error && (
           <p
             role="alert"
-            className="shrink-0 bg-[#161b22] px-4 py-1 text-xs text-[#f85149]"
+            className="shrink-0 bg-surface px-4 py-1 text-xs text-danger"
           >
             {audio.error}
           </p>
         )}
       </header>
 
+      {attendanceNotice && room.attendance && (
+        <div
+          role="status"
+          className="fixed right-4 top-16 z-[70] flex max-w-[calc(100vw-2rem)] items-start gap-3 rounded-xl border border-[#3fb950]/40 bg-[#16251c] px-4 py-3 text-sm text-[#7ee787] shadow-2xl"
+        >
+          <CheckCircle2 size={18} className="mt-0.5 shrink-0" aria-hidden />
+          <div>
+            <p className="font-semibold">Attendance recorded</p>
+            <p className="mt-0.5 text-xs text-[#a7d7b5]">
+              {room.attendance.present_count} {room.attendance.present_count === 1 ? "participant was" : "participants were"} marked present.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setAttendanceNotice(false)}
+            aria-label="Dismiss attendance notice"
+            className="ml-1 rounded p-1 text-[#a7d7b5] hover:bg-white/10 hover:text-white"
+          >
+            <X size={15} aria-hidden />
+          </button>
+        </div>
+      )}
+
       <div className="min-h-0 flex-1">
         <PanelGroup direction="horizontal" autoSaveId="room-h">
           <Panel id="workspace" order={1} defaultSize={78} minSize={40}>
             <CodeWorkspace
+              renderPointerSurface={(panel,path,children)=>panel === "terminal" && !room.canWrite ? children : <PointerSurface panel={panel} path={path} controller={room.pointers}>{children}</PointerSurface>}
               live
               embedded
               liveFiles={room.files}
+              liveFolders={room.folders}
+              liveExpandedFolders={room.expandedFolders}
               liveActivePath={room.activePath}
               readOnly={!room.canWrite}
               sendFiles={room.sendCode}
+              sendFolder={room.sendFolder}
+              sendFolderToggle={room.sendFolderToggle}
               sendDelete={room.sendDelete}
               sendRename={room.sendRename}
               sendActive={room.sendActive}
@@ -192,7 +231,7 @@ export function LiveRoomLayout({ room, sessionId, controls, dialogs }: { room:Li
 
           {!isMobile && (
             <>
-              <PanelResizeHandle className="w-1 bg-[#21262d] transition-colors hover:bg-[#58a6ff]/60" />
+              <PanelResizeHandle className="w-1 bg-hover transition-colors hover:bg-accent/40" />
               <Panel
                 id="sidebar"
                 order={2}
@@ -200,7 +239,7 @@ export function LiveRoomLayout({ room, sessionId, controls, dialogs }: { room:Li
                 minSize={15}
                 maxSize={40}
               >
-                <aside className="flex h-full flex-col gap-2 bg-[#161b22] p-2">
+                <aside className="flex h-full flex-col gap-2 bg-canvas p-2">
                   {roomPanels}
                 </aside>
               </Panel>
@@ -233,6 +272,7 @@ export function LiveRoomLayout({ room, sessionId, controls, dialogs }: { room:Li
           open={terminalOpen && showTerminal}
           onClose={() => setTerminalOpen(false)}
           isMobile={isMobile}
+          renderSurface={children=><PointerSurface panel="terminal" controller={room.pointers}>{children}</PointerSurface>}
           lines={room.terminalLines}
         />
       )}

@@ -6,7 +6,7 @@ const VIEW = {
   idle: {
     text: "Audio",
     label: "No one is speaking right now",
-    tone: "border-[#30363d] text-[#8b949e]",
+    tone: "border-line text-muted hover:bg-hover",
     Icon: VolumeX,
   },
   connecting: {
@@ -51,7 +51,7 @@ export function AudioStatusButton({
         onClick={onClick}
         aria-label={label}
         title={label}
-        className={`flex h-10 min-w-10 items-center justify-center gap-2 rounded-md border px-3 text-sm font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#58a6ff] md:px-4 ${tone}`}
+        className={`flex h-10 min-w-10 items-center justify-center gap-2 rounded-md border px-3 text-sm font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent md:px-4 ${tone}`}
       >
         <Icon
           size={18}

@@ -91,16 +91,16 @@ export const CohortUtils = {
       id: `c${item.id}`,
       status,
       name: item.name,
-      subtitle: item.subtitle ?? "Learn to code live",
+      // Do not manufacture catalog copy when the API omits a course title.
+      subtitle: item.course_title ?? item.subtitle ?? "",
       startsOn: CohortUtils.formatStartsOn(item.start_date),
       durationLabel: CohortUtils.getDurationLabel(
         item.start_date,
         item.end_date,
         status,
       ),
-      seatsTaken: item.seats_taken ?? 0,
-      // API sends `seats`; `seats_total` kept as a fallback for older responses
-      seatsTotal: item.seats ?? item.seats_total ?? 20,
+      seatsTaken: item.seats_taken,
+      seatsTotal: item.seats,
       price: item.price,
     };
   },

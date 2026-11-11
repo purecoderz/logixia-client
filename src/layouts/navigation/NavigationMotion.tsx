@@ -13,6 +13,10 @@ export type NavigationMotion =
 export const NavigationMotionContext = createContext<NavigationMotion>("idle");
 export const useNavigationMotion = () => useContext(NavigationMotionContext);
 
+export function isStudentWorkspace(path: string) {
+  return path === "/playground" || /^\/tasks\/[^/]+$/.test(path);
+}
+
 function isPublicPage(path: string, signedIn: boolean) {
   return (
     ["/privacy", "/terms", "/courses", "/cohorts"].includes(path) ||
@@ -56,9 +60,9 @@ export function useNavigationTransition(signedIn: boolean) {
     ).matches;
     let next: NavigationMotion = "idle";
     if (!reducedMotion && !destination.state?.authTransition) {
-      if (to === "/playground" && isStudentPage(from, signedIn))
+      if (isStudentWorkspace(to) && isStudentPage(from, signedIn))
         next = "student-exit";
-      else if (from === "/playground" && isStudentPage(to, signedIn))
+      else if (isStudentWorkspace(from) && isStudentPage(to, signedIn))
         next = "student-enter";
       else if (
         (from === "/playground" || from.startsWith("/auth/")) &&

@@ -223,7 +223,7 @@ export function InstructorSidebar({
         )}
         <button
           type="button"
-          onClick={logout}
+          onClick={() => void logout()}
           aria-label="Log out"
           className="rounded-md p-1.5 text-muted hover:text-[#f85149]"
         >

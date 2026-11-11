@@ -48,6 +48,7 @@ type Slot = ReactNode | ((ctx: WorkspaceContext) => ReactNode);
 type PaneName = "editor" | "aside";
 
 interface CodeWorkspaceProps {
+  renderPointerSurface?: (panel: "explorer" | "editor" | "terminal", path: string | null, children: ReactNode) => ReactNode;
   storageMode?: WorkspaceStorage;
   onFilesChange?: (files: Record<string, string>) => void;
   storageKey: string; // where files, tabs and panel sizes are saved
@@ -64,7 +65,11 @@ interface CodeWorkspaceProps {
   readOnly?: boolean;
   live?: boolean;
   liveFiles?: Record<string, string>;
+  liveFolders?: string[];
+  liveExpandedFolders?: string[];
   sendFiles?: (name: string, text: string, line?: number) => void;
+  sendFolder?: (path: string) => void;
+  sendFolderToggle?: (path: string, expanded: boolean) => void;
   liveActivePath?: string | null;
   sendDelete?: (path: string) => void;
   sendRename?: (from: string, to: string) => void;
@@ -178,13 +183,18 @@ function WorkspaceContent({
   readOnly = false,
   live = false,
   liveFiles,
+  liveFolders,
+  liveExpandedFolders,
   sendFiles,
+  sendFolder,
+  sendFolderToggle,
   liveActivePath,
   sendDelete,
   sendRename,
   sendActive,
   onTerminalLines,
   currentLine,
+  renderPointerSurface,
 }: CodeWorkspaceProps) {
   const isMobile = useMediaQuery("(max-width: 767px)");
 
@@ -256,8 +266,8 @@ function WorkspaceContent({
 
   // Server files -> workspace nodes
   useEffect(() => {
-    if (live && liveFiles) setLiveNodes(liveFiles);
-  }, [live, liveFiles]);
+    if (live && liveFiles) setLiveNodes(liveFiles, liveFolders);
+  }, [live, liveFiles, liveFolders]);
 
   // Nothing open yet: open the file the instructor is on, or the first one
   useEffect(() => {
@@ -311,10 +321,12 @@ function WorkspaceContent({
   ) => {
     if (readOnly) return;
     onCreateNode(parentId, type, name);
-    if (type !== "file") return; // empty folders aren't synced
-
     const parent = nodes.find((n) => n.id === parentId);
     const path = parent ? `${getPath(nodes, parent)}/${name}` : name;
+    if (type === "folder") {
+      sendFolder?.(path);
+      return;
+    }
     sendFiles?.(path, ""); // the server now knows the file exists
     setPendingOpen(path); // and I switch to it
   };
@@ -378,7 +390,9 @@ function WorkspaceContent({
     setExporting(true);
   };
 
-  const renderExplorer = () => (
+  const surface = (panel: "explorer" | "editor" | "terminal", children: ReactNode) => live && renderPointerSurface ? renderPointerSurface(panel, currentPath, children) : children;
+
+  const renderExplorer = () => surface("explorer", (
     <Explorer
       readOnly={readOnly}
       touchActions={isMobile}
@@ -391,14 +405,16 @@ function WorkspaceContent({
       onCreate={handleCreate}
       onRename={handleRename}
       onDelete={handleDelete}
+      expandedPaths={live ? liveExpandedFolders : undefined}
+      onFolderToggle={live ? sendFolderToggle : undefined}
     />
-  );
+  ));
 
   const Editor = live ? LiveEditor : CodeEditor;
 
   const editorPane = (
     <Pane name="editor" expanded={expanded}>
-      <div className="workspace-editor flex h-full flex-col overflow-hidden rounded-md bg-input text-body">
+      {surface("editor", <div className="workspace-editor flex h-full flex-col overflow-hidden rounded-md bg-input text-body">
         <div className="flex items-center">
           <div className="min-w-0 flex-1">
             <Tabs
@@ -467,6 +483,7 @@ function WorkspaceContent({
               language={language}
               readOnly={readOnly}
               followLine={currentLine}
+
             />
           ) : (
             <div className="flex h-full flex-col items-center justify-center px-6 text-center">
@@ -507,7 +524,7 @@ function WorkspaceContent({
             </div>
           )}
         </div>
-      </div>
+      </div>)}
     </Pane>
   );
 
@@ -564,7 +581,7 @@ function WorkspaceContent({
       </Panel>
       <PanelResizeHandle className="h-1 transition-colors hover:bg-accent/40" />
       <Panel defaultSize={isMobile ? 38 : 25} minSize={10}>
-        {terminalPane}
+        {surface("terminal", terminalPane)}
       </Panel>
     </PanelGroup>
   );
@@ -585,7 +602,7 @@ function WorkspaceContent({
           </Panel>
           <PanelResizeHandle className="h-1 transition-colors hover:bg-accent/40" />
           <Panel defaultSize={45} minSize={10}>
-            {terminalPane}
+            {surface("terminal", terminalPane)}
           </Panel>
         </PanelGroup>
       </Panel>

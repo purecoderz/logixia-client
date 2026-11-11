@@ -143,17 +143,18 @@ export function parseTaskJson(
         return fail(`tests.output_tests[${index}] must be an object.`);
       known(
         test,
-        ["input", "expected_output", "comparison"],
+        ["name", "input", "expected", "match"],
         `tests.output_tests[${index}].`,
       );
-      if (test.comparison !== "exact" && test.comparison !== "contains")
+      if (test.match !== "exact" && test.match !== "contains")
         return fail(
-          `tests.output_tests[${index}].comparison must be exact or contains.`,
+          `tests.output_tests[${index}].match must be exact or contains.`,
         );
       return {
+        name: text(test, "name"),
         input: text(test, "input"),
-        expected_output: text(test, "expected_output"),
-        comparison: test.comparison,
+        expected: text(test, "expected"),
+        match: test.match,
       };
     }),
   };

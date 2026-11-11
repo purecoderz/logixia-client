@@ -17,9 +17,9 @@ it("validates file paths and conflicting word requirements",()=>{
 });
 it("rejects empty contains checks and a wrong custom entry function",()=>{
  const task=emptyTask();task.title="Addition";task.instructions="Write add.";
- task.tests.output_tests=[{input:"",expected_output:"",comparison:"contains"}];task.tests.custom_test="def something_else():\n    pass";
+ task.tests.output_tests=[{name:"Addition output",input:"",expected:"",match:"contains"}];task.tests.custom_test="def something_else():\n    pass";
  expect(validateTask(task).map((error)=>error.section)).toEqual(["output","custom"]);
- task.tests.output_tests[0].comparison="exact";task.tests.custom_test="def test_student(student):\n    assert student.add(2,3) == 5";
+ task.tests.output_tests[0].match="exact";task.tests.custom_test="def test_student(student):\n    assert student.add(2,3) == 5";
  expect(validateTask(task)).toEqual([]);
 });
 it("retains data across sections and saves all authored checks without XP",async()=>{
@@ -32,6 +32,7 @@ it("retains data across sections and saves all authored checks without XP",async
  await user.type(screen.getByLabelText("Forbidden words"),"eval, exec");
  await user.click(screen.getByRole("button",{name:"Output tests"}));
  await user.click(screen.getByRole("button",{name:"Add output test"}));
+ await user.type(screen.getByLabelText("Test name"),"Adds two numbers");
  await user.type(screen.getByLabelText("Expected output"),"5");
  await user.click(screen.getByRole("button",{name:"Custom test"}));
  fireEvent.change(screen.getByLabelText("Custom test code"),{target:{value:"def test_student(student):\n    assert student.add(2, 3) == 5"}});
@@ -41,7 +42,7 @@ it("retains data across sections and saves all authored checks without XP",async
  expect(await screen.findByText("Task saved.")).toBeTruthy();
  const payload=save.mock.calls[0][0];
  expect(payload).not.toHaveProperty("language");expect(payload).not.toHaveProperty("xp");expect(payload.tests.required_words).toEqual(["def","return"]);
- expect(payload.tests.require_main_guard).toBe(true);expect(payload.tests.output_tests[0].expected_output).toBe("5");
+ expect(payload.tests.require_main_guard).toBe(true);expect(payload.tests.output_tests[0].expected).toBe("5");
  expect(payload.tests.custom_test).toContain("test_student(student)");expect(payload.starter_files).toHaveProperty("main.py");
 });
 it("returns to the section with the first validation error",async()=>{

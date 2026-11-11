@@ -1,8 +1,9 @@
 import type { QuizTaskInput } from "./quizForm";
 export interface OutputTest {
+  name: string;
   input: string;
-  expected_output: string;
-  comparison: "exact" | "contains";
+  expected: string;
+  match: "exact" | "contains";
 }
 export interface TaskTests {
   check_syntax: boolean;
@@ -20,7 +21,13 @@ export interface CodeTaskInput {
   tests: TaskTests;
 }
 export type TaskInput = CodeTaskInput | QuizTaskInput;
-export type TaskDocument = TaskInput & { id: number; lesson_id: number };
+export type TaskDocument = TaskInput & {
+  id: number;
+  lesson_id: number | null;
+  task_order: number | null;
+  owner_cohort_id: number | null;
+  created_by_id?: string | null;
+};
 export type TaskSection =
   "details" | "files" | "rules" | "output" | "custom" | "preview";
 export interface TaskProblem {
@@ -89,9 +96,11 @@ export function validateTask(task: CodeTaskInput): TaskProblem[] {
       `“${conflict}” cannot be both required and forbidden.`,
     );
   task.tests.output_tests.forEach((test, index) => {
-    if (!["exact", "contains"].includes(test.comparison))
+    if (!test.name.trim())
+      add("output", `output-name-${index}`, "Give this output test a name.");
+    if (!["exact", "contains"].includes(test.match))
       add("output", `output-mode-${index}`, "Choose an output comparison.");
-    if (test.comparison === "contains" && !test.expected_output)
+    if (test.match === "contains" && !test.expected)
       add(
         "output",
         `output-expected-${index}`,

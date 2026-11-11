@@ -4,6 +4,10 @@ import { commands } from "../utils/terminalCommands";
 import { completeInput } from "../utils/autoTerminalComplete";
 import { FileManagement, type FsNode } from "@/features/workspace/utils/File";
 import { createPythonEngine } from "@/features/workspace/engine/pythonEngine";
+import {
+  PYTHON_EXECUTION_LIMITS,
+  pythonLimitMessage,
+} from "@/features/workspace/engine/executionLimits";
 import { collectFiles } from "@/features/workspace/utils/exportProject";
 
 export function useTerminal(
@@ -21,12 +25,32 @@ export function useTerminal(
   const [ready, setReady] = useState(false);
   const engineRef = useRef<ReturnType<typeof createPythonEngine> | null>(null);
   const pendingRef = useRef<string | null>(null);
+  const runTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const outputBytesRef = useRef(0);
   const [prompt, setPrompt] = useState<string | null>(null);
   const nodesRef = useRef(nodes);
 
   nodesRef.current = nodes;
 
   const push = (line: TerminalLine) => setLines((prev) => [...prev, line]);
+
+  const clearRunTimer = () => {
+    if (runTimerRef.current === null) return;
+    clearTimeout(runTimerRef.current);
+    runTimerRef.current = null;
+  };
+
+  const armRunTimer = () => {
+    clearRunTimer();
+    runTimerRef.current = setTimeout(() => {
+      terminateExecution(pythonLimitMessage.timeout, "stderr");
+    }, PYTHON_EXECUTION_LIMITS.timeoutMs);
+  };
+
+  const beginExecution = () => {
+    outputBytesRef.current = 0;
+    armRunTimer();
+  };
 
   // apply files created or changed by Python back into the Explorer tree
   const applyChanges = (
@@ -52,6 +76,7 @@ export function useTerminal(
     if (prompt !== null) {
       push({ kind: "stdout", text: prompt + input });
       engineRef.current?.sendInput(input);
+      armRunTimer();
       setPrompt(null);
       setInput("");
       return;
@@ -101,13 +126,14 @@ export function useTerminal(
     setInput(next === history.length ? "" : history[next]);
   };
 
-  const startEngine = () => {
+  function startEngine() {
     setReady(false);
     engineRef.current = createPythonEngine((event) => {
       switch (event.type) {
         case "ready":
           setReady(true);
           if (pendingRef.current !== null) {
+            beginExecution();
             engineRef.current?.run(
               collectFiles(nodesRef.current),
               pendingRef.current,
@@ -116,28 +142,55 @@ export function useTerminal(
           }
           break;
         case "stdout":
+          outputBytesRef.current += new TextEncoder().encode(event.text).length;
+          if (
+            outputBytesRef.current > PYTHON_EXECUTION_LIMITS.maxOutputBytes
+          ) {
+            terminateExecution(pythonLimitMessage.output, "stderr");
+            break;
+          }
           push({ kind: "stdout", text: event.text });
           break;
         case "input-request":
+          clearRunTimer();
           setPrompt(event.prompt);
           break;
         case "error":
+          clearRunTimer();
           push({ kind: "stderr", text: event.text });
           setPrompt(null);
           setIsRunning(false);
           break;
         case "done":
+          clearRunTimer();
           applyChanges(event.changes, event.deleted);
           setPrompt(null);
           setIsRunning(false);
           break;
       }
     });
-  };
+  }
+
+  function terminateExecution(
+    message: string,
+    kind: TerminalLine["kind"] = "system",
+  ) {
+    clearRunTimer();
+    engineRef.current?.stop();
+    pendingRef.current = null;
+    outputBytesRef.current = 0;
+    setPrompt(null);
+    setIsRunning(false);
+    push({ kind, text: message });
+    startEngine();
+  }
 
   useEffect(() => {
     startEngine();
-    return () => engineRef.current?.stop();
+    return () => {
+      clearRunTimer();
+      engineRef.current?.stop();
+    };
   }, []);
 
   const runCode = (path: string) => {
@@ -145,6 +198,7 @@ export function useTerminal(
       return push({ kind: "stderr", text: "A program is already running." });
     setIsRunning(true);
     if (ready) {
+      beginExecution();
       engineRef.current?.run(collectFiles(nodesRef.current), path);
     } else {
       pendingRef.current = path;
@@ -161,11 +215,7 @@ export function useTerminal(
   };
 
   const stop = () => {
-    engineRef.current?.stop(); // kills the worker
-    pendingRef.current = null;
-    setIsRunning(false);
-    push({ kind: "system", text: "Process terminated" });
-    startEngine(); // fresh worker for the next run
+    terminateExecution("Process terminated");
   };
 
   const complete = () => {

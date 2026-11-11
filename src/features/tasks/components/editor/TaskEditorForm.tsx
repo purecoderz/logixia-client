@@ -7,6 +7,7 @@ import {
   Terminal,
   Code2,
   Eye,
+  CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Field, fieldProps } from "@/components/ui/Field";
@@ -80,6 +81,7 @@ export function TaskEditorForm({
   const [confirmCancel, setConfirmCancel] = useState(false);
   const running = useRef(false);
   const dirty = JSON.stringify(values) !== JSON.stringify(saved);
+  const savedStatus = success || (editing && !dirty);
   const current = sections.find((item) => item.id === section)!;
   const fieldError = (id: string) =>
     problems.find((problem) => problem.field === id)?.message;
@@ -417,8 +419,10 @@ export function TaskEditorForm({
         <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
           <p
             role="status"
-            className={`text-xs ${success ? "text-success" : "text-muted"}`}
+            aria-live="polite"
+            className={`inline-flex min-h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold ${savedStatus ? "border-emerald-500/30 bg-emerald-500/10 text-success" : dirty ? "border-amber-500/30 bg-amber-500/10 text-warning" : "border-line bg-surface-muted text-muted"}`}
           >
+            {savedStatus && <CheckCircle2 size={14} aria-hidden="true" />}
             {success
               ? "Task saved."
               : dirty

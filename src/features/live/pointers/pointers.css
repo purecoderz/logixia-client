@@ -1,0 +1,12 @@
+@keyframes live-pointer-click {
+  from { transform: scale(.35); opacity: .95; }
+  to { transform: scale(1.8); opacity: 0; }
+}
+.live-pointer-click { animation: live-pointer-click 500ms ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .live-pointer-click { animation-name: live-pointer-click-still; }
+}
+@keyframes live-pointer-click-still {
+  from { opacity: .9; }
+  to { opacity: 0; }
+}

@@ -59,7 +59,8 @@ export default function TaskEditorPage() {
   const lesson = ownerModule?.lessons.find(
     (lesson) => lesson.id === ownerLessonId,
   );
-  if (!lesson)
+  const cohortOwned = Boolean(taskId && task.data?.owner_cohort_id && !task.data.lesson_id);
+  if (!lesson && !cohortOwned)
     return (
       <ErrorState
         what="this lesson"
@@ -95,7 +96,7 @@ export default function TaskEditorPage() {
   const save = async (payload: TaskInput) => {
     const result = taskId
       ? await TaskService.update(taskId, payload)
-      : await TaskService.create(String(lesson.id), payload);
+      : await TaskService.create(String(lesson!.id), payload);
     client.setQueryData(["instructor-task", String(result.id)], result);
     void client.invalidateQueries({ queryKey: courseKeys.all });
     if (!taskId)
@@ -109,7 +110,11 @@ export default function TaskEditorPage() {
       : taskId
         ? "Edit code task"
         : "Create code task";
-  const editorKey = taskId ? `edit-${taskId}-${task.dataUpdatedAt}` : `new-${lesson.id}-${kind}`;
+  const cohortBack = task.data?.owner_cohort_id
+    ? `/instructor/cohorts/tasks?cohort=${task.data.owner_cohort_id}`
+    : null;
+  const cancelTo = cohortBack ?? builderPath(courseId);
+  const editorKey = taskId ? `edit-${taskId}-${task.dataUpdatedAt}` : `new-${lesson!.id}-${kind}`;
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <header>
@@ -119,7 +124,9 @@ export default function TaskEditorPage() {
               label: outline.data?.title ?? "Course",
               to: builderPath(courseId),
             },
-            { label: lesson.title, to: lessonEditorPath(courseId, lesson.id) },
+            ...(lesson
+              ? [{ label: lesson.title, to: lessonEditorPath(courseId, lesson.id) }]
+              : [{ label: "Cohort task", to: cohortBack ?? builderPath(courseId) }]),
             { label: title },
           ]}
         />
@@ -127,7 +134,7 @@ export default function TaskEditorPage() {
           {title}
         </h1>
         <p className="mt-1 text-sm text-muted">
-          {ownerModule?.title} / {lesson.title} ·{" "}
+          {lesson ? `${ownerModule?.title} / ${lesson.title}` : "Created for a cohort · Not attached to a lesson"} ·{" "}
           {kind === "quiz"
             ? "Build multiple-choice questions and choose their correct answers."
             : "Configure the starter project and assessment checks."}
@@ -138,7 +145,7 @@ export default function TaskEditorPage() {
           key={editorKey}
           initial={initial}
           editing={Boolean(taskId)}
-          onCancel={() => navigate(builderPath(courseId))}
+          onCancel={() => navigate(cancelTo)}
           onSave={save}
         />
       ) : (
@@ -146,7 +153,7 @@ export default function TaskEditorPage() {
           key={editorKey}
           initial={initial}
           editing={Boolean(taskId)}
-          onCancel={() => navigate(builderPath(courseId))}
+          onCancel={() => navigate(cancelTo)}
           onSave={save}
         />
       )}

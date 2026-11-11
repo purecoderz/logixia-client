@@ -21,13 +21,16 @@ export interface User {
   id: string;
   username: string;
   email: string;
+  role?: "student" | "ta" | "instructor" | "admin";
 }
 
 export interface SignupResponse {
   message: string;
 }
 
-const api = "http://localhost:8000";
+export interface MessageResponse {
+  message: string;
+}
 
 const authservices = {
   async getCurrentUser(): Promise<User | null> {
@@ -43,10 +46,9 @@ const authservices = {
     return response.json();
   },
   async userLogin(payload: LoginPayload): Promise<LoginResponse> {
-    const response = await fetch(`${api}/login`, {
+    const response = await apiFetch("/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include",
       body: JSON.stringify(payload),
     });
 
@@ -59,7 +61,7 @@ const authservices = {
   },
 
   async createAccount(payload: SignupPayload): Promise<SignupResponse> {
-    const response = await fetch(`${api}/sign-up`, {
+    const response = await apiFetch("/sign-up", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -73,10 +75,37 @@ const authservices = {
     return await response.json();
   },
 
-  async logout(): Promise<void> {
-    const response = await fetch(`${api}/logout`, {
+  async requestPasswordReset(email: string): Promise<MessageResponse> {
+    const response = await apiFetch("/auth/forgot-password", {
       method: "POST",
-      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.detail ?? "Unable to request a password reset");
+    }
+    return response.json();
+  },
+
+  async resetPassword(token: string, password: string): Promise<MessageResponse> {
+    const response = await apiFetch("/auth/reset-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, password }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.detail ?? "Unable to reset your password");
+    }
+    return response.json();
+  },
+
+  async logout(): Promise<void> {
+    const response = await apiFetch("/logout", {
+      method: "POST",
     });
     if (!response.ok) throw new Error("Logout failed");
   },

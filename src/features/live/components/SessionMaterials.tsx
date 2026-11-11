@@ -23,7 +23,7 @@ export function SessionMaterials({ session, open, onClose }: { session:SessionDe
 export function SessionMaterialsButton({sessionId}:{sessionId:number}) {
   const [open,setOpen]=useState(false);
   const query=useSessionDetail(sessionId);
-  return <><button type="button" onClick={()=>setOpen(true)} aria-label="Open teaching materials" className="flex h-10 items-center gap-2 rounded-md border border-[#30363d] px-3 text-sm text-[#c9d1d9] hover:bg-[#21262d]"><BookOpen size={17}/><span className="hidden md:inline">Materials</span></button>{query.data ? <SessionMaterials session={query.data} open={open} onClose={()=>setOpen(false)}/> : <MaterialsDrawer open={open} onClose={()=>setOpen(false)} title="Session materials">{query.error ? <ErrorState what="session materials" error={query.error} onRetry={()=>void query.refetch()} variant="section"/> : <p role="status">Loading teaching materials…</p>}</MaterialsDrawer>}</>;
+  return <><button type="button" onClick={()=>setOpen(true)} aria-label="Open teaching materials" className="flex h-10 items-center gap-2 rounded-md border border-line px-3 text-sm text-body hover:bg-hover"><BookOpen size={17}/><span className="hidden md:inline">Materials</span></button>{query.data ? <SessionMaterials session={query.data} open={open} onClose={()=>setOpen(false)}/> : <MaterialsDrawer open={open} onClose={()=>setOpen(false)} title="Session materials">{query.error ? <ErrorState what="session materials" error={query.error} onRetry={()=>void query.refetch()} variant="section"/> : <p role="status">Loading teaching materials…</p>}</MaterialsDrawer>}</>;
 }
 
 export function SessionRoomTitle({ sessionId }: { sessionId:number }) {

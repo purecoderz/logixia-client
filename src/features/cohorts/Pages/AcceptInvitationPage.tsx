@@ -252,7 +252,7 @@ function InvitationContent({ token }: { token: string }) {
             <Button
               variant="ghost"
               disabled={accept.isPending}
-              onClick={() => logout()}
+              onClick={() => void logout()}
             >
               Sign out to use another account
             </Button>

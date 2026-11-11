@@ -1,19 +1,25 @@
 import { AppLoading } from "../../../components/ui/AppLoading";
 import React, { useState } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
-import { PasswordRequirements } from "./PasswordRequirements";
+import {
+  PasswordRequirements,
+  passwordMeetsRequirements,
+} from "./PasswordRequirements";
 import { SocialAuth } from "./SocialAuth";
 import authservices from "../../../services/authservice";
 import { useAuth } from "../context/AuthContext";
+import { isInstructorRole } from "../InstructorProtectedRoute";
 
 interface AuthFormProps {
   isLogin: boolean;
   onToggleAuth: () => void;
+  audience?: "learner" | "instructor";
 }
 
 export const AuthForm: React.FC<AuthFormProps> = ({
   isLogin,
   onToggleAuth,
+  audience = "learner",
 }) => {
   const location = useLocation();
   const from = (
@@ -21,13 +27,13 @@ export const AuthForm: React.FC<AuthFormProps> = ({
       from?: { pathname?: string; search?: string; hash?: string };
     } | null
   )?.from;
-  const returnPath =
+  const requestedPath =
     from?.pathname?.startsWith("/") &&
     !from.pathname.startsWith("//") &&
     !from.pathname.includes("\\") &&
     !from.pathname.startsWith("/auth/")
       ? `${from.pathname}${from.search ?? ""}${from.hash ?? ""}`
-      : "/";
+      : null;
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -44,7 +50,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
 
   const passwordsMatch = password.length > 0 && password === confirmPassword;
 
-  const { login, profile, isLoading } = useAuth();
+  const { login, logout, profile, isLoading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +68,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({
         window.setTimeout(resolve, 1000),
       );
       try {
-        await login({ email, password });
+        const signedInUser = await login({ email, password });
+        if (audience === "instructor" && !isInstructorRole(signedInUser?.role)) {
+          await logout();
+          setErrorMessage("This account does not have instructor access.");
+        }
       } catch (err) {
         setErrorMessage(
           err instanceof Error ? err.message : "Something went wrong",
@@ -78,6 +88,10 @@ export const AuthForm: React.FC<AuthFormProps> = ({
       }
       if (!passwordsMatch) {
         setErrorMessage("Passwords do not match!");
+        return;
+      }
+      if (!passwordMeetsRequirements(password)) {
+        setErrorMessage("Password does not meet all requirements");
         return;
       }
 
@@ -106,6 +120,8 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   }
 
   if (profile && !isSubmitting) {
+    const home = isInstructorRole(profile.role) ? "/instructor/cohorts" : "/";
+    const returnPath = requestedPath ?? home;
     return (
       <Navigate to={returnPath} replace state={{ authTransition: true }} />
     );
@@ -132,19 +148,34 @@ export const AuthForm: React.FC<AuthFormProps> = ({
               <span>Developer Portal v2.4</span>
             </div>
             <h2 className="text-3xl font-bold text-foreground tracking-tight">
-              {isLogin ? "Sign in to workspace" : "Create developer account"}
+              {isLogin
+                ? audience === "instructor"
+                  ? "Instructor sign in"
+                  : "Sign in to workspace"
+                : "Create developer account"}
             </h2>
             <p className="text-muted text-sm mt-2">
               {isLogin
-                ? "New to Logixia Academy? "
+                ? audience === "instructor"
+                  ? "Looking for the learner portal? "
+                  : "New to Logixia Academy? "
                 : "Already have an account? "}
-              <button
-                type="button"
-                onClick={onToggleAuth}
-                className="text-accent font-medium hover:underline transition-all focus:outline-none"
-              >
-                {isLogin ? "Create an account" : "Sign in"}
-              </button>
+              {audience === "instructor" ? (
+                <Link
+                  to="/auth/login"
+                  className="text-accent font-medium hover:underline transition-all focus:outline-none"
+                >
+                  Sign in as a learner
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={onToggleAuth}
+                  className="text-accent font-medium hover:underline transition-all focus:outline-none"
+                >
+                  {isLogin ? "Create an account" : "Sign in"}
+                </button>
+              )}
             </p>
           </div>
 
@@ -215,7 +246,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value.toLowerCase().trim())}
-                placeholder="developer@logixia.io"
+                placeholder={
+                  audience === "instructor"
+                    ? "instructor@logixia.com"
+                    : "developer@logixia.io"
+                }
                 required
                 className="w-full px-4 py-3 rounded-xl bg-surface border border-line text-foreground text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all placeholder:text-muted"
               />
@@ -303,12 +338,12 @@ export const AuthForm: React.FC<AuthFormProps> = ({
 
             {isLogin && (
               <div className="flex justify-end">
-                <a
-                  href="#forgot"
+                <Link
+                  to={`/auth/forgot-password${audience === "instructor" ? "?audience=instructor" : ""}`}
                   className="text-xs font-mono text-muted hover:text-accent transition-colors"
                 >
                   Forgot password?
-                </a>
+                </Link>
               </div>
             )}
 
@@ -320,10 +355,24 @@ export const AuthForm: React.FC<AuthFormProps> = ({
               {isSubmitting
                 ? "loading.."
                 : isLogin
-                  ? "Sign In ->"
+                  ? audience === "instructor"
+                    ? "Open Instructor Portal ->"
+                    : "Sign In ->"
                   : "Create Free Account ->"}
             </button>
           </form>
+
+          {isLogin && audience === "learner" && (
+            <p className="mt-5 text-center text-xs text-muted">
+              Teaching on Logixia?{" "}
+              <Link
+                to="/instructor/login"
+                className="font-semibold text-accent hover:underline"
+              >
+                Instructor sign in
+              </Link>
+            </p>
+          )}
 
           <SocialAuth />
         </div>

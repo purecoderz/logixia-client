@@ -85,8 +85,8 @@ export const SidebarFooter = ({ isCollapsed }: FooterProps) => {
         confirmText="Yes, Sign Out"
         variant="danger"
         onClose={() => setIsLogoutModalOpen(false)}
-        onConfirm={() => {
-          logout();
+        onConfirm={async () => {
+          await logout();
           setIsLogoutModalOpen(false);
         }}
       />

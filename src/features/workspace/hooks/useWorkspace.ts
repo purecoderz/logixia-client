@@ -82,8 +82,8 @@ export function useWorkspace(
   };
 
   // Live rooms: make our nodes match the files the server sent
-  const setLiveNodes = (files: Record<string, string>) =>
-    setNodes((current) => FileManagement.syncFromPaths(current, files));
+  const setLiveNodes = (files: Record<string, string>, folders: string[] = []) =>
+    setNodes((current) => FileManagement.syncFromPaths(current, files, folders));
 
   return {
     nodes,

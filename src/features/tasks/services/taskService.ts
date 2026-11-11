@@ -2,6 +2,7 @@ import type { TaskTestResult, TaskTestSubmission } from "../taskTest";
 import { apiFetch } from "@/lib/http";
 import { apiErrorFrom } from "@/lib/apiError";
 import type { TaskInput, TaskDocument } from "../taskForm";
+import type { CohortTaskInput } from "@/features/cohorts/types/cohortTask";
 
 export const TaskService = {
   async remove(id: string): Promise<void> {
@@ -50,6 +51,22 @@ export const TaskService = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(task),
+      },
+    );
+    if (!response.ok) throw await apiErrorFrom(response);
+    return response.json();
+  },
+  async createForCohort(
+    cohortId: string,
+    task: TaskInput,
+    assignment: Omit<CohortTaskInput, "task_id">,
+  ): Promise<TaskDocument> {
+    const response = await apiFetch(
+      `/cohorts/${encodeURIComponent(cohortId)}/tasks/create`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...task, ...assignment }),
       },
     );
     if (!response.ok) throw await apiErrorFrom(response);

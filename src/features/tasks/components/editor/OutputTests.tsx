@@ -49,6 +49,15 @@ export function OutputTests({
               Remove
             </Button>
           </div>
+          <Field label="Test name" htmlFor={`output-name-${index}`}>
+            <input
+              id={`output-name-${index}`}
+              value={test.name}
+              onChange={(event) => change(index, { name: event.target.value })}
+              className={inputClass}
+              placeholder="For example: Classifies a positive number"
+            />
+          </Field>
           <div className="grid gap-3 sm:grid-cols-2">
             <Field
               label="Input"
@@ -68,10 +77,8 @@ export function OutputTests({
               <textarea
                 id={`output-expected-${index}`}
                 rows={4}
-                value={test.expected_output}
-                onChange={(e) =>
-                  change(index, { expected_output: e.target.value })
-                }
+                value={test.expected}
+                onChange={(e) => change(index, { expected: e.target.value })}
                 className={`${inputClass} font-mono`}
                 spellCheck={false}
               />
@@ -81,9 +88,9 @@ export function OutputTests({
             <Select
               id={`output-mode-${index}`}
               disabled={disabled}
-              value={test.comparison}
+              value={test.match}
               onChange={(value) =>
-                change(index, { comparison: value as OutputTest["comparison"] })
+                change(index, { match: value as OutputTest["match"] })
               }
               options={[
                 {
@@ -107,7 +114,7 @@ export function OutputTests({
         onClick={() =>
           onChange([
             ...tests,
-            { input: "", expected_output: "", comparison: "exact" },
+            { name: "", input: "", expected: "", match: "exact" },
           ])
         }
       >

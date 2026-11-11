@@ -6,12 +6,20 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { BrandHero } from "./components/BrandHero";
 import { AuthForm } from "./components/AuthForm";
+import { PasswordRecoveryForm } from "./components/PasswordRecoveryForm";
 
 export const AuthPage: React.FC = () => {
   const { pathname, state } = useLocation();
   const navigate = useNavigate();
 
-  const isLogin = !pathname.endsWith("/signup");
+  const isSignup = pathname.endsWith("/signup");
+  const isInstructor = pathname === "/instructor/login";
+  const recoveryMode = pathname.endsWith("/forgot-password")
+    ? "forgot"
+    : pathname.endsWith("/reset-password")
+      ? "reset"
+      : null;
+  const isLogin = !isSignup;
 
   const toggleAuth = () =>
     navigate(isLogin ? "/auth/signup" : "/auth/login", {
@@ -28,7 +36,15 @@ export const AuthPage: React.FC = () => {
         <div className="lg:sticky lg:top-0 lg:h-screen">
           <BrandHero isLogin={isLogin} />
         </div>
-        <AuthForm isLogin={isLogin} onToggleAuth={toggleAuth} />
+        {recoveryMode ? (
+          <PasswordRecoveryForm mode={recoveryMode} />
+        ) : (
+          <AuthForm
+            isLogin={isLogin}
+            audience={isInstructor ? "instructor" : "learner"}
+            onToggleAuth={toggleAuth}
+          />
+        )}
       </div>
     </ThemeProvider>
   );

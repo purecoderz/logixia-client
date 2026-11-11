@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { FlaskConical } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/features/auth/context/AuthContext";
@@ -51,9 +52,9 @@ export default function TaskTestPage() {
     !courseId ||
     !taskId ||
     !task.data ||
-    !outline.data?.modules.some((module) =>
+    (!task.data.owner_cohort_id && !outline.data?.modules.some((module) =>
       module.lessons.some((lesson) => lesson.id === task.data.lesson_id),
-    )
+    ))
   )
     return (
       <ErrorState
@@ -119,6 +120,17 @@ function TestTask({
         storageKey={`instructor-task-test:${profile?.id}:${task.id}`}
         starterFiles={task.starter_files}
         onBack={() => navigate(back)}
+        toolbar={
+          <div className="flex items-center gap-2 border-b border-[#30363d] bg-[#161b22] px-3 py-2 text-xs text-[#8b949e]">
+            <FlaskConical className="size-4 text-[#58a6ff]" aria-hidden />
+            <strong className="font-semibold text-[#f0f6fc]">
+              Instructor test workspace
+            </strong>
+            <span className="hidden sm:inline">
+              Isolated from student drafts and official submissions
+            </span>
+          </div>
+        }
         asideTitle="Test task"
         aside={
           <div className="space-y-4 p-4">

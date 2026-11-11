@@ -15,7 +15,7 @@ const quiz=():QuizTaskInput=>({title:"Python basics",type:"quiz",instructions:"C
 const code=()=>({...emptyTask(),title:"Addition",instructions:"Write add(a, b)."});
 
 it("round-trips both JSON task types and preserves code and whitespace",()=>{
- const task=code();task.starter_files["helpers.py"]="print('hello')\n";task.tests.output_tests=[{input:"  Ada\n",expected_output:"Hello, Ada!\n",comparison:"exact"}];
+ const task=code();task.starter_files["helpers.py"]="print('hello')\n";task.tests.output_tests=[{name:"Greets Ada",input:"  Ada\n",expected:"Hello, Ada!\n",match:"exact"}];
  expect(parseTaskJson(JSON.stringify(task),"code")).toEqual(task);
  expect(parseTaskJson(JSON.stringify(quiz()),"quiz")).toEqual(quiz());
 });

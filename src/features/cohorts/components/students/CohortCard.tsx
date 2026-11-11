@@ -64,7 +64,9 @@ export function CohortCard({
       <h3 className="mt-5 text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
         {name}
       </h3>
-      <p className="mt-2 text-sm leading-6 text-muted">{subtitle}</p>
+      {subtitle && (
+        <p className="mt-2 text-sm leading-6 text-muted">{subtitle}</p>
+      )}
 
       <div className="mt-6 flex flex-wrap gap-4 text-sm text-body">
         <span className="flex items-center gap-1.5">

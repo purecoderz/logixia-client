@@ -100,9 +100,41 @@ export const FileManagement = {
     return next;
   },
 
-  // Live rooms: make nodes match the server's files (keys are paths like "new/main.py")
-  syncFromPaths(nodes: FsNode[], files: Record<string, string>): FsNode[] {
+  ensureFolderPath(nodes: FsNode[], path: string): FsNode[] {
+    const parts = path.split("/");
     let next = nodes;
+    let parentId: string | null = null;
+    for (const name of parts) {
+      const existing = next.find(
+        (node) => node.parentId === parentId && node.name === name,
+      );
+      if (existing) {
+        if (existing.type !== "folder") return next;
+        parentId = existing.id;
+        continue;
+      }
+      const folder: FsNode = {
+        id: crypto.randomUUID(), name, type: "folder", parentId,
+      };
+      next = [...next, folder];
+      parentId = folder.id;
+    }
+    return next;
+  },
+
+  // Live rooms: make nodes match the server's files (keys are paths like "new/main.py")
+  syncFromPaths(
+    nodes: FsNode[],
+    files: Record<string, string>,
+    folders: string[] = [],
+  ): FsNode[] {
+    let next = nodes;
+
+    for (const path of [...folders].sort(
+      (left, right) => left.split("/").length - right.split("/").length,
+    )) {
+      next = FileManagement.ensureFolderPath(next, path);
+    }
 
     for (const [path, content] of Object.entries(files)) {
       next = FileManagement.upsertByPath(next, path, content);
@@ -112,6 +144,18 @@ export const FileManagement = {
     for (const n of next) {
       if (n.type === "file" && !onServer.has(getPath(next, n))) {
         next = FileManagement.delete(next, n.id);
+      }
+    }
+    const serverFolders = new Set(folders);
+    for (const filePath of Object.keys(files)) {
+      const parts = filePath.split("/").slice(0, -1);
+      for (let index = 1; index <= parts.length; index++) {
+        serverFolders.add(parts.slice(0, index).join("/"));
+      }
+    }
+    for (const node of [...next].reverse()) {
+      if (node.type === "folder" && !serverFolders.has(getPath(next, node))) {
+        next = FileManagement.delete(next, node.id);
       }
     }
     return next;

@@ -8,6 +8,7 @@ import { MobileSidebar } from "./sidebar/MobileSidebar";
 import { BottomNav, useShowBottomNav } from "./BottomNav";
 import { Topbar } from "./topbar/TopBar";
 import {
+  isStudentWorkspace,
   NAVIGATION_DURATION,
   useNavigationMotion,
 } from "../navigation/NavigationMotion";
@@ -20,7 +21,7 @@ function StudentLayout() {
   const closeMobile = useCallback(() => setIsMobileOpen(false), []);
   const showBottomNav = useShowBottomNav();
   const { pathname } = useLocation();
-  const workspace = pathname === "/playground";
+  const workspace = isStudentWorkspace(pathname);
   const isQuiz = pathname.includes("/tasks/") && pathname.endsWith("/quiz");
   const motion = useNavigationMotion();
   const hidden =

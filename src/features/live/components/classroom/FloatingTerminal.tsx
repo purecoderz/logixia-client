@@ -3,6 +3,7 @@ import {
   useEffect,
   useRef,
   useState,
+  type ReactNode,
   type KeyboardEvent,
   type PointerEvent,
 } from "react";
@@ -11,6 +12,7 @@ import type { TerminalLine } from "@/components/SmartTerminal/TerminalView";
 import { TerminalOutput } from "@/components/SmartTerminal/TerminalOutput";
 
 interface FloatingTerminalProps {
+  renderSurface?: (children: ReactNode) => ReactNode;
   open: boolean;
   onClose: () => void;
   isMobile: boolean;
@@ -49,6 +51,7 @@ export function FloatingTerminal({
   onClose,
   isMobile,
   lines,
+  renderSurface = children => children,
 }: FloatingTerminalProps) {
   const [pos, setPos] = useState<Pos>(startPosition);
   const posRef = useRef(pos); // always the latest position, even inside event handlers
@@ -117,9 +120,9 @@ export function FloatingTerminal({
   };
 
   const title = (
-    <span className="flex items-center gap-2 text-xs text-[#c9d1d9]">
+    <span className="flex items-center gap-2 text-xs text-body">
       Instructor's terminal
-      <span className="rounded bg-[#21262d] px-1.5 py-0.5 text-[10px] text-[#8b949e]">
+      <span className="rounded bg-hover px-1.5 py-0.5 text-[10px] text-muted">
         View only
       </span>
     </span>
@@ -130,7 +133,7 @@ export function FloatingTerminal({
       type="button"
       onClick={onClose}
       aria-label="Hide terminal"
-      className="flex size-7 items-center justify-center rounded text-[#8b949e] hover:bg-[#30363d] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#58a6ff]"
+      className="flex size-7 items-center justify-center rounded text-muted hover:bg-hover hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
     >
       <X size={16} aria-hidden />
     </button>
@@ -141,13 +144,13 @@ export function FloatingTerminal({
     return (
       <section
         aria-label="Instructor's terminal"
-        className="fixed inset-x-0 bottom-0 z-30 flex h-[40dvh] flex-col overflow-hidden rounded-t-xl border-t border-[#30363d] bg-[#0d1117] shadow-2xl"
+        className="fixed inset-x-0 bottom-0 z-30 flex h-[40dvh] flex-col overflow-hidden rounded-t-xl border-t border-line bg-input shadow-2xl"
       >
-        <div className="flex h-10 shrink-0 items-center justify-between border-b border-[#21262d] bg-[#161b22] pl-3 pr-1">
+        {renderSurface(<div className="flex h-full flex-col"><div className="flex h-10 shrink-0 items-center justify-between border-b border-line bg-surface pl-3 pr-1">
           {title}
           {closeButton}
         </div>
-        <TerminalOutput lines={lines} />
+        <TerminalOutput lines={lines} /></div>)}
       </section>
     );
   }
@@ -156,9 +159,9 @@ export function FloatingTerminal({
     <section
       aria-label="Instructor's terminal"
       style={{ left: pos.x, top: pos.y, width: WIDTH, height: HEIGHT }}
-      className="fixed z-30 flex flex-col overflow-hidden rounded-lg border border-[#30363d] bg-[#0d1117] shadow-2xl"
+      className="fixed z-30 flex flex-col overflow-hidden rounded-lg border border-line bg-input shadow-2xl"
     >
-      <div
+      {renderSurface(<div className="flex h-full flex-col"><div
         role="group"
         tabIndex={0}
         aria-label="Terminal title bar. Use the arrow keys to move the window."
@@ -166,12 +169,12 @@ export function FloatingTerminal({
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onKeyDown={onKeyDown}
-        className="flex h-9 shrink-0 cursor-grab touch-none select-none items-center justify-between border-b border-[#21262d] bg-[#161b22] pl-3 pr-1 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#58a6ff] active:cursor-grabbing"
+        className="flex h-9 shrink-0 cursor-grab touch-none select-none items-center justify-between border-b border-line bg-surface pl-3 pr-1 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent active:cursor-grabbing"
       >
         {title}
         {closeButton}
       </div>
-      <TerminalOutput lines={lines} />
+      <TerminalOutput lines={lines} /></div>)}
     </section>
   );
 }

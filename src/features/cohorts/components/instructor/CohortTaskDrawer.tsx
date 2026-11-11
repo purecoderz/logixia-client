@@ -188,7 +188,9 @@ export function CohortTaskDrawer({
                         {editing.title}
                       </h3>
                       <p className="mt-1 text-xs text-muted">
-                        {editing.module_title} → {editing.lesson_title}
+                        {editing.lesson_title
+                          ? `${editing.module_title ?? "Module"} → ${editing.lesson_title}`
+                          : "Cohort-created task · Not attached to a lesson"}
                       </p>
                     </div>
                     <ScheduleInputs

@@ -4,8 +4,8 @@ export interface CohortTask {
   task_id: number;
   title: string;
   type: "code" | "quiz";
-  module_title: string;
-  lesson_title: string;
+  module_title: string | null;
+  lesson_title: string | null;
   start_date: string;
   due_date: string;
   xp: number;

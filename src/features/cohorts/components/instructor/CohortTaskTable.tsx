@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ActionMenu } from "@/components/ui/ActionMenu";
-import { taskTestPath } from "@/features/tasks/paths";
+import { taskEditorPath, taskTestPath } from "@/features/tasks/paths";
 import { cohortTaskStatus, type CohortTask } from "../../types/cohortTask";
 
 export function CohortTaskTable({
@@ -46,7 +46,7 @@ export function CohortTaskTable({
                 <td className="max-w-xs px-4 py-4">
                   <p className="font-medium text-foreground">{task.title}</p>
                   <p className="mt-1 text-xs leading-5 text-muted">
-                    {task.lesson_title}
+                    {task.lesson_title ?? "Cohort-created task"}
                   </p>
                   <span className="mt-1 block text-[11px] text-muted">
                     {task.type === "code" ? "Code task" : "Quiz"}
@@ -73,6 +73,11 @@ export function CohortTaskTable({
                     disabled={busy}
                     label={`Actions for ${task.title}`}
                     items={[
+                      {
+                        label: "Edit task content",
+                        onSelect: () =>
+                          navigate(taskEditorPath(courseId, task.task_id)),
+                      },
                       {
                         label: "Preview / test task",
                         onSelect: () =>

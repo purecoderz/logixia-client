@@ -14,6 +14,8 @@ import { DueSoonCard } from "../components/student/DueSoonCard";
 import { TodayCard } from "../components/student/TodayCard";
 import { UpcomingCard } from "../components/student/UpcomingCard";
 import { PastDueCard } from "../components/student/PastDueCard";
+import { StudentQuickActions } from "../components/student/StudentQuickActions";
+import { NextClassCard } from "../components/student/NextClassCard";
 
 export function StudentDashboardPage() {
   const { profile } = useAuth();
@@ -60,15 +62,15 @@ export function StudentDashboardPage() {
     );
 
   return (
-    <div className="mx-auto w-full max-w-[1500px] p-4 md:p-6">
+    <div className="mx-auto w-full max-w-[1500px] space-y-6">
+      <DashboardHero
+        name={profile?.username ?? "there"}
+        dueCount={active.length}
+        onReview={() => navigate("/tasks")}
+      />
+      <StudentQuickActions />
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div className="min-w-0 space-y-6">
-          <DashboardHero
-            name={profile?.username ?? "there"}
-            dueCount={active.length}
-            onReview={() => navigate("/tasks")}
-          />
-
           <div className="grid gap-6 md:grid-cols-[1.4fr_1fr]">
             <PerformanceCard assignments={assignments} />
             <ProgressCard assignments={assignments} />
@@ -83,6 +85,7 @@ export function StudentDashboardPage() {
         </div>
 
         <aside className="min-w-0 space-y-6">
+          <NextClassCard cohortId={membership.activeCohort.id} />
           <TodayCard assignments={today} />
           <UpcomingCard assignments={upcoming.slice(0, 4)} />
           <PastDueCard assignments={pastDue.slice(0, 3)} />

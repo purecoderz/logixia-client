@@ -220,7 +220,8 @@ export function CodeEditor({
       }}
       onUpdate={(update) => {
         if (!onCursorLine || readOnly) return;
-        if (update.docChanged || update.selectionSet) {
+        // Document changes already share their line through onChange.
+        if (update.selectionSet && !update.docChanged) {
           onCursorLine(
             update.state.doc.lineAt(update.state.selection.main.head).number,
           );

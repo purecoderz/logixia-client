@@ -17,6 +17,11 @@ export const newQuizTaskPath = (
   lessonId: number | string,
 ) => `${newCodeTaskPath(courseId, lessonId)}?type=quiz`;
 
+export const newCohortTaskPath = (
+  cohortId: number | string,
+  type: "code" | "quiz" = "code",
+) => `/instructor/cohorts/${cohortId}/tasks/new${type === "quiz" ? "?type=quiz" : ""}`;
+
 export const taskTestPath = (
   courseId: number | string,
   taskId: number | string,

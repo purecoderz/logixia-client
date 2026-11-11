@@ -7,9 +7,6 @@ import {
   BookOpen,
   Calendar,
   Clock,
-  Code2,
-  MessageCircle,
-  Star,
   Users,
 } from "lucide-react";
 import { CohortService, type CohortStatus } from "../Services/cohortService";
@@ -281,9 +278,6 @@ export default function StudentCohortsPage() {
             icon={Users}
             label={`${enrolled.length} ${enrolled.length === 1 ? "cohort" : "cohorts"} joined`}
           />
-          <StatPill icon={Code2} label="Practise with real code" />
-          <StatPill icon={MessageCircle} label="Instructor feedback" />
-          <StatPill icon={Star} label="XP on every task" />
         </div>
       </section>
 

@@ -1,6 +1,8 @@
+import { useLivePointers } from "../pointers/useLivePointers";
 // hooks/useLiveRoom.ts
 import { useCallback, useEffect, useRef, useState } from "react";
 import RoomServices from "../services/liveRoomService";
+import type { AttendanceReceipt } from "../services/liveRoomService";
 import { useAuth } from "../../auth/context/AuthContext";
 import type { TerminalLine } from "../../../components/SmartTerminal/TerminalView";
 
@@ -41,6 +43,19 @@ const withRenamedPath = (
     ]),
   );
 
+const folderParents = (path: string) => {
+  const parts = path.split("/").slice(0, -1);
+  return parts.map((_, index) => parts.slice(0, index + 1).join("/"));
+};
+
+const withoutFolderPath = (folders: string[], path: string) =>
+  folders.filter((folder) => !inside(folder, path));
+
+const withRenamedFolders = (folders: string[], from: string, to: string) =>
+  folders.map((folder) =>
+    inside(folder, from) ? to + folder.slice(from.length) : folder,
+  );
+
 // Same limits as the server, so a valid terminal is never rejected
 const MAX_LINES = 200;
 const MAX_LINE_CHARS = 2_000;
@@ -60,12 +75,16 @@ function shrink(lines: TerminalLine[]): TerminalLine[] {
 }
 
 export function useLiveRoom(sessionId: number = 1) {
+  const pointers = useLivePointers();
+  const receivePointer = pointers.receive;
   const { profile } = useAuth();
   const myId = profile?.id ?? null;
 
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [files, setFiles] = useState<Record<string, string>>({});
+  const [folders, setFolders] = useState<string[]>([]);
+  const [expandedFolders, setExpandedFolders] = useState<string[]>([]);
   const [activePath, setActivePath] = useState<string | null>(null);
   const [writerId, setWriterId] = useState<string | null>(null);
   const [speakers, setSpeakers] = useState<string[]>([]);
@@ -75,6 +94,10 @@ export function useLiveRoom(sessionId: number = 1) {
   const [closedReason, setClosedReason] = useState<string | null>(null);
   const [closedCode, setClosedCode] = useState<string | null>(null);
   const [currentLine, setCurrentLine] = useState<number | null>(null);
+  const [attendance, setAttendance] = useState<AttendanceReceipt | null>(null);
+  const [attendancePending, setAttendancePending] = useState(false);
+  const [attendanceError, setAttendanceError] = useState<string | null>(null);
+  const attendanceTimer = useRef<number | null>(null);
 
   // keeps the latest id for the socket handler, which is created only once
   const myIdRef = useRef(myId);
@@ -88,13 +111,17 @@ export function useLiveRoom(sessionId: number = 1) {
     RoomServices.connect(
       `ws://localhost:8000/live/${sessionId}`,
       (msg) => {
+        receivePointer(msg);
         switch (msg.type) {
           case "snapshot":
             setFiles(msg.data.files);
+            setFolders(msg.data.folders ?? []);
+            setExpandedFolders(msg.data.expanded_folders ?? []);
             setActivePath(msg.data.active ?? null);
             setWriterId(msg.data.writer);
             setSpeakers(msg.data.speakers ?? []);
             setMyRole(msg.data.me.role);
+            setAttendance(msg.data.attendance ?? null);
             if (msg.data.roster) {
               setParticipants(
                 msg.data.roster.map((p) => ({
@@ -129,16 +156,39 @@ export function useLiveRoom(sessionId: number = 1) {
               ...prev,
               [msg.data.file]: msg.data.content,
             }));
+            setFolders((prev) => [
+              ...new Set([...prev, ...folderParents(msg.data.file)]),
+            ]);
             if (msg.data.line) setCurrentLine(msg.data.line);
+            break;
+
+          case "create_folder":
+            setFolders((prev) =>
+              prev.includes(msg.data.path) ? prev : [...prev, msg.data.path],
+            );
+            break;
+
+          case "folder_toggle":
+            setExpandedFolders((prev) => msg.data.expanded
+              ? prev.includes(msg.data.path) ? prev : [...prev, msg.data.path]
+              : prev.filter((path) => path !== msg.data.path));
             break;
 
           case "delete_path":
             setFiles((prev) => withoutPath(prev, msg.data.path));
+            setFolders((prev) => withoutFolderPath(prev, msg.data.path));
+            setExpandedFolders((prev) => withoutFolderPath(prev, msg.data.path));
             break;
 
           case "rename_path":
             setFiles((prev) =>
               withRenamedPath(prev, msg.data.from, msg.data.to),
+            );
+            setFolders((prev) =>
+              withRenamedFolders(prev, msg.data.from, msg.data.to),
+            );
+            setExpandedFolders((prev) =>
+              withRenamedFolders(prev, msg.data.from, msg.data.to),
             );
             break;
 
@@ -211,12 +261,34 @@ export function useLiveRoom(sessionId: number = 1) {
             setParticipants((list) => list.filter((p) => p.id !== msg.data.id));
             setSpeakers((prev) => prev.filter((id) => id !== msg.data.id));
             break;
+
+          case "attendance_taken":
+            if (attendanceTimer.current !== null) {
+              clearTimeout(attendanceTimer.current);
+              attendanceTimer.current = null;
+            }
+            setAttendance(msg.data);
+            setAttendancePending(false);
+            setAttendanceError(null);
+            break;
+
+          case "attendance_error":
+            if (attendanceTimer.current !== null) {
+              clearTimeout(attendanceTimer.current);
+              attendanceTimer.current = null;
+            }
+            setAttendancePending(false);
+            setAttendanceError(msg.data.message);
+            break;
         }
       },
       (event) => {
+        receivePointer({type:"reset"});
         setClosedCode(String(event.code));
         setClosedReason(event.reason);
       },
+      undefined,
+      () => receivePointer({type:"reset"}),
     );
 
     return () => RoomServices.disconnect();
@@ -267,10 +339,36 @@ export function useLiveRoom(sessionId: number = 1) {
     (file: string, content: string, line?: number) => {
       if (!canWrite) return;
       setFiles((prev) => ({ ...prev, [file]: content }));
+      setFolders((prev) => [
+        ...new Set([...prev, ...folderParents(file)]),
+      ]);
       pending.current[file] = { content, line }; // the line travels with the content
       if (timer.current === null) timer.current = window.setTimeout(flush, 120);
     },
     [canWrite],
+  );
+
+  const sendFolder = useCallback(
+    (path: string) => {
+      if (!canWrite) return;
+      flush();
+      RoomServices.send("create_folder", { path });
+      setFolders((prev) =>
+        prev.includes(path) ? prev : [...prev, path],
+      );
+    },
+    [canWrite],
+  );
+
+  const sendFolderToggle = useCallback(
+    (path: string, expanded: boolean) => {
+      if (!isTeacher && !canWrite) return;
+      RoomServices.send("folder_toggle", { path, expanded });
+      setExpandedFolders((prev) => expanded
+        ? prev.includes(path) ? prev : [...prev, path]
+        : prev.filter((folder) => folder !== path));
+    },
+    [isTeacher, canWrite],
   );
 
   const sendDelete = useCallback(
@@ -279,6 +377,8 @@ export function useLiveRoom(sessionId: number = 1) {
       flush(); // typing that is still waiting goes out first, so order is kept
       RoomServices.send("delete_path", { path });
       setFiles((prev) => withoutPath(prev, path));
+      setFolders((prev) => withoutFolderPath(prev, path));
+      setExpandedFolders((prev) => withoutFolderPath(prev, path));
     },
     [canWrite],
   );
@@ -289,6 +389,8 @@ export function useLiveRoom(sessionId: number = 1) {
       flush();
       RoomServices.send("rename_path", { from, to });
       setFiles((prev) => withRenamedPath(prev, from, to));
+      setFolders((prev) => withRenamedFolders(prev, from, to));
+      setExpandedFolders((prev) => withRenamedFolders(prev, from, to));
     },
     [canWrite],
   );
@@ -325,6 +427,8 @@ export function useLiveRoom(sessionId: number = 1) {
   useEffect(() => {
     return () => {
       if (termTimer.current !== null) clearTimeout(termTimer.current);
+      if (attendanceTimer.current !== null)
+        clearTimeout(attendanceTimer.current);
     };
   }, []);
 
@@ -338,11 +442,28 @@ export function useLiveRoom(sessionId: number = 1) {
     RoomServices.send("grant_writer", { user_id: userId });
   const revokeWriter = () => RoomServices.send("revoke_writer");
   const closeClass = () => RoomServices.send("close");
+  const takeAttendance = () => {
+    if (!isTeacher || attendance || attendancePending) return;
+    setAttendancePending(true);
+    setAttendanceError(null);
+    RoomServices.send("take_attendance");
+    attendanceTimer.current = window.setTimeout(() => {
+      attendanceTimer.current = null;
+      setAttendancePending(false);
+      setAttendanceError(
+        "Attendance was not confirmed. Check your connection and try again.",
+      );
+    }, 10_000);
+  };
+  const dismissAttendanceError = () => setAttendanceError(null);
 
   return {
+    pointers,
     participants,
     messages,
     files,
+    folders,
+    expandedFolders,
     activePath,
     writerId,
     speakers,
@@ -356,10 +477,15 @@ export function useLiveRoom(sessionId: number = 1) {
     closedReason,
     closedCode,
     currentLine,
+    attendance,
+    attendancePending,
+    attendanceError,
     myId,
     sendMessage,
     toggleHand,
     sendCode,
+    sendFolder,
+    sendFolderToggle,
     sendDelete,
     sendRename,
     sendActive,
@@ -368,6 +494,8 @@ export function useLiveRoom(sessionId: number = 1) {
     grantWriter,
     revokeWriter,
     closeClass,
+    takeAttendance,
+    dismissAttendanceError,
   };
 }
 

@@ -17,7 +17,15 @@ afterEach(()=>{cleanup();localStorage.clear();vi.unstubAllGlobals();});
 function Preference(){const {preference,theme,setPreference}=useTheme();return <><output>{preference}:{theme}</output><button onClick={()=>setPreference("system")}>Use system</button></>;}
 
 it("defaults to dark and toggles to a persistent light theme from the navbar",async()=>{
- render(<InstructorThemeProvider><InstructorTopbar onMenu={()=>{}}/></InstructorThemeProvider>);
+ render(
+   <InstructorThemeProvider>
+     <InstructorTopbar
+       onMenu={() => {}}
+       assistantOpen={false}
+       onAssistant={() => {}}
+     />
+   </InstructorThemeProvider>,
+ );
  expect(document.body.dataset.appTheme).toBe("dark");
  await userEvent.click(screen.getByRole("button",{name:"Switch to light theme"}));
  expect(document.body.dataset.appTheme).toBe("light");

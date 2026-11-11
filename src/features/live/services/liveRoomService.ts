@@ -1,3 +1,4 @@
+import type { PointerPosition } from "../pointers/pointer";
 // services/liveRoomService.ts
 import type { TerminalLine } from "../../../components/SmartTerminal/TerminalView";
 import { refreshSession, expire } from "../../../lib/http";
@@ -13,17 +14,28 @@ export interface ChatEntry {
   data: { text: string };
 }
 
+export interface AttendanceReceipt {
+  taken_at: string;
+  present_count: number;
+}
+
 export type ServerMessage =
+  | { type: "pointer_move" | "pointer_click"; from: Sender; data: PointerPosition }
+  | { type: "pointer_hide"; from?: Sender; data: {user_id?:string} }
   | {
       type: "snapshot";
       data: {
         files: Record<string, string>;
+        folders?: string[];
+        expanded_folders?: string[];
         active?: string | null;
         writer: string | null;
         speakers?: string[];
         me: Sender;
         roster?: Sender[];
         chat: ChatEntry[];
+        pointers?: (PointerPosition & {user_id:string})[];
+        attendance?: AttendanceReceipt | null;
       };
     }
   | {
@@ -31,6 +43,8 @@ export type ServerMessage =
       from: Sender;
       data: { file: string; content: string; line?: number };
     }
+  | { type: "create_folder"; from: Sender; data: { path: string } }
+  | { type: "folder_toggle"; from: Sender; data: { path: string; expanded: boolean } }
   | { type: "delete_path"; from: Sender; data: { path: string } }
   | { type: "rename_path"; from: Sender; data: { from: string; to: string } }
   | { type: "active_file"; from: Sender; data: { path: string } }
@@ -43,12 +57,15 @@ export type ServerMessage =
   | { type: "user_joined"; data: Sender }
   | { type: "user_left"; data: { id: string } }
   | { type: "terminal"; from: Sender; data: { lines: TerminalLine[] } }
-  | { type: "lower_hand"; from: Sender; data: {} };
+  | { type: "lower_hand"; from: Sender; data: {} }
+  | { type: "attendance_taken"; from?: Sender; data: AttendanceReceipt }
+  | { type: "attendance_error"; data: { message: string } };
 
 type Handlers = {
   onMessage: (msg: ServerMessage) => void;
   onClose?: (event: CloseEvent) => void;
   onError?: (message: string) => void;
+  onDisconnect?: () => void;
 };
 
 let socket: WebSocket | null = null;
@@ -86,6 +103,8 @@ function open(url: string, h: Handlers) {
 
   ws.onclose = (event) => {
     if (socket !== ws) return; // we closed it ourselves
+
+    h.onDisconnect?.();
 
     if (AUTH_CLOSE_CODES.includes(event.code)) {
       expire();
@@ -133,10 +152,11 @@ const RoomServices = {
     onMessage: (msg: ServerMessage) => void,
     onClose?: (event: CloseEvent) => void,
     onError?: (message: string) => void,
+    onDisconnect?: () => void,
   ) {
     RoomServices.disconnect();
     attempts = 0;
-    open(url, { onMessage, onClose, onError });
+    open(url, { onMessage, onClose, onError, onDisconnect });
   },
 
   send(type: string, data: object = {}) {

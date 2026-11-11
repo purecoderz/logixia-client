@@ -24,6 +24,7 @@ import {
 import { CohortTaskDrawer } from "../components/instructor/CohortTaskDrawer";
 import { cohortTaskStatus, type CohortTask } from "../types/cohortTask";
 import type { InstructorCohort } from "../types/types";
+import { newCohortTaskPath } from "@/features/tasks/paths";
 
 export default function CohortTasksPage() {
   const cohorts = useInstructorCohorts();
@@ -229,13 +230,19 @@ function TaskList({ cohort }: { cohort: InstructorCohort }) {
           </h2>
           <p className="mt-1 text-xs text-muted">{cohort.course}</p>
         </div>
-        <Button
-          disabled={query.isPending || outline.isPending || !!loadFailure}
-          onClick={() => setDrawer("assign")}
-        >
-          <Plus size={16} />
-          Assign tasks
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <ButtonLink to={newCohortTaskPath(cohort.id)}>
+            <Plus size={16} />
+            Create task
+          </ButtonLink>
+          <Button
+            variant="ghost"
+            disabled={query.isPending || outline.isPending || !!loadFailure}
+            onClick={() => setDrawer("assign")}
+          >
+            Assign tasks
+          </Button>
+        </div>
       </div>
       <ActionNotice notice={notice} onDismiss={dismiss} />
       {loadFailure ? (
@@ -384,7 +391,7 @@ function TaskList({ cohort }: { cohort: InstructorCohort }) {
               <p className="mt-2 text-sm text-muted">
                 {hasFilters
                   ? "Try another search, type or status."
-                  : "Choose tasks from a module and lesson to get started."}
+                  : "Create a task for this cohort or assign one from the course curriculum."}
               </p>
             </div>
           )}

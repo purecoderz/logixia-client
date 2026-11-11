@@ -14,7 +14,7 @@ export function PublicHeader() {
   const { profile } = useAuth();
 
   return (
-    <header className="relative border-b border-line bg-surface/40">
+    <header className="sticky top-0 z-40 border-b border-line bg-surface/85 backdrop-blur-md">
       <nav
         aria-label="Main navigation"
         className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-5 px-5 sm:px-8 lg:px-10"

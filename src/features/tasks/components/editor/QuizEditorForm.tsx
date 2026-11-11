@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Field, fieldProps } from "@/components/ui/Field";
 import { MarkdownRenderer } from "@/components/ui/Markdown";
@@ -46,6 +47,7 @@ export function QuizEditorForm({
   const [confirmCancel, setConfirmCancel] = useState(false);
   const running = useRef(false);
   const dirty = JSON.stringify(value) !== JSON.stringify(saved);
+  const savedStatus = success || (editing && !dirty);
   function change(patch: Partial<QuizTaskInput>) {
     setValue((current) => ({ ...current, ...patch }));
     setProblems([]);
@@ -507,8 +509,10 @@ export function QuizEditorForm({
         <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
           <p
             role="status"
-            className={`text-xs ${success ? "text-success" : "text-muted"}`}
+            aria-live="polite"
+            className={`inline-flex min-h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold ${savedStatus ? "border-emerald-500/30 bg-emerald-500/10 text-success" : dirty ? "border-amber-500/30 bg-amber-500/10 text-warning" : "border-line bg-surface-muted text-muted"}`}
           >
+            {savedStatus && <CheckCircle2 size={14} aria-hidden="true" />}
             {success
               ? "Quiz saved."
               : dirty

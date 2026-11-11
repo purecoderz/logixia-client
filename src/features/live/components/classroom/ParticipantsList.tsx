@@ -26,8 +26,8 @@ export function ParticipantsList({
   const queue = sorted.filter((p) => p.handRaised);
 
   return (
-    <section className="rounded-lg border border-[#30363d] bg-[#161b22] p-3">
-      <h2 className="mb-2 text-xs font-semibold text-[#8b949e]">
+    <section className="rounded-lg border border-line bg-surface p-3">
+      <h2 className="mb-2 text-xs font-semibold text-muted">
         Participants · {participants.length}
       </h2>
       <ul className="space-y-1.5">
@@ -37,7 +37,7 @@ export function ParticipantsList({
           return (
             <li
               key={p.id}
-              className="flex items-center justify-between gap-2 text-sm"
+              className="flex items-center justify-between gap-2 text-sm text-body"
             >
               <span className="truncate">{p.name}</span>
 

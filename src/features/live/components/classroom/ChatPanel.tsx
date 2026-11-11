@@ -24,8 +24,8 @@ export function ChatPanel({ messages, onSend }: ChatPanelProps) {
   };
 
   return (
-    <section className="flex min-h-0 flex-1 flex-col rounded-lg border border-[#30363d] bg-[#161b22]">
-      <h2 className="border-b border-[#21262d] px-3 py-2 text-xs font-semibold text-[#8b949e]">
+    <section className="flex min-h-0 flex-1 flex-col rounded-lg border border-line bg-surface">
+      <h2 className="border-b border-line px-3 py-2 text-xs font-semibold text-muted">
         Chat
       </h2>
 
@@ -44,11 +44,11 @@ export function ChatPanel({ messages, onSend }: ChatPanelProps) {
                 className={`max-w-[80%] break-words rounded-lg px-3 py-1.5 shadow-sm ${
                   mine
                     ? "rounded-tr-none bg-[#005c4b] text-[#e9edef]"
-                    : "rounded-tl-none bg-[#202c33] text-[#e9edef]"
+                    : "rounded-tl-none bg-surface-muted text-body"
                 }`}
               >
                 {showName && (
-                  <p className="mb-0.5 text-xs font-semibold text-[#53bdeb]">
+                  <p className="mb-0.5 text-xs font-semibold text-accent">
                     {m.author}
                   </p>
                 )}
@@ -62,14 +62,14 @@ export function ChatPanel({ messages, onSend }: ChatPanelProps) {
 
       <form
         onSubmit={submit}
-        className="flex items-center gap-2 border-t border-[#21262d] p-2"
+        className="flex items-center gap-2 border-t border-line p-2"
       >
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           aria-label="Message"
           placeholder="Type a message"
-          className="min-w-0 flex-1 rounded-full border border-[#30363d] bg-[#0d1117] px-4 py-2 text-sm outline-none focus:border-[#00a884]"
+          className="min-w-0 flex-1 rounded-full border border-line bg-input px-4 py-2 text-sm text-body outline-none placeholder:text-muted focus:border-accent"
         />
         <button
           type="submit"

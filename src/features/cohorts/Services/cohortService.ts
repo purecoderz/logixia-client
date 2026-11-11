@@ -21,10 +21,10 @@ export interface RawCohort {
   start_date: string;
   end_date: string;
   price: number;
+  course_title?: string;
   subtitle?: string;
-  seats_taken?: number;
-  seats?: number; // what the API actually sends
-  seats_total?: number; // legacy fallback
+  seats_taken: number;
+  seats: number;
 }
 
 // GET /instructor/cohorts
@@ -50,6 +50,15 @@ export interface CohortOption {
 
 async function handleError(response: Response): Promise<never> {
   throw await apiErrorFrom(response);
+}
+
+/**
+ * Public catalog responses must represent persisted Cohort rows. The database
+ * uses positive integer primary keys, so generated/demo records with UUID-like
+ * ids must not leak into student pages.
+ */
+function isPersistedCohort(item: RawCohort): boolean {
+  return Number.isInteger(item.id) && item.id > 0;
 }
 
 // Cohort API Service
@@ -86,9 +95,11 @@ export const CohortService = {
     if (!response.ok) return handleError(response);
 
     const rawData: RawCohort[] | RawCohort = await response.json();
-    return Array.isArray(rawData)
-      ? rawData.map((item) => CohortUtils.transform(item))
-      : [CohortUtils.transform(rawData)];
+    const items = Array.isArray(rawData) ? rawData : [rawData];
+
+    return items
+      .filter(isPersistedCohort)
+      .map((item) => CohortUtils.transform(item));
   },
 
   async getInstructorCohorts(

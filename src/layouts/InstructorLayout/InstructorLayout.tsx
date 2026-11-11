@@ -8,13 +8,20 @@ import { Outlet, useLocation } from "react-router-dom";
 import { BreadcrumbProvider } from "@/components/ui/BreadCrumbs";
 import { InstructorSidebar } from "./Sidebar/InstructorSidebar";
 import { InstructorTopbar } from "./InstructorTopbar";
+import { InstructorAssistant } from "@/features/instructorAssistant/components/InstructorAssistant";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 export function InstructorLayout() {
   const [drawer, setDrawer] = useState(false);
+  const [assistantOpen, setAssistantOpen] = useState(false);
   const [collapsed, setCollapsed] = useInstructorSidebarPreference();
   const { pathname } = useLocation();
+  const desktop = useMediaQuery("(min-width: 1024px)");
 
   useEffect(() => setDrawer(false), [pathname]);
+  useEffect(() => {
+    if (!desktop) setAssistantOpen(false);
+  }, [pathname, desktop]);
 
   return (
     <InstructorThemeProvider>
@@ -55,12 +62,23 @@ export function InstructorLayout() {
           )}
 
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            <InstructorTopbar onMenu={() => setDrawer(true)} />
-            <main className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-none bg-canvas">
-              <div className="min-w-0 w-full max-w-full px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-                <Outlet />
-              </div>
-            </main>
+            <InstructorTopbar
+              onMenu={() => setDrawer(true)}
+              assistantOpen={assistantOpen}
+              onAssistant={() => setAssistantOpen((open) => !open)}
+            />
+            <div className="flex min-h-0 min-w-0 flex-1">
+              <main className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-none bg-canvas">
+                <div className="min-w-0 w-full max-w-full px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+                  <Outlet />
+                </div>
+              </main>
+              <InstructorAssistant
+                pathname={pathname}
+                open={assistantOpen}
+                onOpenChange={setAssistantOpen}
+              />
+            </div>
           </div>
         </div>
       </BreadcrumbProvider>

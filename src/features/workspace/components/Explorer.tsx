@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { FsNode } from "../utils/File";
+import { getPath } from "../utils/exportProject";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 type ExplorerProps = {
@@ -28,6 +29,8 @@ type ExplorerProps = {
   onDelete: (id: string) => void;
   touchActions?: boolean;
   readOnly?: boolean; // viewers can browse and open files, but not create, rename or delete
+  expandedPaths?: string[];
+  onFolderToggle?: (path: string, expanded: boolean) => void;
 };
 
 export function Explorer({
@@ -39,6 +42,8 @@ export function Explorer({
   onDelete,
   readOnly = false,
   touchActions = false,
+  expandedPaths,
+  onFolderToggle,
 }: ExplorerProps) {
   const [expanded, setExpanded] = useState<string[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -51,13 +56,21 @@ export function Explorer({
 
   const deletingTarget = nodes.find((n) => n.id === deletingId);
 
-  const toggle = (id: string) => {
-    setExpanded(
-      expanded.includes(id)
-        ? expanded.filter((x) => x !== id)
-        : [...expanded, id],
-    );
+  const toggle = (node: FsNode) => {
+    const willExpand = !expanded.includes(node.id);
+    setExpanded((current) => willExpand
+      ? current.includes(node.id) ? current : [...current, node.id]
+      : current.filter((id) => id !== node.id));
+    onFolderToggle?.(getPath(nodes, node), willExpand);
   };
+
+  useEffect(() => {
+    if (!expandedPaths) return;
+    const wanted = new Set(expandedPaths);
+    setExpanded(nodes
+      .filter((node) => node.type === "folder" && wanted.has(getPath(nodes, node)))
+      .map((node) => node.id));
+  }, [expandedPaths, nodes]);
 
   const getParentId = () => {
     const sel = nodes.find((n) => n.id === selectedId);
@@ -67,10 +80,15 @@ export function Explorer({
   const startCreating = (type: "file" | "folder") => {
     const parentId = getParentId();
     setRenamingId(null);
-    if (parentId)
+    if (parentId) {
       setExpanded((current) =>
         current.includes(parentId) ? current : [...current, parentId],
       );
+      const parent = nodes.find((node) => node.id === parentId);
+      if (parent && !expanded.includes(parentId)) {
+        onFolderToggle?.(getPath(nodes, parent), true);
+      }
+    }
     setCreating({ type, parentId });
   };
 
@@ -113,10 +131,11 @@ export function Explorer({
           .map((n) => (
             <div key={n.id}>
               <div
+                data-live-explorer-path={getPath(nodes, n)}
                 tabIndex={0}
                 onClick={() => {
                   setSelectedId(n.id);
-                  if (n.type === "folder") toggle(n.id);
+                  if (n.type === "folder") toggle(n);
                   else onOpenFile(n.id);
                 }}
                 onDoubleClick={() => {

@@ -149,7 +149,7 @@ export default function AllTasksPage() {
             Create your first course
           </h2>
           <p className="max-w-md text-sm text-muted">
-            Tasks belong to lessons, and lessons belong to courses.
+            Create a course for curriculum tasks, or create a cohort task from Manage cohort tasks.
           </p>
           <ButtonLink to={NEW_COURSE_PATH}>Create course</ButtonLink>
         </div>

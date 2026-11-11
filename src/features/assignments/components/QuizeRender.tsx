@@ -8,6 +8,7 @@ import {
   Loader2,
   RotateCcw,
 } from "lucide-react";
+import { MarkdownRenderer } from "@/components/ui/Markdown";
 
 export interface QuizChoice {
   id: string;
@@ -268,16 +269,19 @@ export default function QuizRenderer({
       </div>
 
       {/* ── Scrollable Questions Section: ONLY this part scrolls ── */}
-      <div className="flex-1 min-h-0 overflow-y-auto pr-1 flex flex-col gap-4">
+      <div
+        data-quiz-scroll-region
+        className="flex-1 min-h-0 overflow-y-auto pr-1 flex flex-col gap-4"
+      >
         {/* Question Card */}
         <article className="student-card rounded-xl border border-line bg-surface p-5 sm:p-6 space-y-4 transition-colors">
           <div className="space-y-1">
             <span className="text-xs font-semibold uppercase tracking-wider text-muted">
               Question {currentIndex + 1}
             </span>
-            <h2 className="text-base sm:text-lg font-semibold leading-snug text-foreground">
-              {question.prompt}
-            </h2>
+            <div className="text-base font-semibold leading-snug text-foreground sm:text-lg">
+              <MarkdownRenderer content={question.prompt} />
+            </div>
           </div>
 
           {/* Dynamic Options List */}
@@ -392,9 +396,13 @@ export default function QuizRenderer({
             <p className="font-medium">{submitError}</p>
           </div>
         )}
+      </div>
 
-        {/* Navigation Footer */}
-        <div className="flex items-center justify-between pt-2 pb-6 shrink-0">
+      {/* Navigation stays visible while the question content scrolls. */}
+      <footer
+        data-quiz-navigation
+        className="flex shrink-0 items-center justify-between gap-3 border-t border-line bg-canvas pb-1 pt-3"
+      >
           <button
             type="button"
             onClick={handlePrev}
@@ -474,8 +482,7 @@ export default function QuizRenderer({
               Next
             </button>
           )}
-        </div>
-      </div>
+      </footer>
     </div>
   );
 }

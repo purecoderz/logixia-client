@@ -2,9 +2,30 @@
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
 export const AUTH_EXPIRED_EVENT = "auth:expired";
+export const SESSION_INTENT_KEY = "logixia:session-intent";
+
+export function wasExplicitlyLoggedOut() {
+  return localStorage.getItem(SESSION_INTENT_KEY) === "logged-out";
+}
+
+export function markSessionLoggedOut() {
+  localStorage.setItem(SESSION_INTENT_KEY, "logged-out");
+}
+
+export function markSessionActive() {
+  localStorage.removeItem(SESSION_INTENT_KEY);
+}
 
 // login and refresh must never trigger a refresh themselves
-const NO_REFRESH = ["/auth/login", "/auth/refresh"];
+const NO_REFRESH = [
+  "/login",
+  "/logout",
+  "/sign-up",
+  "/auth/login",
+  "/auth/refresh",
+  "/auth/forgot-password",
+  "/auth/reset-password",
+];
 
 type RefreshResult = "ok" | "denied" | "failed";
 
@@ -57,7 +78,11 @@ export async function apiFetch(
 
   const response = await fetch(url, options);
 
-  if (response.status !== 401 || NO_REFRESH.some((p) => url.includes(p))) {
+  if (
+    response.status !== 401 ||
+    wasExplicitlyLoggedOut() ||
+    NO_REFRESH.some((p) => url.includes(p))
+  ) {
     return response;
   }
 

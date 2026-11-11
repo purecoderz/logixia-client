@@ -14,7 +14,7 @@ export function StudentLiveRoomPage({room, sessionId}:{room:LiveRoom;sessionId:n
               aria-label={room.handRaised ? "Lower hand" : "Raise hand"}
               className={`flex h-10 min-w-10 items-center justify-center gap-2 rounded-md px-3 text-sm font-bold md:px-4 ${
                 room.handRaised
-                  ? "bg-[#30363d] text-white"
+                  ? "border border-line bg-hover text-foreground"
                   : "bg-[#d29922] text-[#0d1117]"
               }`}
             >

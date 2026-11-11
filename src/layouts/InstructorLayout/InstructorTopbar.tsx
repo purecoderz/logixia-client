@@ -1,8 +1,16 @@
 import { ThemeToggle } from "@/features/theme/ThemeToggle";
 import { TopbarBreadcrumbs } from "@/components/ui/BreadCrumbs";
-import { Bell, Menu, Search } from "lucide-react";
+import { Bell, Menu, Search, Sparkles } from "lucide-react";
 
-export function InstructorTopbar({ onMenu }: { onMenu: () => void }) {
+export function InstructorTopbar({
+  onMenu,
+  assistantOpen,
+  onAssistant,
+}: {
+  onMenu: () => void;
+  assistantOpen: boolean;
+  onAssistant: () => void;
+}) {
   return (
     <header
       data-instructor-topbar
@@ -37,6 +45,18 @@ export function InstructorTopbar({ onMenu }: { onMenu: () => void }) {
       </div>
 
       <ThemeToggle />
+
+      <button
+        type="button"
+        onClick={onAssistant}
+        aria-expanded={assistantOpen}
+        aria-controls="instructor-assistant-panel"
+        aria-label={assistantOpen ? "Close instructor assistant" : "Open instructor assistant"}
+        className={`flex h-10 shrink-0 items-center gap-2 rounded-lg px-2.5 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${assistantOpen ? "bg-accent/15 text-accent" : "text-body hover:bg-hover"}`}
+      >
+        <Sparkles size={18} aria-hidden />
+        <span className="hidden xl:inline">Ask AI</span>
+      </button>
 
       <button
         type="button"

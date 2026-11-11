@@ -12,7 +12,7 @@ export function LiveRoomPage() {
 function ConnectedLiveRoom({sessionId}:{sessionId:number}) {
   const room=useLiveRoom(sessionId);
   // A disconnected room still needs the shared layout's disconnect message.
-  if (!room.ready && !room.closedReason) return <div role="status" className="flex h-dvh items-center justify-center bg-[#161b22] text-[#c9d1d9]">Connecting to classroom…</div>;
+  if (!room.ready && !room.closedReason) return <div role="status" className="flex h-dvh items-center justify-center bg-canvas text-body">Connecting to classroom…</div>;
   return room.isTeacher
     ? <InstructorLiveRoomPage room={room} sessionId={sessionId}/>
     : <StudentLiveRoomPage room={room} sessionId={sessionId}/>;

@@ -41,6 +41,13 @@ export class NoCohortError extends Error {
   }
 }
 
+export function quizSubmissionAnswers(
+  answers: Record<string, string>,
+): Record<string, string> {
+  // Return answers as-is: { "q1": "q1-c", "q2": "q2-b", ... }
+  return { ...answers };
+}
+
 export const AssignmentService = {
   getAssignments: async (selectedCohortId?: number): Promise<Assignment[]> => {
     const id = localStorage.getItem("activeCohortId");
@@ -69,8 +76,16 @@ export const AssignmentService = {
     assignmentId: string,
     answers: Record<string, string>,
   ): Promise<void> => {
-    await new Promise((r) => setTimeout(r, 600)); // replace with a real POST later
-    console.log("submit quiz", assignmentId, answers);
+    const submissionAnswers = quizSubmissionAnswers(answers);
+    const response = await apiFetch(
+      `/cohort-tasks/${assignmentId}/quiz/submit`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(submissionAnswers),
+      },
+    );
+    if (!response.ok) throw await apiErrorFrom(response);
   },
 
   practiceRun: async (

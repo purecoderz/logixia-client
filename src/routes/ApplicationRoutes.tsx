@@ -36,6 +36,7 @@ import { ThemeProvider } from "@/features/theme/ThemeProvider";
 import AllTasksPage from "@/features/tasks/pages/AllTasksPage";
 import { AssignmentsPage } from "@/features/assignments/pages/AssignmentsPage";
 import { LegacyStudentTaskRedirect } from "@/features/assignments/pages/LegacyStudentTaskRedirect";
+import { PlaygroundPage } from "@/features/workspace/pages/Playground";
 import { InstructorLayout } from "@/layouts/InstructorLayout/InstructorLayout";
 import { PublicLayout } from "@/layouts/PublicLayout/PublicLayout";
 import StudentLayout from "@/layouts/StudentLayout/StudentLayouts";
@@ -78,11 +79,6 @@ const QuizGroundPage = lazy(() =>
 const ArcadeHubPage = lazy(() =>
   import("@/features/arcade/pages/ArcadeHubPage").then((m) => ({
     default: m.ArcadeHubPage,
-  })),
-);
-const PlaygroundPage = lazy(() =>
-  import("@/features/workspace/pages/Playground").then((m) => ({
-    default: m.PlaygroundPage,
   })),
 );
 

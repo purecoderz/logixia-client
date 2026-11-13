@@ -118,8 +118,12 @@ export function useLiveRoom(sessionId: number = 1) {
   useEffect(() => {
     if (!myId) return; // connect only after the profile is loaded
 
+    const wsBase = (import.meta.env.VITE_API_URL ?? "http://localhost:8000")
+      .replace(/\/+$/, "")
+      .replace(/^http/, "ws");
+
     RoomServices.connect(
-      `ws://localhost:8000/live/${sessionId}`,
+      `${wsBase}/live/${sessionId}`,
       (msg) => {
         receivePointer(msg);
         switch (msg.type) {

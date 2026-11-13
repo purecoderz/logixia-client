@@ -1,10 +1,14 @@
 // lib/socket.ts
 import { refreshSession, expire } from "./http"; // export both from http.ts
 
+const WS_BASE = (import.meta.env.VITE_API_URL ?? "http://localhost:8000")
+  .replace(/\/+$/, "")
+  .replace(/^http/, "ws");
+
 export async function connectSocket(path: string): Promise<WebSocket> {
   const open = () =>
     new Promise<WebSocket>((resolve, reject) => {
-      const ws = new WebSocket(`ws://localhost:8000${path}`);
+      const ws = new WebSocket(`${WS_BASE}${path}`);
       ws.onopen = () => resolve(ws);
       ws.onerror = () => reject(new Error("socket failed"));
     });

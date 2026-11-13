@@ -4,7 +4,10 @@ import { Dialog, DialogBackdrop, DialogPanel, DialogTitle, Transition } from "@h
 import { BookOpen, Clock3, X } from "lucide-react";
 import { MarkdownRenderer } from "@/components/ui/Markdown";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { useAuth } from "@/features/auth/context/AuthContext";
+import { useActiveCohort } from "@/features/cohorts/hooks/useActiveCohort";
 import { InstructorSessionService, sessionKeys } from "../services/instructorSessionService";
+import { StudentSessionService } from "../services/studentSessionService";
 import { safeRecordingUrl, type SessionDetail } from "../types/session";
 
 export function SessionMaterials({ session, open, onClose }: { session:SessionDetail;open:boolean;onClose:()=>void }) {
@@ -39,9 +42,26 @@ function formatElapsed(ms: number): string {
   return [hrs, mins, secs].map((n) => String(n).padStart(2, "0")).join(":");
 }
 
+function getStoredSessionStart(sessionId: number): number {
+  const key = `live:session-start:${sessionId}`;
+  try {
+    const raw = window.sessionStorage.getItem(key);
+    const parsed = raw ? Number(raw) : NaN;
+    if (Number.isFinite(parsed) && parsed > 0) return parsed;
+    const now = Date.now();
+    window.sessionStorage.setItem(key, String(now));
+    return now;
+  } catch {
+    return Date.now();
+  }
+}
+
 export function SessionElapsedTimer({ sessionId }: { sessionId: number }) {
   const query = useSessionDetail(sessionId);
-  const fallbackStart = useRef(Date.now());
+  const fallbackStart = useRef<number>(0);
+  if (fallbackStart.current === 0) {
+    fallbackStart.current = getStoredSessionStart(sessionId);
+  }
   const startedMs = query.data?.started_at ? Date.parse(query.data.started_at) : NaN;
   const origin = Number.isFinite(startedMs) ? startedMs : fallbackStart.current;
   const [now, setNow] = useState(() => Date.now());
@@ -62,8 +82,28 @@ export function SessionElapsedTimer({ sessionId }: { sessionId: number }) {
   );
 }
 
-function useSessionDetail(sessionId:number) {
-  return useQuery({queryKey:sessionKeys.detail(sessionId),queryFn:()=>InstructorSessionService.get(sessionId),enabled:Number.isSafeInteger(sessionId)&&sessionId>0,staleTime:5*60*1000});
+function useSessionDetail(sessionId: number) {
+  const { profile } = useAuth();
+  const isInstructor = profile?.role === "instructor";
+  const { activeCohort } = useActiveCohort();
+  const cohortId = activeCohort?.id;
+  const validSession = Number.isSafeInteger(sessionId) && sessionId > 0;
+
+  return useQuery({
+    queryKey: isInstructor
+      ? sessionKeys.detail(sessionId)
+      : [...sessionKeys.detail(sessionId), "student", cohortId ?? 0],
+    queryFn: async () => {
+      if (isInstructor) return InstructorSessionService.get(sessionId);
+      if (!cohortId) throw new Error("No active cohort selected.");
+      const list = await StudentSessionService.list(cohortId);
+      const match = list.find((item) => item.id === sessionId);
+      if (!match) throw new Error("Session details not found.");
+      return match;
+    },
+    enabled: validSession && (isInstructor || Boolean(cohortId)),
+    staleTime: 5 * 60 * 1000,
+  });
 }
 
 /** Shared reading panel for loaded materials and the live room's loading/error states. */

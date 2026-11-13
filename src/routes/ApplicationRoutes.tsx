@@ -2,7 +2,7 @@ import { Suspense, lazy } from "react";
 import type { Location } from "react-router-dom";
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import { AppLoading } from "@/components/ui/AppLoading";
+import { ListPageSkeleton } from "@/components/ui/ListPageSkeleton";
 import { AuthPage } from "@/features/auth/AuthenticationPage";
 import { ResetPasswordPage } from "@/features/auth/ResetPasswordPage";
 import { InstructorProtectedRoute } from "@/features/auth/InstructorProtectedRoute";
@@ -97,7 +97,7 @@ export function ApplicationRoutes({
   signedIn,
 }: ApplicationRoutesProps) {
   return (
-    <Suspense fallback={<AppLoading fullscreen={false} message="Loading…" />}>
+    <Suspense fallback={<ListPageSkeleton label="Loading page" />}>
       <Routes location={location}>
       {/* Authentication has its own full-screen shell. */}
       <Route path="/auth/login" element={<AuthPage />} />

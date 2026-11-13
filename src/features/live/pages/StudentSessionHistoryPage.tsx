@@ -61,7 +61,7 @@ function SessionHistoryContent({
       </header>
 
       {history.isPending ? (
-        <ListPageSkeleton label={`Loading ${cohortName} session history`} />
+        <SessionHistorySkeleton label={`Loading ${cohortName} session history`} />
       ) : history.error ? (
         <ErrorState
           what="your session history"
@@ -86,6 +86,38 @@ function SessionHistoryContent({
           onClose={() => setNotes(null)}
         />
       )}
+    </div>
+  );
+}
+
+function SessionHistorySkeleton({ label }: { label: string }) {
+  const bone = "rounded-md bg-surface-muted motion-safe:animate-pulse";
+  return (
+    <div role="status" aria-label={label} className="space-y-4">
+      <span className="sr-only">{label}…</span>
+      <div className="flex gap-2">
+        {[12, 20, 16, 24].map((w, i) => (
+          <div
+            key={i}
+            className="h-8 rounded-full bg-surface-muted motion-safe:animate-pulse"
+            style={{ width: `${w * 4}px` }}
+          />
+        ))}
+      </div>
+      <div className="divide-y divide-line overflow-hidden rounded-xl border border-line">
+        {[0, 1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="flex items-center justify-between gap-4 px-4 py-4"
+          >
+            <div className="space-y-2">
+              <div className={`${bone} h-4 w-48`} />
+              <div className={`${bone} h-3 w-32`} />
+            </div>
+            <div className={`${bone} h-7 w-20 rounded-full`} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

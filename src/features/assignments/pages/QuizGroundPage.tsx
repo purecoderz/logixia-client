@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { AppLoading } from "../../../components/ui/AppLoading";
+import { ListPageSkeleton } from "../../../components/ui/ListPageSkeleton";
 import { ErrorState } from "../../../components/ui/ErrorState";
 import { AssignmentService } from "../services/assignmentService";
 import QuizRenderer from "../components/QuizeRender";
@@ -42,7 +42,7 @@ export function QuizGroundPage() {
   }
 
   if (isPending || !task || task.type === "code") {
-    return <AppLoading message="Loading quiz…" />;
+    return <ListPageSkeleton label="Loading quiz" />;
   }
 
   return (

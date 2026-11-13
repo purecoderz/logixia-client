@@ -561,7 +561,7 @@ function WorkspaceContent({
           if (
             activeFile &&
             path &&
-            onRunFile?.(path, activeFile.content) === true
+            onRunFile?.(path, activeFile.content ?? "") === true
           ) {
             return;
           }

@@ -1,53 +1,182 @@
+import { Suspense, lazy } from "react";
 import type { Location } from "react-router-dom";
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import { AuthPage } from "@/features/auth/AuthenticationPage";
-import { ResetPasswordPage } from "@/features/auth/ResetPasswordPage";
+import { AppLoading } from "@/components/ui/AppLoading";
 import { InstructorProtectedRoute } from "@/features/auth/InstructorProtectedRoute";
 import { UserProtectedRoute } from "@/features/auth/UserProtectedRoute";
-import AcceptInvitationPage from "@/features/cohorts/Pages/AcceptInvitationPage";
-import CohortMembersPage from "@/features/cohorts/Pages/CohortMembersPage";
-import StudentManagementPage from "@/features/students/pages/StudentManagementPage";
-import CohortTasksPage from "@/features/cohorts/Pages/CohortTasksPage";
-import { CohortDetails } from "@/features/cohorts/Pages/CohortDetailsPage";
-import { CohortsRegistrationPage } from "@/features/cohorts/Pages/CohortsPage";
-import CreateCohortPage from "@/features/cohorts/Pages/CreateCohortPage";
-import { InstructorCohortsPage } from "@/features/cohorts/Pages/InsrtuctorCohortPage";
-import StudentCohortsPage from "@/features/cohorts/Pages/StudentCohortsPage";
-import { CohortLeaderboardPage } from "@/features/cohorts/Pages/CohortLeaderboardPage";
-import CourseBuilderPage from "@/features/courses/pages/CourseBuilderPage";
-import CreateCoursePage from "@/features/courses/pages/CreateCoursePage";
-import InstructorCoursesPage from "@/features/courses/pages/InstructorCoursesPage";
-import LessonEditorPage from "@/features/courses/pages/LessonEditorPage";
-import { StudentDashboardPage } from "@/features/dashboard/pages/StudentDashboardPage";
-import { DailyChallengePage } from "@/features/dashboard/pages/DailyChallengePage";
-import { InstructorDashboardPage } from "@/features/dashboard/pages/InstructorDashboardPage";
-import { HomePage } from "@/features/home";
-import { LecturePage } from "@/features/lectures/pages/LecturePage";
-import InstructorSessionsPage from "@/features/live/pages/InstructorSessionsPage";
-import { LiveRoomPage } from "@/features/live/pages/LiveRoomPage";
-import { StudentSessionsPage } from "@/features/live/pages/StudentSessionsPage";
-import { StudentSessionHistoryPage } from "@/features/live/pages/StudentSessionHistoryPage";
-import SessionPlayerPage from "@/features/live/pages/SessionPlayerPage";
-import { LegalPage } from "@/features/legal/pages/LegalPage";
-import InstructorSettingsPage from "@/features/settings/pages/InstructorSettingsPage";
-import StudentSettingsPage from "@/features/settings/pages/StudentSettingsPage";
-import { ComingSoonPage } from "@/features/system/pages/ComingSoonPage";
-import { NotFoundPage } from "@/features/system/pages/NotFoundPage";
 import { ThemeProvider } from "@/features/theme/ThemeProvider";
-import AllTasksPage from "@/features/tasks/pages/AllTasksPage";
-import CohortTaskEditorPage from "@/features/tasks/pages/CohortTaskEditorPage";
-import TaskEditorPage from "@/features/tasks/pages/TaskEditorPage";
-import TaskTestPage from "@/features/tasks/pages/TaskTestPage";
-import { AssignmentGroundPage } from "@/features/assignments/pages/AssignmentGroundPage";
-import { AssignmentsPage } from "@/features/assignments/pages/AssignmentsPage";
-import { LegacyStudentTaskRedirect } from "@/features/assignments/pages/LegacyStudentTaskRedirect";
-import { QuizGroundPage } from "@/features/assignments/pages/QuizGroundPage";
-import { ArcadeHubPage } from "@/features/arcade/pages/ArcadeHubPage";
-import { PlaygroundPage } from "@/features/workspace/pages/Playground";
 import { InstructorLayout } from "@/layouts/InstructorLayout/InstructorLayout";
 import { PublicLayout } from "@/layouts/PublicLayout/PublicLayout";
 import StudentLayout from "@/layouts/StudentLayout/StudentLayouts";
+
+const AuthPage = lazy(() =>
+  import("@/features/auth/AuthenticationPage").then((m) => ({
+    default: m.AuthPage,
+  })),
+);
+const ResetPasswordPage = lazy(() =>
+  import("@/features/auth/ResetPasswordPage").then((m) => ({
+    default: m.ResetPasswordPage,
+  })),
+);
+const AcceptInvitationPage = lazy(
+  () => import("@/features/cohorts/Pages/AcceptInvitationPage"),
+);
+const CohortMembersPage = lazy(
+  () => import("@/features/cohorts/Pages/CohortMembersPage"),
+);
+const StudentManagementPage = lazy(
+  () => import("@/features/students/pages/StudentManagementPage"),
+);
+const CohortTasksPage = lazy(
+  () => import("@/features/cohorts/Pages/CohortTasksPage"),
+);
+const CohortDetails = lazy(() =>
+  import("@/features/cohorts/Pages/CohortDetailsPage").then((m) => ({
+    default: m.CohortDetails,
+  })),
+);
+const CohortsRegistrationPage = lazy(() =>
+  import("@/features/cohorts/Pages/CohortsPage").then((m) => ({
+    default: m.CohortsRegistrationPage,
+  })),
+);
+const CreateCohortPage = lazy(
+  () => import("@/features/cohorts/Pages/CreateCohortPage"),
+);
+const InstructorCohortsPage = lazy(() =>
+  import("@/features/cohorts/Pages/InsrtuctorCohortPage").then((m) => ({
+    default: m.InstructorCohortsPage,
+  })),
+);
+const StudentCohortsPage = lazy(
+  () => import("@/features/cohorts/Pages/StudentCohortsPage"),
+);
+const CohortLeaderboardPage = lazy(() =>
+  import("@/features/cohorts/Pages/CohortLeaderboardPage").then((m) => ({
+    default: m.CohortLeaderboardPage,
+  })),
+);
+const CourseBuilderPage = lazy(
+  () => import("@/features/courses/pages/CourseBuilderPage"),
+);
+const CreateCoursePage = lazy(
+  () => import("@/features/courses/pages/CreateCoursePage"),
+);
+const InstructorCoursesPage = lazy(
+  () => import("@/features/courses/pages/InstructorCoursesPage"),
+);
+const LessonEditorPage = lazy(
+  () => import("@/features/courses/pages/LessonEditorPage"),
+);
+const StudentDashboardPage = lazy(() =>
+  import("@/features/dashboard/pages/StudentDashboardPage").then((m) => ({
+    default: m.StudentDashboardPage,
+  })),
+);
+const DailyChallengePage = lazy(() =>
+  import("@/features/dashboard/pages/DailyChallengePage").then((m) => ({
+    default: m.DailyChallengePage,
+  })),
+);
+const InstructorDashboardPage = lazy(() =>
+  import("@/features/dashboard/pages/InstructorDashboardPage").then((m) => ({
+    default: m.InstructorDashboardPage,
+  })),
+);
+const HomePage = lazy(() =>
+  import("@/features/home").then((m) => ({ default: m.HomePage })),
+);
+const LecturePage = lazy(() =>
+  import("@/features/lectures/pages/LecturePage").then((m) => ({
+    default: m.LecturePage,
+  })),
+);
+const InstructorSessionsPage = lazy(
+  () => import("@/features/live/pages/InstructorSessionsPage"),
+);
+const LiveRoomPage = lazy(() =>
+  import("@/features/live/pages/LiveRoomPage").then((m) => ({
+    default: m.LiveRoomPage,
+  })),
+);
+const StudentSessionsPage = lazy(() =>
+  import("@/features/live/pages/StudentSessionsPage").then((m) => ({
+    default: m.StudentSessionsPage,
+  })),
+);
+const StudentSessionHistoryPage = lazy(() =>
+  import("@/features/live/pages/StudentSessionHistoryPage").then((m) => ({
+    default: m.StudentSessionHistoryPage,
+  })),
+);
+const SessionPlayerPage = lazy(
+  () => import("@/features/live/pages/SessionPlayerPage"),
+);
+const LegalPage = lazy(() =>
+  import("@/features/legal/pages/LegalPage").then((m) => ({
+    default: m.LegalPage,
+  })),
+);
+const InstructorSettingsPage = lazy(
+  () => import("@/features/settings/pages/InstructorSettingsPage"),
+);
+const StudentSettingsPage = lazy(
+  () => import("@/features/settings/pages/StudentSettingsPage"),
+);
+const ComingSoonPage = lazy(() =>
+  import("@/features/system/pages/ComingSoonPage").then((m) => ({
+    default: m.ComingSoonPage,
+  })),
+);
+const NotFoundPage = lazy(() =>
+  import("@/features/system/pages/NotFoundPage").then((m) => ({
+    default: m.NotFoundPage,
+  })),
+);
+const AllTasksPage = lazy(
+  () => import("@/features/tasks/pages/AllTasksPage"),
+);
+const CohortTaskEditorPage = lazy(
+  () => import("@/features/tasks/pages/CohortTaskEditorPage"),
+);
+const TaskEditorPage = lazy(
+  () => import("@/features/tasks/pages/TaskEditorPage"),
+);
+const TaskTestPage = lazy(
+  () => import("@/features/tasks/pages/TaskTestPage"),
+);
+const AssignmentGroundPage = lazy(() =>
+  import("@/features/assignments/pages/AssignmentGroundPage").then((m) => ({
+    default: m.AssignmentGroundPage,
+  })),
+);
+const AssignmentsPage = lazy(() =>
+  import("@/features/assignments/pages/AssignmentsPage").then((m) => ({
+    default: m.AssignmentsPage,
+  })),
+);
+const LegacyStudentTaskRedirect = lazy(() =>
+  import("@/features/assignments/pages/LegacyStudentTaskRedirect").then(
+    (m) => ({ default: m.LegacyStudentTaskRedirect }),
+  ),
+);
+const QuizGroundPage = lazy(() =>
+  import("@/features/assignments/pages/QuizGroundPage").then((m) => ({
+    default: m.QuizGroundPage,
+  })),
+);
+const ArcadeHubPage = lazy(() =>
+  import("@/features/arcade/pages/ArcadeHubPage").then((m) => ({
+    default: m.ArcadeHubPage,
+  })),
+);
+const PlaygroundPage = lazy(() =>
+  import("@/features/workspace/pages/Playground").then((m) => ({
+    default: m.PlaygroundPage,
+  })),
+);
 
 interface ApplicationRoutesProps {
   location: Location;
@@ -60,7 +189,8 @@ export function ApplicationRoutes({
   signedIn,
 }: ApplicationRoutesProps) {
   return (
-    <Routes location={location}>
+    <Suspense fallback={<AppLoading message="Loading…" />}>
+      <Routes location={location}>
       {/* Authentication has its own full-screen shell. */}
       <Route path="/auth/login" element={<AuthPage />} />
       <Route path="/auth/signup" element={<AuthPage />} />
@@ -196,6 +326,7 @@ export function ApplicationRoutes({
 
       {/* Unknown addresses must remain last so every real route wins first. */}
       <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+      </Routes>
+    </Suspense>
   );
 }

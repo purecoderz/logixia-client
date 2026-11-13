@@ -25,4 +25,30 @@ export default defineConfig({
   resolve: {
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
   },
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            {
+              name: "react-vendor",
+              test: /node_modules[\\/](react|react-dom|react-router-dom|react-router)[\\/]/,
+            },
+            {
+              name: "codemirror",
+              test: /node_modules[\\/](@codemirror|@uiw\/react-codemirror|@uiw\/codemirror-theme-|@lezer)/,
+            },
+            {
+              name: "markdown",
+              test: /node_modules[\\/](react-markdown|react-syntax-highlighter|remark-|rehype-|micromark|mdast-|unified|hast-|refractor|prismjs)/,
+            },
+            {
+              name: "ui-vendor",
+              test: /node_modules[\\/](lucide-react|@headlessui\/react|@tanstack\/react-query|react-resizable-panels|jszip)/,
+            },
+          ],
+        },
+      },
+    },
+  },
 });

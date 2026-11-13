@@ -127,11 +127,7 @@ export function DailyChallengePage() {
               starterFiles={remote.starter_files ?? { "main.py": "" }}
               asideTitle="Challenge"
               aside={
-                <TaskInstructions
-                  instructions={remote.prompt}
-                  xp={remote.xp}
-                  dueDate={remote.challenge_date}
-                />
+                <TaskInstructions instructions={remote.prompt} />
               }
               asideFooter={({ getFiles }) => (
                 <div className="flex items-center gap-2">

@@ -173,6 +173,14 @@ export function CodeEditor({
   );
 
   const cm = useRef<ReactCodeMirrorRef>(null);
+  const recentEmits = useRef<Set<string>>(new Set());
+  const viewDoc = cm.current?.view?.state.doc.toString();
+  // Ignore lagging React `value` renders that originated from our own fast typing,
+  // so CodeMirror never replaces the doc and resets the cursor to line 1.
+  const editorValue =
+    !readOnly && viewDoc !== undefined && recentEmits.current.has(value)
+      ? viewDoc
+      : value;
 
   // Followers: move the cursor to the instructor's line and scroll to it.
   // Re-runs on `value` too, so it still works when the document updates.
@@ -196,7 +204,7 @@ export function CodeEditor({
   return (
     <CodeMirror
       ref={cm}
-      value={value}
+      value={editorValue}
       theme={theme === "light" ? githubLight : dracula}
       className="h-full"
       readOnly={readOnly}
@@ -211,6 +219,11 @@ export function CodeEditor({
       extensions={extensions}
       onChange={(val, viewUpdate) => {
         if (readOnly) return;
+        recentEmits.current.add(val);
+        if (recentEmits.current.size > 30) {
+          const oldest = recentEmits.current.values().next().value;
+          if (oldest !== undefined) recentEmits.current.delete(oldest);
+        }
         // Only compute line number if actively live streaming
         const line = isLive
           ? viewUpdate.state.doc.lineAt(viewUpdate.state.selection.main.head)

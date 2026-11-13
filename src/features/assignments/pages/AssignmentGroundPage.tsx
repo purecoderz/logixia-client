@@ -178,35 +178,35 @@ export function AssignmentGround({
         }
         asideTitle={task.title}
         aside={
-          <TaskInstructions
-            instructions={task.instructions}
-          />
+          <div className="space-y-3">
+            {statusBanner && <div className="px-4 pt-3">{statusBanner}</div>}
+            <TaskInstructions
+              instructions={task.instructions}
+            />
+          </div>
         }
         asideFooter={({ nodes, getFiles }) => (
-          <div className="flex flex-col gap-3">
-            {statusBanner}
-            <div className="flex items-center justify-between gap-3">
-              <p
-                role="status"
-                className={`min-w-0 truncate text-xs ${footerColor}`}
-              >
-                {footerText}
-              </p>
+          <div className="flex items-center gap-2.5">
+            <p
+              role="status"
+              className={`hidden truncate text-xs xl:inline ${footerColor}`}
+            >
+              {footerText}
+            </p>
 
-              <button
-                type="button"
-                onClick={() => submit(getFiles())}
-                disabled={submitState === "submitting" || nodes.length === 0}
-                className={`inline-flex shrink-0 items-center gap-1.5 rounded-md px-3.5 py-1.5 text-[13px] font-medium text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#58a6ff] disabled:cursor-not-allowed disabled:opacity-50 ${
-                  isPracticeMode
-                    ? "bg-[#1f6feb] hover:bg-[#388bfd]"
-                    : "bg-[#238636] hover:bg-[#2ea043]"
-                }`}
-              >
-                {btnIcon}
-                {btnLabel}
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => submit(getFiles())}
+              disabled={submitState === "submitting" || nodes.length === 0}
+              className={`inline-flex shrink-0 items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#58a6ff] disabled:cursor-not-allowed disabled:opacity-50 ${
+                isPracticeMode
+                  ? "bg-[#1f6feb] hover:bg-[#388bfd]"
+                  : "bg-[#238636] hover:bg-[#2ea043]"
+              }`}
+            >
+              {btnIcon}
+              {btnLabel}
+            </button>
           </div>
         )}
       />

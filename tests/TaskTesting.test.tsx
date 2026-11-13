@@ -22,7 +22,7 @@ it("opens Test task from the table action menu",async()=>{
  await userEvent.click(screen.getByRole("menuitem",{name:"Test task"}));
  expect(screen.getByRole("status").textContent).toBe("/instructor/courses/1/tasks/12/test");
 });
-function setup(){render(<QueryClientProvider client={new QueryClient({defaultOptions:{queries:{retry:false}}})}><MemoryRouter initialEntries={["/instructor/courses/1/tasks/12/test"]}><Routes><Route path="/instructor/courses/:courseId/tasks/:taskId/test" element={<TaskTestPage/>}/></Routes></MemoryRouter></QueryClientProvider>);}
+function setup(){render(<QueryClientProvider client={new QueryClient({defaultOptions:{queries:{retry:false}}})}><MemoryRouter initialEntries={["/instructor/tasks?course=1","/instructor/courses/1/tasks/12/test"]} initialIndex={1}><Routes><Route path="/instructor/tasks" element={<output>Tasks list</output>}/><Route path="/instructor/courses/:courseId/tasks/:taskId/test" element={<TaskTestPage/>}/></Routes></MemoryRouter></QueryClientProvider>);}
 it("tests code files on explicit click and displays failed checks",async()=>{
  vi.mocked(TaskService.get).mockResolvedValue({...emptyTask(),id:12,lesson_id:3,title:"Addition",instructions:"Print five."});
  vi.mocked(TaskService.test).mockResolvedValue({passed:false,checks:[{name:"Output test 1",passed:false,message:"Expected 5"}]});
@@ -33,14 +33,40 @@ it("tests code files on explicit click and displays failed checks",async()=>{
  expect(await screen.findByText("Some checks failed.")).toBeTruthy();
  expect(TaskService.test).toHaveBeenCalledExactlyOnceWith("12",{files:{"main.py":"print(5)"}});
 });
-it("collects quiz choice IDs and sends an instructor-only dry run",async()=>{
+it("shows instant quiz feedback and returns to the previous page when clicking Done",async()=>{
  vi.mocked(TaskService.get).mockResolvedValue({id:12,lesson_id:3,title:"Python",type:"quiz",instructions:"Choose one.",questions:[{id:"q1",prompt:"Function keyword?",choices:[{id:"a",text:"def"},{id:"b",text:"class"}],correct_choice_id:"a",explanation:"Use def."}]});
- vi.mocked(TaskService.test).mockResolvedValue({passed:true,checks:[{name:"Question 1",passed:true}]});
  setup();
- const button=await screen.findByRole("button",{name:"Test answers"});
- expect((button as HTMLButtonElement).disabled).toBe(true);
+ const doneBtn=await screen.findByRole("button",{name:"Done"});
+ expect(screen.queryByRole("button",{name:"Test answers"})).toBeNull();
  await userEvent.click(screen.getByRole("radio",{name:"def"}));
- await userEvent.click(button);
- expect(await screen.findByText("All checks passed.")).toBeTruthy();
- expect(TaskService.test).toHaveBeenCalledExactlyOnceWith("12",{answers:[{question_id:"q1",choice_id:"a"}]});
+ expect(screen.getByText("Use def.")).toBeTruthy();
+ await userEvent.click(doneBtn);
+ expect(await screen.findByText("Tasks list")).toBeTruthy();
+ expect(TaskService.test).not.toHaveBeenCalled();
+});
+
+it("navigates across multiple quiz questions using the student quiz layout and finishes with Done",async()=>{
+ vi.mocked(TaskService.get).mockResolvedValue({
+  id:12,
+  lesson_id:3,
+  title:"Multi-step Quiz",
+  type:"quiz",
+  instructions:"Answer every question.",
+  questions:[
+   {id:"q1",prompt:"First question?",choices:[{id:"a",text:"Option A"},{id:"b",text:"Option B"}],correct_choice_id:"a",explanation:"Explanation 1"},
+   {id:"q2",prompt:"Second question?",choices:[{id:"c",text:"Option C"},{id:"d",text:"Option D"}],correct_choice_id:"d",explanation:"Explanation 2"},
+  ],
+ });
+ setup();
+ expect(await screen.findByText("Question 1 of 2")).toBeTruthy();
+ expect(screen.getByText("First question?")).toBeTruthy();
+ await userEvent.click(screen.getByRole("radio",{name:"Option A"}));
+ expect(screen.getByText("Explanation 1")).toBeTruthy();
+ await userEvent.click(screen.getByRole("button",{name:"Next"}));
+ expect(screen.getByText("Question 2 of 2")).toBeTruthy();
+ expect(screen.getByText("Second question?")).toBeTruthy();
+ await userEvent.click(screen.getByRole("radio",{name:"Option D"}));
+ expect(screen.getByText("Explanation 2")).toBeTruthy();
+ await userEvent.click(screen.getByRole("button",{name:"Done"}));
+ expect(await screen.findByText("Tasks list")).toBeTruthy();
 });

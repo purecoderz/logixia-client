@@ -8,6 +8,7 @@ import {
   Code2,
   Eye,
   CheckCircle2,
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Field, fieldProps } from "@/components/ui/Field";
@@ -19,6 +20,7 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { inputClass } from "@/components/ui/formStyles";
 import { ApiError, friendlyMessage } from "@/lib/apiError";
 import {
+  emptyTask,
   taskPayload,
   validateTask,
   wordsFrom,
@@ -65,11 +67,13 @@ export function TaskEditorForm({
   editing,
   onSave,
   onCancel,
+  onNew,
 }: {
   initial: CodeTaskInput;
   editing: boolean;
   onSave: (task: CodeTaskInput) => Promise<void>;
   onCancel: () => void;
+  onNew?: () => void;
 }) {
   const [values, setValues] = useState(initial);
   const [saved, setSaved] = useState(initial);
@@ -79,12 +83,24 @@ export function TaskEditorForm({
   const [busy, setBusy] = useState(false);
   const [success, setSuccess] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
+  const [confirmNew, setConfirmNew] = useState(false);
   const running = useRef(false);
   const dirty = JSON.stringify(values) !== JSON.stringify(saved);
   const savedStatus = success || (editing && !dirty);
   const current = sections.find((item) => item.id === section)!;
   const fieldError = (id: string) =>
     problems.find((problem) => problem.field === id)?.message;
+  function resetToNew() {
+    const fresh = emptyTask();
+    setValues(fresh);
+    setSaved(fresh);
+    setSection("details");
+    setProblems([]);
+    setError(null);
+    setSuccess(false);
+    setConfirmNew(false);
+    onNew?.();
+  }
   function change(patch: Partial<CodeTaskInput>) {
     setValues((previous) => ({ ...previous, ...patch }));
     setProblems([]);
@@ -431,7 +447,15 @@ export function TaskEditorForm({
                   ? "All changes saved"
                   : "Complete the task details, then save once."}
           </p>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="ghost"
+              disabled={busy}
+              onClick={() => (dirty ? setConfirmNew(true) : resetToNew())}
+            >
+              <Plus size={15} aria-hidden="true" />
+              New task
+            </Button>
             <Button
               variant="ghost"
               disabled={busy}
@@ -464,6 +488,14 @@ export function TaskEditorForm({
         confirmLabel="Discard changes"
         onCancel={() => setConfirmCancel(false)}
         onConfirm={onCancel}
+      />
+      <ConfirmDialog
+        open={confirmNew}
+        title="Start a new task?"
+        message="Your unsaved changes will be lost."
+        confirmLabel="Start new task"
+        onCancel={() => setConfirmNew(false)}
+        onConfirm={resetToNew}
       />
     </>
   );

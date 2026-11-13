@@ -21,8 +21,9 @@ export function useInstructorCohorts(enabled = true) {
 }
 
 /** Cohorts the logged-in student belongs to (topbar switcher). */
-export function useMyCohorts() {
+export function useMyCohorts(enabled = true) {
   return useQuery({
+    enabled,
     queryKey: cohortKeys.mine(),
     queryFn: CohortService.getMine,
     staleTime: 60_000,

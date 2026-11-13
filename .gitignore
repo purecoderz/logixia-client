@@ -25,3 +25,4 @@ diagram*
 *.sw?
 docs*
 tests*
+.env*

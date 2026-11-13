@@ -27,7 +27,9 @@ function Item({
   collapsed?: boolean;
 }) {
   const { pathname } = useLocation();
-  const inside = pathname.startsWith(item.path) && item.path !== "/instructor";
+  const inside =
+    (pathname.startsWith(item.path) && item.path !== "/instructor") ||
+    !!item.children?.some((c) => pathname === c.path);
   const [open, setOpen] = useState(inside);
   const icon = (
     <span aria-hidden="true" className="shrink-0 text-xl leading-none">

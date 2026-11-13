@@ -1,3 +1,11 @@
+export interface NavChildItem {
+  id: string;
+  label: string;
+  path: string;
+  badge?: string;
+  badgeStyle?: string;
+}
+
 export interface NavItem {
   id: string;
   label: string;
@@ -6,6 +14,7 @@ export interface NavItem {
   badge?: string;
   badgeStyle?: string;
   isLivePulse?: boolean;
+  children?: NavChildItem[];
 }
 
 export interface NavSection {
@@ -58,7 +67,15 @@ export const GUEST_NAV_SECTIONS: NavSection[] = [
 export const STUDENT_NAV_SECTIONS: NavSection[] = [
   {
     title: "OVERVIEW",
-    items: [{ id: "home", label: "Student Dashboard", icon: "🏠", path: "/" }],
+    items: [
+      { id: "home", label: "Student Dashboard", icon: "🏠", path: "/" },
+      {
+        id: "daily-challenge",
+        label: "Daily Challenge",
+        icon: "⚡",
+        path: "/daily-challenge",
+      },
+    ],
   },
   {
     title: "ACTIVE COHORT",
@@ -66,18 +83,15 @@ export const STUDENT_NAV_SECTIONS: NavSection[] = [
       {
         id: "live-stream",
         label: "Live Synchronized Room",
-        icon: "🔴",
-        isLivePulse: true,
-        badge: "IN SESSION",
+        icon: "🎥",
+        isLivePulse: false,
         badgeStyle: "bg-emerald-500/10 text-success border-emerald-500/30",
         path: "/live-stream",
       },
       {
         id: "lessons",
-        label: "Pre-Class Notes",
-        icon: "📝",
-        badge: "24h Prior",
-        badgeStyle: "bg-accent/10 text-accent border-accent/30",
+        label: "Learning Path",
+        icon: "🗺️",
         path: "/lessons",
       },
       {
@@ -93,53 +107,54 @@ export const STUDENT_NAV_SECTIONS: NavSection[] = [
         path: "/history",
       },
       {
-        id: "schedule",
-        label: "Class Timetable",
-        icon: "📅",
-        path: "/schedule",
+        id: "leaderboard",
+        label: "Leaderboard",
+        icon: "🏆",
+        path: "/leaderboard",
       },
     ],
   },
   {
-    title: "Cohort Management",
+    title: "PROGRAMS & PRACTICE",
     items: [
       {
-        id: "reg-cohort",
-        label: "Cohort Registration",
-        icon: "📝",
-        path: "/register/cohorts",
-      },
-
-      {
-        id: "my-cohort",
-        label: "My Cohort",
-        icon: "💻",
+        id: "cohort-management",
+        label: "Cohort Management",
+        icon: "🎓",
         path: "/student/cohorts",
+        children: [
+          {
+            id: "my-cohort",
+            label: "My Cohort",
+            path: "/student/cohorts",
+          },
+          {
+            id: "reg-cohort",
+            label: "Cohort Registration",
+            path: "/register/cohorts",
+          },
+        ],
       },
-    ],
-  },
-  {
-    title: "PRACTICE & GAMIFICATION",
-    items: [
       {
-        id: "playground",
-        label: "PlayGround IDE",
+        id: "practice-group",
+        label: "Practice & Arcade",
         icon: "🧪",
         path: "/playground",
+        children: [
+          {
+            id: "playground",
+            label: "PlayGround IDE",
+            path: "/playground",
+          },
+          {
+            id: "playgame",
+            label: "PlayGame Arcade",
+            badge: "+150 XP",
+            badgeStyle: "bg-amber-500/10 text-warning border-amber-500/30",
+            path: "/game",
+          },
+        ],
       },
-      {
-        id: "playgame",
-        label: "PlayGame Arcade",
-        icon: "👾",
-        badge: "+150 XP",
-        badgeStyle: "bg-amber-500/10 text-warning border-amber-500/30",
-        path: "/game",
-      },
-    ],
-  },
-  {
-    title: "SELF-PACED COURSES",
-    items: [
       {
         id: "courses-catalog",
         label: "Courses Catalog",
@@ -160,3 +175,20 @@ export const STUDENT_NAV_SECTIONS: NavSection[] = [
     ],
   },
 ];
+
+export function getStudentNavSections(hasLiveSession = false): NavSection[] {
+  if (!hasLiveSession) return STUDENT_NAV_SECTIONS;
+
+  return STUDENT_NAV_SECTIONS.map((section) => ({
+    ...section,
+    items: section.items.map((item) =>
+      item.id === "live-stream"
+        ? {
+            ...item,
+            isLivePulse: true,
+            badge: "IN SESSION",
+          }
+        : item,
+    ),
+  }));
+}

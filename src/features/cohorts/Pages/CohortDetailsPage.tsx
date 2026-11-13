@@ -6,6 +6,8 @@ import {
   BookOpen,
   Calendar,
   Check,
+  ChevronDown,
+  ChevronRight,
   Clock,
   ListChecks,
   MessageCircle,
@@ -17,10 +19,7 @@ import {
 import { STATUS_STYLES } from "../components/students/CohortCard";
 import { EnrolCard, MobileEnrolBar } from "../components/students/EnrolCard";
 import { CohortService, type CohortStatus } from "../Services/cohortService";
-
-import { SectionRow } from "../../../components/CoursesUi/SectionRow";
 import { toCohortView } from "../utils/toCohotView";
-import { RoadmapRow } from "../../../components/CoursesUi/RoadmapRow";
 
 const card = "rounded-xl border border-line bg-surface p-4";
 const h2 = "text-xl font-medium text-foreground";
@@ -106,6 +105,55 @@ function Fact({ icon: Icon, label, value }: FactData) {
         {label}
       </dt>
       <dd className="mt-1 text-sm font-medium text-foreground">{value}</dd>
+    </div>
+  );
+}
+
+function SyllabusModule({
+  title,
+  lessons,
+  defaultOpen = false,
+}: {
+  title: string;
+  lessons: ApiLesson[];
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <div className="overflow-hidden rounded-xl border border-line bg-surface">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
+      >
+        <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-surface-muted text-body">
+          {open ? <ChevronDown size={15} aria-hidden /> : <ChevronRight size={15} aria-hidden />}
+        </span>
+        <span className="flex-1 truncate text-sm font-medium text-foreground sm:text-base">
+          {title}
+        </span>
+        <span className="shrink-0 font-mono text-xs text-muted">
+          {lessons.length} {lessons.length === 1 ? "lesson" : "lessons"}
+        </span>
+      </button>
+
+      {open && lessons.length > 0 && (
+        <ol className="divide-y divide-line border-t border-line bg-canvas/40">
+          {lessons.map((lesson) => (
+            <li
+              key={lesson.lesson_order}
+              className="flex items-center gap-3 px-4 py-2.5 pl-6 text-sm text-body"
+            >
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-accent/15 font-mono text-xs font-medium text-accent">
+                {lesson.lesson_order}
+              </span>
+              <span className="truncate">{lesson.title}</span>
+            </li>
+          ))}
+        </ol>
+      )}
     </div>
   );
 }
@@ -307,7 +355,7 @@ export function CohortDetails() {
             </ul>
           </section>
 
-          {/* Syllabus: unchanged */}
+          {/* Syllabus */}
           <section id="syllabus" className="scroll-mt-8">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <h2 className={h2}>Syllabus</h2>
@@ -321,24 +369,14 @@ export function CohortDetails() {
             {cohort.weeks.length === 0 ? (
               <p className="mt-4 text-sm text-muted">The syllabus for this cohort hasn't been published yet.</p>
             ) : (
-              <div className="mt-4">
+              <div className="mt-4 space-y-3">
                 {cohort.weeks.map((week, i) => (
-                  <SectionRow
+                  <SyllabusModule
                     key={week.id}
                     title={week.title}
-                    completed={0}
-                    total={week.lessons.length}
+                    lessons={week.lessons}
                     defaultOpen={i === 0}
-                  >
-                    {week.lessons.map((lesson) => (
-                      <RoadmapRow
-                        key={`${week.id}-${lesson.lesson_order}`}
-                        title={lesson.title}
-                        step={lesson.lesson_order}
-                        to=""
-                      />
-                    ))}
-                  </SectionRow>
+                  />
                 ))}
               </div>
             )}

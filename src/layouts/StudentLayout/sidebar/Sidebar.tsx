@@ -1,8 +1,8 @@
-import { GUEST_NAV_SECTIONS, STUDENT_NAV_SECTIONS } from "../navConfig";
 import { SidebarHeader } from "./components/SidebarHeader";
 import { SidebarSection } from "./components/SidebarSection";
 import { SidebarFooter } from "./components/SidebarFooter";
 import { useAuth } from "../../../features/auth/context/AuthContext";
+import { useStudentNavSections } from "./useStudentNavSections";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -10,12 +10,11 @@ interface SidebarProps {
 
 export const StudentSidebar = ({ isCollapsed }: SidebarProps) => {
   const { profile, isLoading } = useAuth();
+  const navSections = useStudentNavSections(Boolean(profile));
 
   if (isLoading) {
     return <h1>Loading</h1>;
   }
-
-  const navSections = profile ? STUDENT_NAV_SECTIONS : GUEST_NAV_SECTIONS;
 
   return (
     <aside

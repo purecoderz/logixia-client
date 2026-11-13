@@ -25,9 +25,7 @@ export function SessionHistoryRow({
     <div className="flex flex-wrap items-center gap-2">
       {recording && session.recording_status === "ready" ? (
         <a
-          href={recording}
-          target="_blank"
-          rel="noopener noreferrer"
+          href={`/sessions/${session.id}/watch?cohort=${session.cohort_id}`}
           className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-accent px-3.5 text-sm font-semibold text-on-accent hover:bg-accent-hover"
         >
           <Play className="size-4" aria-hidden /> Watch recording

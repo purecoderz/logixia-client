@@ -1,6 +1,7 @@
 import { ThemeToggle } from "@/features/theme/ThemeToggle";
-import { TopbarBreadcrumbs } from "@/components/ui/BreadCrumbs";
-import { Bell, Menu, Search, Sparkles } from "lucide-react";
+import { TopbarBackButton, TopbarBreadcrumbs } from "@/components/ui/BreadCrumbs";
+import { Menu, Search, Sparkles } from "lucide-react";
+import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 
 export function InstructorTopbar({
   onMenu,
@@ -24,6 +25,8 @@ export function InstructorTopbar({
       >
         <Menu size={20} aria-hidden />
       </button>
+
+      <TopbarBackButton />
 
       {/* takes the free space, pushes search + bell to the right */}
       <div className="min-w-0 flex-1">
@@ -58,13 +61,7 @@ export function InstructorTopbar({
         <span className="hidden xl:inline">Ask AI</span>
       </button>
 
-      <button
-        type="button"
-        aria-label="Notifications"
-        className="flex size-10 shrink-0 items-center justify-center rounded-lg text-body hover:bg-hover"
-      >
-        <Bell size={20} aria-hidden />
-      </button>
+      <NotificationBell />
     </header>
   );
 }

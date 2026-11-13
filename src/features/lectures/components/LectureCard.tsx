@@ -1,5 +1,4 @@
-import { ArrowUpRight, BookOpen } from "lucide-react";
-import { Link } from "react-router-dom";
+import { BookOpen } from "lucide-react";
 import type {
   Tutorial,
   TutorialLevel,
@@ -43,10 +42,7 @@ export function LectureCard({ tutorial }: { tutorial: Tutorial }) {
   const isFree = tutorial.price === 0;
 
   return (
-    <Link
-      to={`/tutorials/${tutorial.slug}`}
-      className="student-catalog-card group flex flex-col overflow-hidden rounded-xl border border-line bg-surface transition-colors hover:border-line-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-    >
+    <article className="student-catalog-card group flex flex-col overflow-hidden rounded-xl border border-line bg-surface transition-colors hover:border-line-strong">
       <div className="flex items-center justify-between gap-3 px-6 pt-6">
         <span className="flex size-11 items-center justify-center rounded-xl border border-line bg-input text-cyan-500">
           <BookOpen size={22} />
@@ -72,11 +68,8 @@ export function LectureCard({ tutorial }: { tutorial: Tutorial }) {
           >
             {formatPrice(tutorial.price)}
           </span>
-          <span className="inline-flex items-center gap-2 text-sm font-semibold text-success">
-            View course <ArrowUpRight size={16} />
-          </span>
         </div>
       </div>
-    </Link>
+    </article>
   );
 }

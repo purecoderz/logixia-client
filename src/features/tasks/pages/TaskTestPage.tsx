@@ -1,6 +1,13 @@
+import "@/features/theme/learning-shell.css";
+import "@/layouts/StudentLayout/student-theme.css";
 import { useRef, useState } from "react";
-import { FlaskConical } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import {
+  ArrowLeft,
+  FlaskConical,
+  HelpCircle,
+  RotateCcw,
+} from "lucide-react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { ThemeProvider } from "@/features/theme/ThemeProvider";
@@ -83,6 +90,7 @@ function TestTask({
 }) {
   const navigate = useNavigate();
   const { profile } = useAuth();
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [result, setResult] = useState<TaskTestResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -170,91 +178,267 @@ function TestTask({
         )}
       />
     );
-  const complete =
-    task.questions.length > 0 && task.questions.every((q) => answers[q.id]);
-  return (
-    <main className="min-h-screen bg-canvas px-4 py-8 text-body">
-      <div className="mx-auto max-w-3xl space-y-5">
-        <header className="flex flex-wrap items-center justify-between gap-3">
-          <ButtonLink variant="ghost" to={back}>
-            Back to tasks
-          </ButtonLink>
-          <ThemeToggle />
-        </header>
-        <section className="space-y-4 rounded-xl border border-line bg-surface p-5">
-          <h1 className="text-2xl font-semibold text-foreground">
-            Test · {task.title}
-          </h1>
-          {explanation}
-          <MarkdownRenderer content={task.instructions} />
-          <ButtonLink variant="ghost" to={taskEditorPath(courseId, task.id)}>
-            Edit quiz
-          </ButtonLink>
-        </section>
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            if (complete)
-              void test({
-                answers: task.questions.map((q) => ({
-                  question_id: q.id,
-                  choice_id: answers[q.id],
-                })),
-              });
-          }}
-          className="space-y-4"
-        >
-          <fieldset disabled={busy} className="space-y-4">
-            <legend className="sr-only">Quiz attempt</legend>
-            {task.questions.map((q, index) => (
-              <fieldset
-                key={q.id}
-                className="space-y-3 rounded-xl border border-line bg-surface p-5"
-              >
-                <legend className="text-sm font-semibold text-foreground">
-                  Question {index + 1}
-                </legend>
-                <MarkdownRenderer content={q.prompt} />
+  const totalQuestions = task.questions.length;
+  const question = task.questions[currentIndex] ?? {
+    id: "empty",
+    prompt: "",
+    choices: [],
+    correct_choice_id: "",
+    explanation: "",
+  };
+  const isFirstQuestion = currentIndex === 0;
+  const isLastQuestion = currentIndex === Math.max(0, totalQuestions - 1);
+  const progressPercentage = totalQuestions
+    ? Math.round(((currentIndex + 1) / totalQuestions) * 100)
+    : 0;
+  const hasAnsweredCurrent = Boolean(answers[question.id]);
+  const answeredCount = Object.keys(answers).length;
 
-                {q.choices.map((choice) => (
-                  <label
-                    key={choice.id}
-                    className="flex items-start gap-3 rounded-lg border border-line p-3 text-sm"
-                  >
-                    <input
-                      type="radio"
-                      name={q.id}
-                      checked={answers[q.id] === choice.id}
-                      onChange={() => {
-                        setAnswers((old) => ({ ...old, [q.id]: choice.id }));
-                        setResult(null);
-                        setError(null);
-                      }}
-                      className="mt-1 accent-accent"
-                    />
-                    {choice.text}
-                  </label>
-                ))}
-              </fieldset>
-            ))}
-          </fieldset>
-          {!complete && (
-            <p className="text-xs text-muted">
-              Select an answer for every question before testing.
-            </p>
-          )}
-          {error && <FormError message={error} />}{" "}
-          {result && <TaskTestResults result={result} />}
-          <Button type="submit" disabled={!complete || busy} aria-busy={busy}>
-            {busy ? (
-              <>
-                <Spinner tone="dark" /> Testing…
-              </>
-            ) : (
-              "Test answers"
+  const handleDone = () => {
+    const idx =
+      typeof window !== "undefined" &&
+      window.history.state &&
+      typeof window.history.state.idx === "number"
+        ? window.history.state.idx
+        : 0;
+    if (idx > 0) {
+      navigate(-1);
+      return;
+    }
+    navigate(back);
+  };
+
+  const handleReset = () => {
+    setAnswers({});
+    setCurrentIndex(0);
+    setResult(null);
+    setError(null);
+  };
+
+  const getChoiceStatusClasses = (choiceId: string) => {
+    const isSelected = answers[question.id] === choiceId;
+
+    if (!hasAnsweredCurrent) {
+      return isSelected
+        ? "border-accent ring-1 ring-accent bg-accent/10 text-foreground"
+        : "border-line bg-surface hover:bg-hover text-foreground";
+    }
+
+    const hasAnswerKey = Boolean(question.correct_choice_id);
+    if (!hasAnswerKey) {
+      return isSelected
+        ? "border-accent bg-accent/15 text-accent font-semibold"
+        : "border-line bg-surface text-muted opacity-60";
+    }
+
+    const isCorrect = choiceId === question.correct_choice_id;
+    if (isCorrect) {
+      return "border-success bg-success/15 text-success font-semibold";
+    }
+    if (isSelected && !isCorrect) {
+      return "border-danger bg-danger/15 text-danger font-semibold";
+    }
+    return "border-line bg-surface text-muted opacity-50";
+  };
+
+  return (
+    <main
+      data-student-shell
+      data-student-content
+      className="flex h-dvh flex-col overflow-hidden bg-canvas px-4 py-4 text-body sm:px-6 lg:px-8"
+    >
+      <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col gap-4 animate-fade-in text-body">
+        {/* ── Fixed Top Section: Back navigation & Quiz Header (do NOT scroll) ── */}
+        <div className="flex shrink-0 flex-col gap-3">
+          <header className="flex flex-wrap items-center justify-between gap-3">
+            <Link
+              to={back}
+              className="inline-flex items-center gap-2 text-sm font-medium text-muted transition-colors hover:text-foreground"
+            >
+              <ArrowLeft className="size-4" aria-hidden />
+              Back to tasks
+            </Link>
+
+            <div className="flex flex-wrap items-center gap-2">
+              {answeredCount > 0 && (
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted transition-colors hover:bg-hover hover:text-foreground"
+                >
+                  <RotateCcw className="size-3.5" aria-hidden />
+                  Repractice from start
+                </button>
+              )}
+              <ButtonLink variant="ghost" to={taskEditorPath(courseId, task.id)}>
+                Edit quiz
+              </ButtonLink>
+              <ThemeToggle />
+            </div>
+          </header>
+
+          {/* Quiz Header Banner */}
+          <section className="student-card flex flex-col gap-3 rounded-xl border border-line bg-surface p-4 sm:p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/15 px-2.5 py-0.5 text-xs font-semibold text-accent">
+                  <HelpCircle className="size-3.5" aria-hidden />
+                  Quiz
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-muted px-2.5 py-0.5 text-xs font-semibold text-muted">
+                  <FlaskConical className="size-3.5 text-accent" aria-hidden />
+                  Instructor test mode
+                </span>
+              </div>
+            </div>
+
+            <h1 className="text-lg font-bold tracking-tight text-foreground sm:text-xl">
+              Test · {task.title}
+            </h1>
+
+            {task.instructions && (
+              <div className="line-clamp-2 text-xs leading-relaxed text-muted sm:text-sm">
+                <MarkdownRenderer content={task.instructions} />
+              </div>
             )}
-          </Button>
-        </form>
+
+            {explanation}
+
+            {/* Progress Bar inside Header */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-xs font-medium text-muted">
+                <span>
+                  Question {currentIndex + 1} of {totalQuestions}
+                </span>
+                <span>{progressPercentage}% completed</span>
+              </div>
+              <div
+                role="progressbar"
+                aria-valuenow={progressPercentage}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                className="h-1.5 w-full overflow-hidden rounded-full border border-line bg-surface-muted"
+              >
+                <div
+                  className="h-full rounded-full bg-accent transition-all duration-300"
+                  style={{ width: `${progressPercentage}%` }}
+                />
+              </div>
+            </div>
+          </section>
+        </div>
+
+        {/* ── Scrollable Questions Section: ONLY this part scrolls ── */}
+        <div
+          data-quiz-scroll-region
+          className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1"
+        >
+          <article className="student-card space-y-4 rounded-xl border border-line bg-surface p-5 transition-colors sm:p-6">
+            <div className="space-y-1">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted">
+                Question {currentIndex + 1}
+              </span>
+              <div className="text-base font-semibold leading-snug text-foreground sm:text-lg">
+                <MarkdownRenderer content={question.prompt} />
+              </div>
+            </div>
+
+            {/* Dynamic Options List */}
+            <div
+              className="space-y-2.5"
+              role="radiogroup"
+              aria-label={question.prompt}
+            >
+              {question.choices.map((choice) => (
+                <label
+                  key={choice.id}
+                  className={`flex items-center gap-3.5 rounded-xl border p-4 transition-all ${
+                    busy ? "cursor-default" : "cursor-pointer"
+                  } ${getChoiceStatusClasses(choice.id)}`}
+                >
+                  <input
+                    type="radio"
+                    name={`question-${question.id}`}
+                    value={choice.id}
+                    checked={answers[question.id] === choice.id}
+                    onChange={() => {
+                      if (busy) return;
+                      setAnswers((old) => ({
+                        ...old,
+                        [question.id]: choice.id,
+                      }));
+                      setResult(null);
+                      setError(null);
+                    }}
+                    disabled={busy}
+                    className="size-4 shrink-0 cursor-pointer accent-accent disabled:cursor-default"
+                  />
+                  <span className="flex-1 text-sm font-medium leading-relaxed">
+                    {choice.text}
+                  </span>
+                </label>
+              ))}
+            </div>
+
+            {/* Explanation Block - immediately shown once an option is selected */}
+            {hasAnsweredCurrent && question.explanation && (
+              <div className="animate-fade-in space-y-1 rounded-lg border-l-4 border-accent bg-surface-muted p-4">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">
+                  Explanation
+                </h4>
+                <p className="text-sm leading-relaxed text-body">
+                  {question.explanation}
+                </p>
+              </div>
+            )}
+          </article>
+        </div>
+
+        {/* ── Navigation stays visible while the question content scrolls ── */}
+        <footer
+          data-quiz-navigation
+          className="flex shrink-0 items-center justify-between gap-3 border-t border-line bg-canvas pb-1 pt-3"
+        >
+          <button
+            type="button"
+            onClick={() => !isFirstQuestion && setCurrentIndex((i) => i - 1)}
+            disabled={isFirstQuestion}
+            className="rounded-lg border border-line bg-surface px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-hover disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Previous
+          </button>
+
+          {isLastQuestion ? (
+            <div className="flex items-center gap-2">
+              {answeredCount > 0 && (
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-hover"
+                >
+                  <RotateCcw className="size-4" aria-hidden />
+                  Repractice
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={handleDone}
+                className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-2 text-sm font-semibold text-on-accent shadow-sm transition-colors hover:bg-accent-hover"
+              >
+                Done
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => !isLastQuestion && setCurrentIndex((i) => i + 1)}
+              disabled={isLastQuestion}
+              className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-2 text-sm font-semibold text-on-accent shadow-sm transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Next
+            </button>
+          )}
+        </footer>
       </div>
     </main>
   );

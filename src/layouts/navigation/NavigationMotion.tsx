@@ -13,8 +13,15 @@ export type NavigationMotion =
 export const NavigationMotionContext = createContext<NavigationMotion>("idle");
 export const useNavigationMotion = () => useContext(NavigationMotionContext);
 
-export function isStudentWorkspace(path: string) {
-  return path === "/playground" || /^\/tasks\/[^/]+$/.test(path);
+export function isStudentWorkspace(path: string, search = "") {
+  if (path === "/playground" || /^\/tasks\/[^/]+$/.test(path)) return true;
+  if (path === "/game") {
+    const params = new URLSearchParams(search);
+    return (
+      params.get("mode") === "code-bot-maze" && Boolean(params.get("level"))
+    );
+  }
+  return false;
 }
 
 function isPublicPage(path: string, signedIn: boolean) {
@@ -34,7 +41,9 @@ function isStudentPage(path: string, signedIn: boolean) {
       "/lessons",
       "/tasks",
       "/history",
-      "/schedule",
+      "/leaderboard",
+      "/game",
+      "/daily-challenge",
       "/user/cohorts",
       "/invitations/accept",
     ].includes(path)

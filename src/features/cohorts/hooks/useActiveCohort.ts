@@ -38,8 +38,8 @@ function select(id: number | null) {
 }
 
 /** One source of truth for selection, membership validation and loading state. */
-export function useActiveCohort() {
-  const membership = useMyCohorts();
+export function useActiveCohort(enabled = true) {
+  const membership = useMyCohorts(enabled);
   const selectedId = useSyncExternalStore(subscribe, read, () => null);
   const cohorts = membership.data ?? [];
   const activeCohort =

@@ -22,6 +22,10 @@ export interface User {
   username: string;
   email: string;
   role?: "student" | "ta" | "instructor" | "admin";
+  bio?: string | null;
+  current_streak?: number;
+  longest_streak?: number;
+  last_streak_date?: string | null;
 }
 
 export interface SignupResponse {
@@ -76,7 +80,7 @@ const authservices = {
   },
 
   async requestPasswordReset(email: string): Promise<MessageResponse> {
-    const response = await apiFetch("/auth/forgot-password", {
+    const response = await apiFetch("/password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
@@ -90,10 +94,10 @@ const authservices = {
   },
 
   async resetPassword(token: string, password: string): Promise<MessageResponse> {
-    const response = await apiFetch("/auth/reset-password", {
+    const response = await apiFetch("/password/reset", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, password }),
+      body: JSON.stringify({ token, "new_password":password}),
     });
 
     if (!response.ok) {

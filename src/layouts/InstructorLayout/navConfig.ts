@@ -70,21 +70,20 @@ export const instructorNav: InstructorNavSection[] = [
         icon: "📅",
       },
       {
-        id: "plan",
-        label: "Classroom Plan",
-        path: "/instructor/plan",
-        icon: "📅",
-      },
-      {
         id: "tasks",
         label: "Tasks",
         path: "/instructor/tasks",
         icon: "📋",
         children: [
           {
-            id: "all-tasks",
-            label: "All Task",
+            id: "course-tasks",
+            label: "Course Task",
             path: "/instructor/tasks",
+          },
+          {
+            id: "cohort-tasks",
+            label: "Cohort Task",
+            path: "/instructor/cohorts/tasks",
           },
         ],
       },
@@ -95,15 +94,9 @@ export const instructorNav: InstructorNavSection[] = [
     items: [
       {
         id: "roster",
-        label: "Student Roster",
+        label: "Student Management",
         path: "/instructor/students",
         icon: "👥",
-      },
-      {
-        id: "register",
-        label: "Register Student",
-        path: "/instructor/students/new",
-        icon: "📝",
       },
     ],
   },

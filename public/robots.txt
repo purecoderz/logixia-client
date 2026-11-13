@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /auth/
+Disallow: /instructor/
+Disallow: /live/
+
+Sitemap: https://www.logixia.com.ng/sitemap.xml

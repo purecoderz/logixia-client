@@ -4,7 +4,6 @@ import {
   NavigationMotionContext,
   useNavigationTransition,
 } from "./layouts/navigation/NavigationMotion";
-import { PublicHeader } from "./layouts/PublicLayout/PublicHeader";
 import { ApplicationRoutes } from "./routes/ApplicationRoutes";
 
 function App() {
@@ -21,13 +20,7 @@ function App() {
         signedIn={Boolean(profile)}
       />
       {motion === "public-return" && (
-        <div
-          inert
-          aria-hidden="true"
-          className="playground-returning-header fixed inset-x-0 top-0 z-[110] bg-canvas text-body"
-        >
-          <PublicHeader />
-        </div>
+        <AppLoading message="Returning to Logixia…" />
       )}
     </NavigationMotionContext>
   );

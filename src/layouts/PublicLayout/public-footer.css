@@ -1,12 +1,19 @@
 .public-footer {
   --footer-background: #0b0f15;
-  color-scheme: dark;
+  --footer-wave-back: rgba(88, 166, 255, 0.07);
+  --footer-wave-mid: rgba(22, 27, 34, 0.75);
+  --footer-wave-stroke: rgba(88, 166, 255, 0.22);
 }
+
 body[data-app-theme="light"] .public-footer {
-  --footer-background: #102337;
+  --footer-background: #e8eff6;
+  --footer-wave-back: rgba(23, 92, 211, 0.06);
+  --footer-wave-mid: rgba(216, 228, 240, 0.7);
+  --footer-wave-stroke: rgba(23, 92, 211, 0.18);
 }
+
 .public-footer a:focus-visible {
-  outline: 2px solid #22d3ee;
-  outline-offset: 5px;
-  border-radius: 3px;
+  outline: 2px solid var(--app-accent);
+  outline-offset: 4px;
+  border-radius: 4px;
 }

@@ -146,6 +146,10 @@ export default function CohortTaskEditorPage() {
           initial={emptyQuiz()}
           editing={false}
           onCancel={() => navigate(back)}
+          onNew={() => {
+            setSchedule(initialSchedule);
+            setScheduleMessage(null);
+          }}
           onSave={save}
         />
       ) : (
@@ -154,6 +158,10 @@ export default function CohortTaskEditorPage() {
           initial={emptyTask()}
           editing={false}
           onCancel={() => navigate(back)}
+          onNew={() => {
+            setSchedule(initialSchedule);
+            setScheduleMessage(null);
+          }}
           onSave={save}
         />
       )}

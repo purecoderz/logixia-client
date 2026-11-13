@@ -1,5 +1,5 @@
 // services/audioService.ts
-const BASE = import.meta.env.VITE_AUDIO_URL ?? "https://audio.logixia.com.ng";
+const BASE = import.meta.env.VITE_AUDIO_URL;
 const ICE: RTCIceServer[] = [{ urls: "stun:stun.l.google.com:19302" }];
 
 let micStream: MediaStream | null = null;

@@ -6,7 +6,13 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import {
+  Link,
+  useInRouterContext,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 
 export interface Crumb {
   label: string;
@@ -119,4 +125,73 @@ export function TopbarBreadcrumbs() {
       )}
     </nav>
   );
+}
+
+const backButtonClass =
+  "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-line bg-input px-2.5 text-xs font-medium text-body transition-colors hover:bg-hover hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
+
+function RouterBackButton() {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const items = useContext(ItemsContext);
+  const parent = [...items].reverse().find((c) => c.to);
+
+  const handleBack = () => {
+    const idx =
+      typeof window !== "undefined" &&
+      window.history.state &&
+      typeof window.history.state.idx === "number"
+        ? window.history.state.idx
+        : 0;
+    if (idx > 0) {
+      navigate(-1);
+      return;
+    }
+    if (parent?.to) {
+      navigate(parent.to);
+      return;
+    }
+    if (pathname.startsWith("/instructor") && pathname !== "/instructor") {
+      navigate("/instructor");
+      return;
+    }
+    if (pathname !== "/" && pathname !== "/instructor") {
+      navigate("/");
+      return;
+    }
+    navigate(-1);
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleBack}
+      aria-label="Go back"
+      title="Go back"
+      className={backButtonClass}
+    >
+      <ArrowLeft size={16} aria-hidden="true" />
+      <span className="hidden sm:inline">Back</span>
+    </button>
+  );
+}
+
+/** Global back button for topbars. Uses router history/breadcrumbs when inside a router. */
+export function TopbarBackButton() {
+  const inRouter = useInRouterContext();
+  if (!inRouter) {
+    return (
+      <button
+        type="button"
+        onClick={() => window.history.back()}
+        aria-label="Go back"
+        title="Go back"
+        className={backButtonClass}
+      >
+        <ArrowLeft size={16} aria-hidden="true" />
+        <span className="hidden sm:inline">Back</span>
+      </button>
+    );
+  }
+  return <RouterBackButton />;
 }

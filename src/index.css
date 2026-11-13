@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
 @custom-variant dark (&:where([data-app-theme="dark"], [data-app-theme="dark"] *));
 
 /* Semantic colors default to the existing dark palette outside themed app layouts. */

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Field, fieldProps } from "@/components/ui/Field";
 import { MarkdownRenderer } from "@/components/ui/Markdown";
@@ -10,6 +10,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { inputClass } from "@/components/ui/formStyles";
 import { ApiError, friendlyMessage } from "@/lib/apiError";
 import {
+  emptyQuiz,
   moveItem,
   newQuestion,
   quizPayload,
@@ -31,11 +32,13 @@ export function QuizEditorForm({
   editing,
   onSave,
   onCancel,
+  onNew,
 }: {
   initial: QuizTaskInput;
   editing: boolean;
   onSave: (quiz: QuizTaskInput) => Promise<void>;
   onCancel: () => void;
+  onNew?: () => void;
 }) {
   const [value, setValue] = useState(initial);
   const [saved, setSaved] = useState(initial);
@@ -45,9 +48,21 @@ export function QuizEditorForm({
   const [busy, setBusy] = useState(false);
   const [success, setSuccess] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
+  const [confirmNew, setConfirmNew] = useState(false);
   const running = useRef(false);
   const dirty = JSON.stringify(value) !== JSON.stringify(saved);
   const savedStatus = success || (editing && !dirty);
+  function resetToNew() {
+    const fresh = emptyQuiz();
+    setValue(fresh);
+    setSaved(fresh);
+    setSection("details");
+    setProblems([]);
+    setError(null);
+    setSuccess(false);
+    setConfirmNew(false);
+    onNew?.();
+  }
   function change(patch: Partial<QuizTaskInput>) {
     setValue((current) => ({ ...current, ...patch }));
     setProblems([]);
@@ -521,7 +536,15 @@ export function QuizEditorForm({
                   ? "All changes saved"
                   : "Complete the details and questions, then save once."}
           </p>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="ghost"
+              disabled={busy}
+              onClick={() => (dirty ? setConfirmNew(true) : resetToNew())}
+            >
+              <Plus size={15} aria-hidden="true" />
+              New quiz
+            </Button>
             <Button
               variant="ghost"
               disabled={busy}
@@ -554,6 +577,14 @@ export function QuizEditorForm({
         confirmLabel="Discard changes"
         onCancel={() => setConfirmCancel(false)}
         onConfirm={onCancel}
+      />
+      <ConfirmDialog
+        open={confirmNew}
+        title="Start a new quiz?"
+        message="Your unsaved quiz changes will be lost."
+        confirmLabel="Start new quiz"
+        onCancel={() => setConfirmNew(false)}
+        onConfirm={resetToNew}
       />
     </div>
   );

@@ -1,10 +1,11 @@
 import { PointerSurface } from "../pointers/PointerSurface";
-import { SessionRoomTitle } from "../components/SessionMaterials";
+import { SessionElapsedTimer, SessionRoomTitle } from "../components/SessionMaterials";
 // pages/LiveRoom/LiveRoomPage.tsx
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import {
+  Bot,
   MessageSquare,
   Mic,
   MicOff,
@@ -24,6 +25,7 @@ import { AudioStatusButton } from "../components/classroom/AudioStatusButton";
 import { FloatingTerminal } from "../components/classroom/FloatingTerminal";
 import { CodeWorkspace } from "@/features/workspace/Workspace";
 import { Drawer } from "@/features/workspace/components/ui/Drawer";
+import { LiveReeborgPanel } from "@/features/arcade/botMaze/LiveReeborgPanel";
 
 function explainClose(code: string | null, reason: string): string {
   if (reason === "Not a member") return "You're not part of this class.";
@@ -64,6 +66,7 @@ export function LiveRoomLayout({ room, sessionId, controls, dialogs }: { room:Li
     "room:terminal-open",
     true,
   );
+  const reeborgOpen = room.reeborg.open;
 
   // Built once, shown in the sidebar on desktop and in the drawer on mobile
   const roomPanels = (
@@ -107,6 +110,7 @@ export function LiveRoomLayout({ room, sessionId, controls, dialogs }: { room:Li
           <span className="shrink-0 text-[11px] font-bold tracking-wider text-[#3fb950]">
             LIVE
           </span>
+          <SessionElapsedTimer sessionId={sessionId} />
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
@@ -122,6 +126,30 @@ export function LiveRoomLayout({ room, sessionId, controls, dialogs }: { room:Li
           )}
 
           <AudioStatusButton status={audio.status} onClick={audio.fix} />
+          {room.isTeacher && (
+            <button
+              type="button"
+              onClick={() =>
+                room.sendReeborg({
+                  open: !reeborgOpen,
+                  level_id: room.reeborg.level_id,
+                  run: null,
+                })
+              }
+              aria-pressed={reeborgOpen}
+              aria-label={
+                reeborgOpen ? "Close Reeborg mode" : "Open Reeborg mode"
+              }
+              className={`flex h-10 min-w-10 items-center justify-center gap-2 rounded-md border px-3 text-sm font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent md:px-4 ${
+                reeborgOpen
+                  ? "border-accent/60 bg-accent/15 text-accent"
+                  : "border-line text-body hover:bg-hover"
+              }`}
+            >
+              <Bot size={18} aria-hidden />
+              <span className="hidden md:inline">Reeborg</span>
+            </button>
+          )}
           {showTerminal && (
             <button
               type="button"
@@ -225,6 +253,36 @@ export function LiveRoomLayout({ room, sessionId, controls, dialogs }: { room:Li
               currentLine={room.currentLine}
               storageKey={`session:${sessionId}`}
               title="Live classroom"
+              layout={reeborgOpen ? "split" : undefined}
+              asideTitle={reeborgOpen ? "Reeborg World" : undefined}
+              aside={
+                reeborgOpen ? (
+                  <LiveReeborgPanel
+                    levelId={room.reeborg.level_id}
+                    canControl={room.canWrite}
+                    onLevelChange={(levelId) =>
+                      room.sendReeborg({
+                        open: true,
+                        level_id: levelId,
+                        run: null,
+                      })
+                    }
+                    runRequest={room.reeborg.run ?? null}
+                  />
+                ) : undefined
+              }
+              onRunFile={
+                reeborgOpen
+                  ? (_path, content) => {
+                      room.sendReeborg({
+                        open: true,
+                        level_id: room.reeborg.level_id,
+                        run: { code: content, seq: Date.now() },
+                      });
+                      return true;
+                    }
+                  : undefined
+              }
               onTerminalLines={room.sendTerminal}
             />
           </Panel>

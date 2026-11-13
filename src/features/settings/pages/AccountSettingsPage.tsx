@@ -1,4 +1,9 @@
 import { Select } from "@/components/ui/Select";
+import {
+  DIFFICULTY_META,
+  useChallengeDifficulty,
+  type ChallengeDifficulty,
+} from "@/features/dashboard/services/dailyChallengeStore";
 import { useTheme, type ThemePreference } from "@/features/theme/ThemeProvider";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -49,6 +54,8 @@ export function AccountSettingsPage({
 }: AccountSettingsPageProps) {
   const { profile } = useAuth();
   const { preference, setPreference } = useTheme();
+  const [challengeDifficulty, setChallengeDifficulty] =
+    useChallengeDifficulty();
   const [params, setParams] = useSearchParams();
   const section =
     sections.find((item) => item.id === params.get("section")) ?? sections[0];
@@ -159,6 +166,40 @@ export function AccountSettingsPage({
                     ]}
                   />
                 </div>
+                {audience === "student" && (
+                  <div className="max-w-sm">
+                    <label
+                      htmlFor="daily-challenge-difficulty"
+                      className="mb-2 block text-sm font-medium text-foreground"
+                    >
+                      Daily challenge difficulty
+                    </label>
+                    <Select
+                      id="daily-challenge-difficulty"
+                      value={challengeDifficulty}
+                      onChange={(value) =>
+                        setChallengeDifficulty(value as ChallengeDifficulty)
+                      }
+                      options={[
+                        {
+                          value: "beginner",
+                          label: `Beginner (+${DIFFICULTY_META.beginner.xp} XP)`,
+                          description: DIFFICULTY_META.beginner.description,
+                        },
+                        {
+                          value: "intermediate",
+                          label: `Intermediate (+${DIFFICULTY_META.intermediate.xp} XP)`,
+                          description: DIFFICULTY_META.intermediate.description,
+                        },
+                        {
+                          value: "advanced",
+                          label: `Advanced (+${DIFFICULTY_META.advanced.xp} XP)`,
+                          description: DIFFICULTY_META.advanced.description,
+                        },
+                      ]}
+                    />
+                  </div>
+                )}
                 {sidebarPreference && (
                   <div className="flex items-start justify-between gap-4 rounded-lg border border-line p-4">
                     <div>

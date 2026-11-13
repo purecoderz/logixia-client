@@ -1,7 +1,7 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle, Transition } from "@headlessui/react";
-import { BookOpen, X } from "lucide-react";
+import { BookOpen, Clock3, X } from "lucide-react";
 import { MarkdownRenderer } from "@/components/ui/Markdown";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { InstructorSessionService, sessionKeys } from "../services/instructorSessionService";
@@ -29,6 +29,37 @@ export function SessionMaterialsButton({sessionId}:{sessionId:number}) {
 export function SessionRoomTitle({ sessionId }: { sessionId:number }) {
   const query=useSessionDetail(sessionId);
   return <>{query.data?.title ?? "Live classroom"}</>;
+}
+
+function formatElapsed(ms: number): string {
+  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+  const hrs = Math.floor(totalSeconds / 3600);
+  const mins = Math.floor((totalSeconds % 3600) / 60);
+  const secs = totalSeconds % 60;
+  return [hrs, mins, secs].map((n) => String(n).padStart(2, "0")).join(":");
+}
+
+export function SessionElapsedTimer({ sessionId }: { sessionId: number }) {
+  const query = useSessionDetail(sessionId);
+  const fallbackStart = useRef(Date.now());
+  const startedMs = query.data?.started_at ? Date.parse(query.data.started_at) : NaN;
+  const origin = Number.isFinite(startedMs) ? startedMs : fallbackStart.current;
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <span
+      aria-label="Session elapsed time"
+      className="inline-flex shrink-0 items-center gap-1 rounded-md border border-line bg-input px-2 py-0.5 font-mono text-xs font-medium tabular-nums text-body"
+    >
+      <Clock3 size={12} className="text-muted" aria-hidden />
+      {formatElapsed(now - origin)}
+    </span>
+  );
 }
 
 function useSessionDetail(sessionId:number) {

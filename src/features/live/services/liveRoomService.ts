@@ -7,6 +7,7 @@ export interface Sender {
   id: string;
   role: string;
   name: string;
+  username?: string;
 }
 
 export interface ChatEntry {
@@ -17,6 +18,12 @@ export interface ChatEntry {
 export interface AttendanceReceipt {
   taken_at: string;
   present_count: number;
+}
+
+export interface ReeborgLiveState {
+  open: boolean;
+  level_id: string;
+  run?: { code: string; seq: number } | null;
 }
 
 export type ServerMessage =
@@ -36,6 +43,7 @@ export type ServerMessage =
         chat: ChatEntry[];
         pointers?: (PointerPosition & {user_id:string})[];
         attendance?: AttendanceReceipt | null;
+        reeborg?: ReeborgLiveState | null;
       };
     }
   | {
@@ -59,7 +67,8 @@ export type ServerMessage =
   | { type: "terminal"; from: Sender; data: { lines: TerminalLine[] } }
   | { type: "lower_hand"; from: Sender; data: {} }
   | { type: "attendance_taken"; from?: Sender; data: AttendanceReceipt }
-  | { type: "attendance_error"; data: { message: string } };
+  | { type: "attendance_error"; data: { message: string } }
+  | { type: "reeborg_state"; from?: Sender; data: ReeborgLiveState };
 
 type Handlers = {
   onMessage: (msg: ServerMessage) => void;

@@ -1,14 +1,23 @@
 import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { ThemeProvider } from "../../features/theme/ThemeProvider";
-import { PublicHeader } from "./PublicHeader";
+import { HomeHeader } from "../../features/home/components/HomeHeader";
 import { PublicFooter } from "./PublicFooter";
+import "../../features/home/home.css";
 
 export function PublicLayout() {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   useEffect(() => {
+    if (hash) {
+      const id = hash.replace("#", "");
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+    }
     window.scrollTo(0, 0);
-  }, [pathname]);
+  }, [pathname, hash]);
 
   return (
     <ThemeProvider>
@@ -22,7 +31,7 @@ export function PublicLayout() {
         >
           Skip to content
         </a>
-        <PublicHeader />
+        <HomeHeader />
         <main
           id="public-content"
           className="mx-auto w-full max-w-7xl flex-1 px-5 py-10 sm:px-8 sm:py-14 lg:px-10 lg:py-16"

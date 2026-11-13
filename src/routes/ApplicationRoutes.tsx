@@ -1,34 +1,40 @@
 import type { Location } from "react-router-dom";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 import { AuthPage } from "@/features/auth/AuthenticationPage";
+import { ResetPasswordPage } from "@/features/auth/ResetPasswordPage";
 import { InstructorProtectedRoute } from "@/features/auth/InstructorProtectedRoute";
 import { UserProtectedRoute } from "@/features/auth/UserProtectedRoute";
 import AcceptInvitationPage from "@/features/cohorts/Pages/AcceptInvitationPage";
 import CohortMembersPage from "@/features/cohorts/Pages/CohortMembersPage";
+import StudentManagementPage from "@/features/students/pages/StudentManagementPage";
 import CohortTasksPage from "@/features/cohorts/Pages/CohortTasksPage";
 import { CohortDetails } from "@/features/cohorts/Pages/CohortDetailsPage";
 import { CohortsRegistrationPage } from "@/features/cohorts/Pages/CohortsPage";
 import CreateCohortPage from "@/features/cohorts/Pages/CreateCohortPage";
 import { InstructorCohortsPage } from "@/features/cohorts/Pages/InsrtuctorCohortPage";
 import StudentCohortsPage from "@/features/cohorts/Pages/StudentCohortsPage";
+import { CohortLeaderboardPage } from "@/features/cohorts/Pages/CohortLeaderboardPage";
 import CourseBuilderPage from "@/features/courses/pages/CourseBuilderPage";
 import CreateCoursePage from "@/features/courses/pages/CreateCoursePage";
 import InstructorCoursesPage from "@/features/courses/pages/InstructorCoursesPage";
 import LessonEditorPage from "@/features/courses/pages/LessonEditorPage";
 import { StudentDashboardPage } from "@/features/dashboard/pages/StudentDashboardPage";
+import { DailyChallengePage } from "@/features/dashboard/pages/DailyChallengePage";
 import { InstructorDashboardPage } from "@/features/dashboard/pages/InstructorDashboardPage";
-import { Home } from "@/features/home/pages/HomePage";
+import { HomePage } from "@/features/home";
 import { LecturePage } from "@/features/lectures/pages/LecturePage";
 import InstructorSessionsPage from "@/features/live/pages/InstructorSessionsPage";
 import { LiveRoomPage } from "@/features/live/pages/LiveRoomPage";
 import { StudentSessionsPage } from "@/features/live/pages/StudentSessionsPage";
 import { StudentSessionHistoryPage } from "@/features/live/pages/StudentSessionHistoryPage";
+import SessionPlayerPage from "@/features/live/pages/SessionPlayerPage";
 import { LegalPage } from "@/features/legal/pages/LegalPage";
 import InstructorSettingsPage from "@/features/settings/pages/InstructorSettingsPage";
 import StudentSettingsPage from "@/features/settings/pages/StudentSettingsPage";
 import { ComingSoonPage } from "@/features/system/pages/ComingSoonPage";
 import { NotFoundPage } from "@/features/system/pages/NotFoundPage";
+import { ThemeProvider } from "@/features/theme/ThemeProvider";
 import AllTasksPage from "@/features/tasks/pages/AllTasksPage";
 import CohortTaskEditorPage from "@/features/tasks/pages/CohortTaskEditorPage";
 import TaskEditorPage from "@/features/tasks/pages/TaskEditorPage";
@@ -37,6 +43,7 @@ import { AssignmentGroundPage } from "@/features/assignments/pages/AssignmentGro
 import { AssignmentsPage } from "@/features/assignments/pages/AssignmentsPage";
 import { LegacyStudentTaskRedirect } from "@/features/assignments/pages/LegacyStudentTaskRedirect";
 import { QuizGroundPage } from "@/features/assignments/pages/QuizGroundPage";
+import { ArcadeHubPage } from "@/features/arcade/pages/ArcadeHubPage";
 import { PlaygroundPage } from "@/features/workspace/pages/Playground";
 import { InstructorLayout } from "@/layouts/InstructorLayout/InstructorLayout";
 import { PublicLayout } from "@/layouts/PublicLayout/PublicLayout";
@@ -59,45 +66,38 @@ export function ApplicationRoutes({
       <Route path="/auth/signup" element={<AuthPage />} />
       <Route path="/auth/forgot-password" element={<AuthPage />} />
       <Route path="/auth/reset-password" element={<AuthPage />} />
+      <Route path="/password" element={<ResetPasswordPage />} />
       <Route path="/instructor/login" element={<AuthPage />} />
 
       {/* Guests open the playground without mounting student navigation. */}
       {!signedIn && <Route path="/playground" element={<PlaygroundPage />} />}
 
+      {/* The landing page owns its header and footer. */}
+      {!signedIn && (
+        <Route
+          path="/"
+          element={
+            <ThemeProvider>
+              <HomePage />
+            </ThemeProvider>
+          }
+        />
+      )}
+
       <Route element={<PublicLayout />}>
         <Route path="/privacy" element={<LegalPage document="privacy" />} />
         <Route path="/terms" element={<LegalPage document="terms" />} />
-        {!signedIn && <Route path="/" element={<Home />} />}
-        <Route path="/cohorts" element={<CohortsRegistrationPage />} />
-        <Route path="/courses" element={<LecturePage />} />
-        <Route
-          path="/tutorials/:slug"
-          element={
-            <ComingSoonPage
-              title="Course curriculum"
-              description="Our interactive course lessons and coding challenges are being prepared. Check back soon!"
-              backTo="/courses"
-            />
-          }
-        />
+        <Route path="/cohorts" element={<Navigate to="/#classroom" replace />} />
+        <Route path="/courses" element={<Navigate to="/#learning" replace />} />
         <Route path="/cohort/:id" element={<CohortDetails />} />
-        {!signedIn && (
-          <Route
-            path="/game"
-            element={
-              <ComingSoonPage
-                title="PlayGame Arcade"
-                description="The Logixia coding arcade is being prepared. Soon you’ll be able to practise, compete, and earn XP here."
-              />
-            }
-          />
-        )}
       </Route>
 
       {/* Live rooms are full-screen and do not use either dashboard shell. */}
       <Route element={<UserProtectedRoute />}>
         <Route path="/live/room" element={<LiveRoomPage />} />
         <Route path="/live/room/:id" element={<LiveRoomPage />} />
+        <Route path="/sessions/watch" element={<SessionPlayerPage />} />
+        <Route path="/sessions/:sessionId/watch" element={<SessionPlayerPage />} />
         <Route path="/assignments" element={<LegacyStudentTaskRedirect />} />
         <Route
           path="/assignments/:id"
@@ -151,12 +151,9 @@ export function ApplicationRoutes({
           <Route path="settings" element={<InstructorSettingsPage />} />
           <Route
             path="plan"
-            element={<ComingSoonPage title="Classroom plan" backTo="/instructor" />}
+            element={<Navigate to="/instructor/sessions" replace />}
           />
-          <Route
-            path="students"
-            element={<ComingSoonPage title="Student roster" backTo="/instructor" />}
-          />
+          <Route path="students" element={<StudentManagementPage />} />
           <Route
             path="students/new"
             element={<ComingSoonPage title="Register student" backTo="/instructor" />}
@@ -170,18 +167,9 @@ export function ApplicationRoutes({
         <Route path="/invitations/accept" element={<AcceptInvitationPage />} />
         <Route element={<UserProtectedRoute />}>
           {signedIn && <Route path="/" element={<StudentDashboardPage />} />}
+          <Route path="/daily-challenge" element={<DailyChallengePage />} />
           <Route path="/settings" element={<StudentSettingsPage />} />
           <Route path="/student/courses" element={<LecturePage />} />
-          <Route
-            path="/student/tutorials/:slug"
-            element={
-              <ComingSoonPage
-                title="Course curriculum"
-                description="Our interactive course lessons and coding challenges are being prepared. Check back soon!"
-                backTo="/student/courses"
-              />
-            }
-          />
           <Route
             path="/register/cohorts"
             element={<CohortsRegistrationPage />}
@@ -191,25 +179,18 @@ export function ApplicationRoutes({
           <Route path="/live-stream" element={<StudentSessionsPage />} />
           <Route
             path="/lessons"
-            element={<ComingSoonPage title="Pre-class notes" />}
+            element={<ComingSoonPage title="Learning path" />}
           />
           <Route path="/tasks" element={<AssignmentsPage />} />
           <Route path="/tasks/:id" element={<AssignmentGroundPage />} />
           <Route path="/tasks/:id/quiz" element={<QuizGroundPage />} />
           <Route path="/history" element={<StudentSessionHistoryPage />} />
+          <Route path="/leaderboard" element={<CohortLeaderboardPage />} />
           <Route
             path="/schedule"
-            element={<ComingSoonPage title="Class timetable" />}
+            element={<Navigate to="/live-stream" replace />}
           />
-          <Route
-            path="/game"
-            element={
-              <ComingSoonPage
-                title="PlayGame Arcade"
-                description="The Logixia coding arcade is being prepared. Soon you’ll be able to practise, compete, and earn XP here."
-              />
-            }
-          />
+          <Route path="/game" element={<ArcadeHubPage />} />
         </Route>
       </Route>
 

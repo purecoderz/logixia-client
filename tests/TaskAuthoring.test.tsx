@@ -1,10 +1,18 @@
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter, Route, Routes, Link } from "react-router-dom";
+import { BreadcrumbProvider, PageBreadcrumbs } from "../src/components/ui/BreadCrumbs";
+import { InstructorTopbar } from "../src/layouts/InstructorLayout/InstructorTopbar";
+import { InstructorThemeProvider } from "../src/features/theme/ThemeProvider";
 import { TaskEditorForm } from "../src/features/tasks/components/editor/TaskEditorForm";
 import { emptyTask, validateTask, validPythonPath, wordsFrom } from "../src/features/tasks/taskForm";
 
 vi.mock("../src/features/tasks/components/editor/TaskCodeInput",()=>({TaskCodeInput:({id,label,value,onChange}:{id:string;label:string;value:string;onChange:(v:string)=>void})=><textarea id={id} aria-label={label} value={value} onChange={(event)=>onChange(event.target.value)}/>}));
+beforeAll(()=>{
+ HTMLDialogElement.prototype.showModal=function(){this.open=true;};
+ HTMLDialogElement.prototype.close=function(){this.open=false;};
+});
 afterEach(cleanup);
 
 it("validates file paths and conflicting word requirements",()=>{
@@ -51,4 +59,45 @@ it("returns to the section with the first validation error",async()=>{
  await userEvent.click(screen.getByRole("button",{name:"Create task"}));
  expect(await screen.findByLabelText("Task title")).toBeTruthy();
  expect(screen.getByRole("button",{name:"Details Has errors"}).getAttribute("aria-current")).toBe("page");
+});
+
+it("resets the editor when clicking New task after saving or after confirming unsaved edits",async()=>{
+ const user=userEvent.setup();
+ const save=vi.fn().mockResolvedValue(undefined);
+ const onNew=vi.fn();
+ const savedTask={...emptyTask(),title:"Saved task",instructions:"Saved instructions"};
+ render(<TaskEditorForm initial={savedTask} editing onSave={save} onCancel={()=>{}} onNew={onNew}/>);
+ expect((screen.getByLabelText("Task title") as HTMLInputElement).value).toBe("Saved task");
+ await user.click(screen.getByRole("button",{name:"New task"}));
+ expect((screen.getByLabelText("Task title") as HTMLInputElement).value).toBe("");
+ expect(onNew).toHaveBeenCalledTimes(1);
+
+ await user.type(screen.getByLabelText("Task title"),"Draft task");
+ await user.click(screen.getByRole("button",{name:"New task"}));
+ expect(screen.getByRole("dialog",{name:"Start a new task?"})).toBeTruthy();
+ await user.click(screen.getByRole("button",{name:"Start new task"}));
+ expect((screen.getByLabelText("Task title") as HTMLInputElement).value).toBe("");
+ expect(onNew).toHaveBeenCalledTimes(2);
+});
+
+it("renders a global back button on the topbar that navigates back",async()=>{
+ const user=userEvent.setup();
+ render(
+  <InstructorThemeProvider>
+   <MemoryRouter initialEntries={["/instructor/courses/1/builder"]}>
+    <BreadcrumbProvider>
+     <InstructorTopbar onMenu={()=>{}} assistantOpen={false} onAssistant={()=>{}}/>
+     <Routes>
+      <Route path="/instructor/courses/1/builder" element={<><output>Course builder</output><Link to="/instructor/courses/1/tasks/5">Edit task</Link></>}/>
+      <Route path="/instructor/courses/1/tasks/5" element={<><PageBreadcrumbs items={[{label:"Builder",to:"/instructor/courses/1/builder"},{label:"Edit code task"}]}/><output>Task editor</output></>}/>
+     </Routes>
+    </BreadcrumbProvider>
+   </MemoryRouter>
+  </InstructorThemeProvider>
+ );
+ expect(screen.getByText("Course builder")).toBeTruthy();
+ await user.click(screen.getByRole("link",{name:"Edit task"}));
+ expect(screen.getByText("Task editor")).toBeTruthy();
+ await user.click(screen.getByRole("button",{name:"Go back"}));
+ expect(screen.getByText("Course builder")).toBeTruthy();
 });

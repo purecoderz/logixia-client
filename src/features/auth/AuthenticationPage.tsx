@@ -1,7 +1,7 @@
 import "./auth-theme.css";
 import { ThemeProvider } from "../theme/ThemeProvider";
 import { ThemeToggle } from "../theme/ThemeToggle";
-import { DepartingPublicHeader } from "../../layouts/PublicLayout/DepartingPublicHeader";
+import { DepartingPublicLoading } from "../../layouts/PublicLayout/DepartingPublicLoading";
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { BrandHero } from "./components/BrandHero";
@@ -28,7 +28,7 @@ export const AuthPage: React.FC = () => {
 
   return (
     <ThemeProvider>
-      <DepartingPublicHeader />
+      <DepartingPublicLoading />
       <div className="absolute right-4 top-4 z-30">
         <ThemeToggle />
       </div>

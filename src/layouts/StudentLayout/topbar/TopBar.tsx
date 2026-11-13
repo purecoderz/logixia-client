@@ -1,13 +1,31 @@
 import { ThemeToggle } from "@/features/theme/ThemeToggle";
+import { TopbarBackButton, TopbarBreadcrumbs } from "@/components/ui/BreadCrumbs";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Bell, LogOut, Search, Settings } from "lucide-react";
+import { Flame, LogOut, Search, Settings } from "lucide-react";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { CohortSwitcher } from "@/features/cohorts/components/CohortSwitcher";
+import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import {
+  useDailyChallengeActivity,
+  useTodayDailyChallenge,
+} from "@/features/dashboard/services/dailyChallengeService";
+import { useDailyChallenge } from "@/features/dashboard/services/dailyChallengeStore";
 
 export function Topbar() {
   const { profile, logout } = useAuth();
+  const { difficulty, isSolved: localSolved, completedDaysCount } =
+    useDailyChallenge();
+  const activityQuery = useDailyChallengeActivity();
+  const todayQuery = useTodayDailyChallenge(difficulty);
+
+  const streakCount =
+    activityQuery.data?.current_streak ??
+    Math.max(profile?.current_streak ?? 0, completedDaysCount);
+  const completedToday = todayQuery.data
+    ? Boolean(todayQuery.data.completed)
+    : localSolved;
 
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -32,6 +50,8 @@ export function Topbar() {
   return (
     <>
       <header className="flex h-16 shrink-0 items-center gap-3 border-b border-line bg-surface px-4 md:px-6">
+        <TopbarBackButton />
+        <TopbarBreadcrumbs />
         <div className="relative hidden max-w-md flex-1 sm:block">
           <Search
             size={16}
@@ -48,17 +68,32 @@ export function Topbar() {
 
         <div className="ml-auto flex shrink-0 items-center gap-2 md:gap-3">
           {profile && <CohortSwitcher />}
+          {profile && (
+            <Link
+              to="/daily-challenge"
+              title={
+                completedToday
+                  ? `${streakCount}-day streak (completed today) — View Daily Challenge`
+                  : `${streakCount}-day streak — Complete today's Daily Challenge`
+              }
+              aria-label={`Daily streak: ${streakCount} days`}
+              className={`inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-semibold transition-colors ${
+                completedToday || streakCount > 0
+                  ? "border-amber-500/30 bg-amber-500/10 text-warning hover:bg-amber-500/15"
+                  : "border-line bg-input text-muted hover:bg-hover hover:text-foreground"
+              }`}
+            >
+              <Flame
+                size={14}
+                aria-hidden
+                className={completedToday ? "fill-current" : undefined}
+              />
+              <span>{streakCount}</span>
+            </Link>
+          )}
           <ThemeToggle />
 
-          <button
-            type="button"
-            aria-label="Notifications"
-            title="Notifications"
-            className="relative flex h-10 w-10 items-center justify-center rounded-lg text-body transition-colors hover:bg-hover hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-          >
-            <Bell size={20} aria-hidden />
-            <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-[#da3633]" />
-          </button>
+          <NotificationBell />
 
           {profile ? (
             <div

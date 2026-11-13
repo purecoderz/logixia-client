@@ -37,12 +37,14 @@ export interface QuizData {
 export interface QuizRendererProps {
   quiz: QuizData;
   onBack?: () => void;
+  backLabel?: string;
   onSubmitAnswers?: (answers: Record<string, string>) => Promise<void> | void;
 }
 
 export default function QuizRenderer({
   quiz,
   onBack,
+  backLabel = "Back to tasks",
   onSubmitAnswers,
 }: QuizRendererProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -168,7 +170,7 @@ export default function QuizRenderer({
               className="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-foreground transition-colors"
             >
               <ArrowLeft className="size-4" aria-hidden />
-              Back to tasks
+              {backLabel}
             </button>
 
             {answeredCount > 0 && (

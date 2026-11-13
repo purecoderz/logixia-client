@@ -1,8 +1,11 @@
 import { useLivePointers } from "../pointers/useLivePointers";
 // hooks/useLiveRoom.ts
 import { useCallback, useEffect, useRef, useState } from "react";
-import RoomServices from "../services/liveRoomService";
-import type { AttendanceReceipt } from "../services/liveRoomService";
+import RoomServices, {
+  type AttendanceReceipt,
+  type ReeborgLiveState,
+  type Sender,
+} from "../services/liveRoomService";
 import { useAuth } from "../../auth/context/AuthContext";
 import type { TerminalLine } from "../../../components/SmartTerminal/TerminalView";
 
@@ -21,6 +24,8 @@ export interface ChatMessage {
 }
 
 const TEACHERS = ["admin", "instructor"];
+
+const senderName = (s: Sender) => s.username ?? s.name;
 
 // A folder path covers everything inside it
 const inside = (key: string, path: string) =>
@@ -98,6 +103,11 @@ export function useLiveRoom(sessionId: number = 1) {
   const [attendancePending, setAttendancePending] = useState(false);
   const [attendanceError, setAttendanceError] = useState<string | null>(null);
   const attendanceTimer = useRef<number | null>(null);
+  const [reeborg, setReeborg] = useState<ReeborgLiveState>({
+    open: false,
+    level_id: "first-steps",
+    run: null,
+  });
 
   // keeps the latest id for the socket handler, which is created only once
   const myIdRef = useRef(myId);
@@ -122,10 +132,12 @@ export function useLiveRoom(sessionId: number = 1) {
             setSpeakers(msg.data.speakers ?? []);
             setMyRole(msg.data.me.role);
             setAttendance(msg.data.attendance ?? null);
+            if (msg.data.reeborg) setReeborg(msg.data.reeborg);
             if (msg.data.roster) {
               setParticipants(
                 msg.data.roster.map((p) => ({
                   ...p,
+                  name: senderName(p),
                   handRaised: false,
                   raisedAt: null,
                 })),
@@ -134,7 +146,7 @@ export function useLiveRoom(sessionId: number = 1) {
             setMessages(
               msg.data.chat.map((c) => ({
                 id: crypto.randomUUID(),
-                author: c.from.id === myIdRef.current ? "You" : c.from.name,
+                author: c.from.id === myIdRef.current ? "You" : senderName(c.from),
                 text: c.data.text,
               })),
             );
@@ -145,7 +157,7 @@ export function useLiveRoom(sessionId: number = 1) {
               ...prev,
               {
                 id: crypto.randomUUID(),
-                author: msg.from.id === myIdRef.current ? "You" : msg.from.name,
+                author: msg.from.id === myIdRef.current ? "You" : senderName(msg.from),
                 text: msg.data.text,
               },
             ]);
@@ -253,7 +265,7 @@ export function useLiveRoom(sessionId: number = 1) {
             setParticipants((list) =>
               list.some((p) => p.id === msg.data.id)
                 ? list
-                : [...list, { ...msg.data, handRaised: false, raisedAt: null }],
+                : [...list, { ...msg.data, name: senderName(msg.data), handRaised: false, raisedAt: null }],
             );
             break;
 
@@ -279,6 +291,10 @@ export function useLiveRoom(sessionId: number = 1) {
             }
             setAttendancePending(false);
             setAttendanceError(msg.data.message);
+            break;
+
+          case "reeborg_state":
+            setReeborg(msg.data);
             break;
         }
       },
@@ -338,10 +354,6 @@ export function useLiveRoom(sessionId: number = 1) {
   const sendCode = useCallback(
     (file: string, content: string, line?: number) => {
       if (!canWrite) return;
-      setFiles((prev) => ({ ...prev, [file]: content }));
-      setFolders((prev) => [
-        ...new Set([...prev, ...folderParents(file)]),
-      ]);
       pending.current[file] = { content, line }; // the line travels with the content
       if (timer.current === null) timer.current = window.setTimeout(flush, 120);
     },
@@ -456,6 +468,10 @@ export function useLiveRoom(sessionId: number = 1) {
     }, 10_000);
   };
   const dismissAttendanceError = () => setAttendanceError(null);
+  const sendReeborg = useCallback((next: ReeborgLiveState) => {
+    setReeborg(next);
+    RoomServices.send("reeborg_state", next);
+  }, []);
 
   return {
     pointers,
@@ -496,6 +512,8 @@ export function useLiveRoom(sessionId: number = 1) {
     closeClass,
     takeAttendance,
     dismissAttendanceError,
+    reeborg,
+    sendReeborg,
   };
 }
 

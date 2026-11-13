@@ -76,6 +76,7 @@ interface CodeWorkspaceProps {
   sendActive?: (path: string) => void;
   currentLine?: number | null;
   onTerminalLines?: (lines: TerminalLine[]) => void;
+  onRunFile?: (path: string, content: string) => boolean | void;
 }
 
 function IconButton({
@@ -120,17 +121,24 @@ function ExpandButton({
 
 function PaneHeader({
   title,
+  actions,
   open,
   onToggle,
 }: {
-  title: string;
+  title?: string;
+  actions?: ReactNode;
   open: boolean;
   onToggle: () => void;
 }) {
   return (
-    <div className="flex h-8 shrink-0 items-center justify-between border-b border-surface-muted bg-surface pl-3 pr-1">
-      <span className="text-xs text-muted">{title}</span>
-      <ExpandButton open={open} onClick={onToggle} />
+    <div className="flex min-h-10 shrink-0 items-center justify-between gap-3 border-b border-surface-muted bg-surface py-1 pl-3 pr-1.5">
+      <span className="min-w-0 truncate text-xs font-medium text-muted">
+        {title}
+      </span>
+      <div className="ml-auto flex shrink-0 items-center gap-2">
+        {actions}
+        <ExpandButton open={open} onClick={onToggle} />
+      </div>
     </div>
   );
 }
@@ -193,6 +201,7 @@ function WorkspaceContent({
   sendRename,
   sendActive,
   onTerminalLines,
+  onRunFile,
   currentLine,
   renderPointerSurface,
 }: CodeWorkspaceProps) {
@@ -480,6 +489,14 @@ function WorkspaceContent({
                 if (readOnly) return;
                 sendFiles?.(getPath(nodes, activeFile), text, line);
               }}
+              onCursorLine={(line) => {
+                if (!live || readOnly) return;
+                sendFiles?.(
+                  getPath(nodes, activeFile),
+                  activeFile.content ?? "",
+                  line,
+                );
+              }}
               language={language}
               readOnly={readOnly}
               followLine={currentLine}
@@ -539,37 +556,41 @@ function WorkspaceContent({
         isRunning={terminal.isRunning}
         onStop={terminal.stop}
         prompts={terminal.prompt}
-        onRun={() =>
-          terminal.runFile(activeFile ? getPath(nodes, activeFile) : null)
-        }
+        onRun={() => {
+          const path = activeFile ? getPath(nodes, activeFile) : null;
+          if (
+            activeFile &&
+            path &&
+            onRunFile?.(path, activeFile.content) === true
+          ) {
+            return;
+          }
+          terminal.runFile(path);
+        }}
         onComplete={terminal.complete}
         onClear={terminal.clear}
       />
     </div>
   );
 
-  // The aside on desktop: framed (header, expand, footer) when a title or footer is given
+  // The aside on desktop: framed (header with actions + expand) when a title or footer/action is given
   const asidePane = aside ? (
     framed ? (
       <Pane name="aside" expanded={expanded}>
-        <div className="flex h-full flex-col overflow-hidden rounded-md border border-line bg-input">
-          {asideTitle && (
+        <div className="flex h-full flex-col overflow-hidden rounded-md border border-line bg-surface">
+          {(asideTitle || asideFooter) && (
             <PaneHeader
               title={asideTitle}
+              actions={asideFooter}
               open={expanded === "aside"}
               onToggle={() => toggleExpand("aside")}
             />
           )}
-          <div className="min-h-0 flex-1 overflow-y-auto">{aside}</div>
-          {asideFooter && (
-            <div className="shrink-0 border-t border-surface-muted bg-surface px-4 py-3">
-              {asideFooter}
-            </div>
-          )}
+          <div className="min-h-0 flex-1 overflow-y-auto bg-surface">{aside}</div>
         </div>
       </Pane>
     ) : (
-      <div className="h-full overflow-y-auto">{aside}</div>
+      <div className="h-full overflow-y-auto bg-surface">{aside}</div>
     )
   ) : null;
 

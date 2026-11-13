@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { GUEST_NAV_SECTIONS, STUDENT_NAV_SECTIONS } from "../navConfig";
 import { SidebarHeader } from "./components/SidebarHeader";
 import { SidebarSection } from "./components/SidebarSection";
 import { SidebarFooter } from "./components/SidebarFooter";
 import { useAuth } from "../../../features/auth/context/AuthContext";
+import { useStudentNavSections } from "./useStudentNavSections";
 
 interface MobileSidebarProps {
   isOpen: boolean;
@@ -14,6 +14,7 @@ interface MobileSidebarProps {
 export const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
   const { profile, isLoading } = useAuth();
   const { pathname } = useLocation();
+  const navSections = useStudentNavSections(Boolean(profile));
 
   // Close when the route changes (i.e. a nav link was tapped)
   useEffect(() => {
@@ -38,8 +39,6 @@ export const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
       document.body.style.overflow = prevOverflow;
     };
   }, [isOpen, onClose]);
-
-  const navSections = profile ? STUDENT_NAV_SECTIONS : GUEST_NAV_SECTIONS;
 
   return (
     <div

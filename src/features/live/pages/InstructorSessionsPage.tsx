@@ -46,7 +46,7 @@ function SessionList({cohorts,cohortId}:{cohorts:InstructorCohort[];cohortId:str
   const [materials,setMaterials]=useState<SessionDetail|null>(null);
   const [materialsOpen, setMaterialsOpen] = useState(false);
   function showMaterials(session: SessionDetail) { setMaterials(session); setMaterialsOpen(true); }
-  const [confirm,setConfirm]=useState<{action:"start"|"cancel";session:CohortSession}|null>(null);
+  const [confirm,setConfirm]=useState<{action:"start"|"cancel"|"delete";session:CohortSession}|null>(null);
   const [busy,setBusy]=useState(false);const running=useRef(false);
   const [notice,setNotice]=useState<Notice|null>(null);const dismiss=useCallback(()=>setNotice(null),[]);
   const rows=query.data??[];
@@ -54,9 +54,9 @@ function SessionList({cohorts,cohortId}:{cohorts:InstructorCohort[];cohortId:str
   const groups=new Map<string,{title:string;rows:SessionDetail[]}>();
   for(const item of visible){const key=`${item.cohort_id}:${item.module_id}`;if(!groups.has(key))groups.set(key,{title:item.module_title,rows:[]});groups.get(key)!.rows.push(item);}
   const live=rows.filter(item=>item.status==="live");
-  async function refresh(){await Promise.all([client.invalidateQueries({queryKey:sessionKeys.instructor}),client.invalidateQueries({queryKey:["live-sessions"]}),client.invalidateQueries({queryKey:["sessions","detail"]})]);}
+  async function refresh(){await Promise.all([client.invalidateQueries({queryKey:sessionKeys.instructor}),client.invalidateQueries({queryKey:["live-sessions"]}),client.invalidateQueries({queryKey:["sessions","detail"]}),client.invalidateQueries({queryKey:["session-history"]})]);}
   async function save(id:string,input:SessionInput){if(drawer && drawer!=="new")await InstructorSessionService.update(drawer.id,input);else await InstructorSessionService.create(id,input);await refresh();setNotice({kind:"success",message:drawer==="new"?"Session scheduled.":"Session updated."});}
-  async function confirmAction(){if(!confirm||running.current)return;const {action,session}=confirm;running.current=true;setBusy(true);setNotice(null);try{if(action==="start")await InstructorSessionService.start(session.id);else await InstructorSessionService.cancel(session.id);await refresh();setConfirm(null);if(action==="start")navigate(sessionRoomPath(session.id));else setNotice({kind:"success",message:"Session cancelled."});}catch(error){setNotice({kind:"error",message:error instanceof ApiError && error.status===409?error.message:friendlyMessage(error,`Couldn’t ${action} the session. Please try again.`)});setConfirm(null);}finally{running.current=false;setBusy(false);}}
+  async function confirmAction(){if(!confirm||running.current)return;const {action,session}=confirm;running.current=true;setBusy(true);setNotice(null);try{if(action==="start")await InstructorSessionService.start(session.id);else if(action==="cancel")await InstructorSessionService.cancel(session.id);else await InstructorSessionService.remove(session.id);await refresh();setConfirm(null);if(action==="start")navigate(sessionRoomPath(session.id));else setNotice({kind:"success",message:action==="cancel"?"Session cancelled.":"Session deleted."});}catch(error){setNotice({kind:"error",message:error instanceof ApiError && error.status===409?error.message:friendlyMessage(error,`Couldn’t ${action} the session. Please try again.`)});setConfirm(null);}finally{running.current=false;setBusy(false);}}
   return <div className="min-w-0 space-y-5">
     <div className="flex flex-wrap items-center justify-between gap-4"><p className="text-sm text-muted">{cohorts.find(item=>item.id===cohortId)?.course}</p><Button disabled={busy} onClick={()=>setDrawer("new")}><Plus size={16}/>Schedule session</Button></div>
     <ActionNotice notice={notice} onDismiss={dismiss}/>
@@ -68,13 +68,43 @@ function SessionList({cohorts,cohortId}:{cohorts:InstructorCohort[];cohortId:str
         <h2 className="break-words text-sm font-semibold text-foreground">{group.title}</h2>
         {group.rows.map(item => <SessionScheduleCard key={item.id} session={item}>
           {item.status === "scheduled" ? <Button variant="ghost" disabled={busy} onClick={()=>setConfirm({action:"start",session:item})}>Start room</Button> : item.status === "live" ? <ButtonLink to={sessionRoomPath(item.id)}>Join room</ButtonLink> : <Button variant="ghost" onClick={()=>showMaterials(item)}>View materials</Button>}
-          <ActionMenu label={`Actions for ${item.title}`} disabled={busy} items={[{label:"View teaching materials",onSelect:()=>showMaterials(item)},...(item.status === "scheduled" ? [{label:"Edit session",onSelect:()=>setDrawer(item)},{label:"Cancel session",onSelect:()=>setConfirm({action:"cancel" as const,session:item})}] : [])]}/>
+          <ActionMenu
+            label={`Actions for ${item.title}`}
+            disabled={busy}
+            items={[
+              {
+                label: "View teaching materials",
+                onSelect: () => showMaterials(item),
+              },
+              ...(item.status === "scheduled" || item.status === "ended"
+                ? [{ label: "Edit session", onSelect: () => setDrawer(item) }]
+                : []),
+              ...(item.status === "scheduled"
+                ? [
+                    {
+                      label: "Cancel session",
+                      onSelect: () =>
+                        setConfirm({ action: "cancel" as const, session: item }),
+                    },
+                  ]
+                : []),
+              ...(item.status === "ended"
+                ? [
+                    {
+                      label: "Delete session",
+                      onSelect: () =>
+                        setConfirm({ action: "delete" as const, session: item }),
+                    },
+                  ]
+                : []),
+            ]}
+          />
         </SessionScheduleCard>)}
       </section>) : <div className="rounded-xl border border-dashed border-line py-14 text-center"><CalendarDays size={28} className="mx-auto text-muted"/><h2 className="mt-4 font-semibold text-foreground">{search?"No matching sessions":`No ${views.find(view=>view.value===status)?.label.toLowerCase()} sessions`}</h2><p className="mt-2 text-sm text-muted">{search?"Try another search.":"Sessions appear here when their status matches this view."}</p></div>}
       <p className="text-xs text-muted">Dates use your local timezone: {Intl.DateTimeFormat().resolvedOptions().timeZone}. <Link to="/instructor/cohorts" className="text-accent hover:underline">Manage cohorts →</Link></p>
     </>}
     {drawer && <SessionScheduleDrawer cohorts={cohorts.filter(item=>item.id===cohortId)} initialCohortId={cohortId} editing={drawer==="new"?null:drawer} onClose={()=>setDrawer(null)} onSave={save}/>}
     {materials!==null && <SessionMaterials session={materials} open={materialsOpen} onClose={()=>setMaterialsOpen(false)}/>}
-    <ConfirmDialog open={!!confirm} title={confirm?.action==="start"?"Start this session?":"Cancel this session?"} message={confirm?.action==="start"?`“${confirm.session.title}” will become live and cohort members can join.`:`Cancel “${confirm?.session.title??""}”? It will remain in your cancelled sessions.`} confirmLabel={confirm?.action==="start"?"Start room":"Cancel session"} busy={busy} onConfirm={()=>void confirmAction()} onCancel={()=>setConfirm(null)}/>
+    <ConfirmDialog open={!!confirm} title={confirm?.action==="start"?"Start this session?":confirm?.action==="cancel"?"Cancel this session?":"Delete this session?"} message={confirm?.action==="start"?`“${confirm.session.title}” will become live and cohort members can join.`:confirm?.action==="cancel"?`Cancel “${confirm?.session.title??""}”? It will remain in your cancelled sessions.`:`Delete “${confirm?.session.title??""}”? This will permanently remove the session and its recording link.`} confirmLabel={confirm?.action==="start"?"Start room":confirm?.action==="cancel"?"Cancel session":"Delete session"} busy={busy} onConfirm={()=>void confirmAction()} onCancel={()=>setConfirm(null)}/>
   </div>;
 }

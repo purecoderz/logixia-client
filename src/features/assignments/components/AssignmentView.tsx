@@ -27,7 +27,7 @@ export function AssignmentsView({
 }: {
   assignments: Assignment[];
 }) {
-  const [filter, setFilter] = useState<Filter>("active");
+  const [filter, setFilter] = useState<Filter>("all");
   const [view, setView] = useState<View>(() =>
     localStorage.getItem(VIEW_KEY) === "table" ? "table" : "grid",
   );

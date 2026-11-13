@@ -7,15 +7,9 @@ type Props = {
 };
 
 
-export function TaskInstructions({ instructions,}: Props) {
-  // const due = new Date(dueDate).toLocaleDateString(undefined, {
-  //   month: "short",
-  //   day: "numeric",
-  // });
-
+export function TaskInstructions({ instructions }: Props) {
   return (
-    <div className="h-full overflow-y-auto p-4">
-
+    <div className="p-4">
       <MarkdownRenderer content={instructions} />
     </div>
   );

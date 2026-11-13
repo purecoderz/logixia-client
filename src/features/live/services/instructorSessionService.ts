@@ -32,4 +32,7 @@ export const InstructorSessionService = {
   async cancel(id: number): Promise<void> {
     const response = await apiFetch(`/sessions/${id}/cancel`, { method: "POST" }); await check(response);
   },
+  async remove(id: number): Promise<void> {
+    const response = await apiFetch(`/sessions/${id}`, { method: "DELETE" }); await check(response);
+  },
 };

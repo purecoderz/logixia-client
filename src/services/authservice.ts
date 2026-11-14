@@ -1,4 +1,5 @@
 import { apiFetch } from "../lib/http";
+import { ApiError } from "../lib/apiError";
 
 // services/authService.ts
 export interface SignupPayload {
@@ -103,6 +104,36 @@ const authservices = {
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       throw new Error(error.detail ?? "Unable to reset your password");
+    }
+    return response.json();
+  },
+
+  async verifyEmail(token: string): Promise<MessageResponse> {
+    const response = await apiFetch(
+      `/verify?token=${encodeURIComponent(token)}`,
+    );
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new ApiError(
+        error.detail ?? "Unable to verify your account",
+        response.status,
+      );
+    }
+    return response.json();
+  },
+
+  async resendVerificationEmail(email: string): Promise<MessageResponse> {
+    const response = await apiFetch("/mail", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new ApiError(
+        error.detail ?? "Unable to resend verification email",
+        response.status,
+      );
     }
     return response.json();
   },

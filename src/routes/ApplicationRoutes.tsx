@@ -5,6 +5,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { ListPageSkeleton } from "@/components/ui/ListPageSkeleton";
 import { AuthPage } from "@/features/auth/AuthenticationPage";
 import { ResetPasswordPage } from "@/features/auth/ResetPasswordPage";
+import { VerifyEmailPage } from "@/features/auth/VerifyEmailPage";
 import { InstructorProtectedRoute } from "@/features/auth/InstructorProtectedRoute";
 import { UserProtectedRoute } from "@/features/auth/UserProtectedRoute";
 import AcceptInvitationPage from "@/features/cohorts/Pages/AcceptInvitationPage";
@@ -91,6 +92,8 @@ export function ApplicationRoutes({
       <Route path="/auth/forgot-password" element={<AuthPage />} />
       <Route path="/auth/reset-password" element={<AuthPage />} />
       <Route path="/password" element={<ResetPasswordPage />} />
+      <Route path="/verify" element={<VerifyEmailPage />} />
+      <Route path="/mail" element={<VerifyEmailPage />} />
       <Route path="/instructor/login" element={<AuthPage />} />
 
       {/* Guests open the playground without mounting student navigation. */}

@@ -8,10 +8,10 @@ import {
   Loader2,
   RotateCcw,
 } from "lucide-react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/features/auth/context/AuthContext";
-import { ListPageSkeleton } from "@/components/ui/ListPageSkeleton";
+import { QuizSkeleton, WorkspaceSkeleton } from "@/components/ui/TaskSkeletons";
 import { useCourseOutline } from "@/features/courses/hooks/useCourseOutline";
 import { CodeWorkspace } from "@/features/workspace/Workspace";
 import { MarkdownRenderer } from "@/components/ui/Markdown";
@@ -27,6 +27,8 @@ import { TaskTestResults } from "../components/TaskTestResults";
 
 export default function TaskTestPage() {
   const { courseId, taskId } = useParams();
+  const { search } = useLocation();
+  const isCodeHint = new URLSearchParams(search).get("type") === "code";
   const outline = useCourseOutline(courseId);
   const task = useQuery({
     queryKey: ["instructor-task", taskId],
@@ -45,7 +47,11 @@ export default function TaskTestPage() {
       </div>
     );
   if (outline.isPending || task.isPending)
-    return <ListPageSkeleton label="Loading task" />;
+    return isCodeHint ? (
+      <WorkspaceSkeleton label="Loading task" />
+    ) : (
+      <QuizSkeleton label="Loading quiz" />
+    );
   if (
     !courseId ||
     !taskId ||

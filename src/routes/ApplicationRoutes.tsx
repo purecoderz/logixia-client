@@ -35,8 +35,10 @@ import { NotFoundPage } from "@/features/system/pages/NotFoundPage";
 import { ThemeProvider } from "@/features/theme/ThemeProvider";
 import AllTasksPage from "@/features/tasks/pages/AllTasksPage";
 import TaskTestPage from "@/features/tasks/pages/TaskTestPage";
+import { AssignmentGroundPage } from "@/features/assignments/pages/AssignmentGroundPage";
 import { AssignmentsPage } from "@/features/assignments/pages/AssignmentsPage";
 import { LegacyStudentTaskRedirect } from "@/features/assignments/pages/LegacyStudentTaskRedirect";
+import { QuizGroundPage } from "@/features/assignments/pages/QuizGroundPage";
 import { PlaygroundPage } from "@/features/workspace/pages/Playground";
 import { InstructorLayout } from "@/layouts/InstructorLayout/InstructorLayout";
 import { PublicLayout } from "@/layouts/PublicLayout/PublicLayout";
@@ -63,16 +65,6 @@ const CohortTaskEditorPage = lazy(
 );
 const TaskEditorPage = lazy(
   () => import("@/features/tasks/pages/TaskEditorPage"),
-);
-const AssignmentGroundPage = lazy(() =>
-  import("@/features/assignments/pages/AssignmentGroundPage").then((m) => ({
-    default: m.AssignmentGroundPage,
-  })),
-);
-const QuizGroundPage = lazy(() =>
-  import("@/features/assignments/pages/QuizGroundPage").then((m) => ({
-    default: m.QuizGroundPage,
-  })),
 );
 const ArcadeHubPage = lazy(() =>
   import("@/features/arcade/pages/ArcadeHubPage").then((m) => ({

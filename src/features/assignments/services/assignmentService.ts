@@ -68,8 +68,15 @@ export const AssignmentService = {
     assignmentId: string,
     files: Record<string, string>,
   ): Promise<void> => {
-    await new Promise((r) => setTimeout(r, 600)); // replace with a real POST later
-    console.log("submit", assignmentId, files);
+    const response = await apiFetch(
+      `/cohort-tasks/${encodeURIComponent(assignmentId)}/submit`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ files }),
+      },
+    );
+    if (!response.ok) throw await apiErrorFrom(response);
   },
 
   submitQuiz: async (

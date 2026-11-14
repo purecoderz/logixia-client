@@ -1,7 +1,7 @@
 import { ErrorState } from "../../../components/ui/ErrorState";
 import { useAuth } from "../../auth/context/AuthContext";
 import { useAssignment } from "../hooks/useAssignmentDraft";
-import { ListPageSkeleton } from "../../../components/ui/ListPageSkeleton";
+import { WorkspaceSkeleton } from "../../../components/ui/TaskSkeletons";
 import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 import { ThemeBoundary } from "../../theme/ThemeProvider";
 // pages/Assignments/AssignmentGround.tsx
@@ -82,7 +82,8 @@ export function AssignmentGround({
       </div>
     );
 
-  if (!task || task.type === "quiz") return <ListPageSkeleton label="Restoring your task" />;
+  if (!task || task.type === "quiz")
+    return <WorkspaceSkeleton label="Restoring your task" />;
 
   // ── Status badge shown in the toolbar ──────────────────────────────────────
   const statusBadge = isMissed ? (

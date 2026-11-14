@@ -81,7 +81,9 @@ export function CohortTaskTable({
                       {
                         label: "Preview / test task",
                         onSelect: () =>
-                          navigate(taskTestPath(courseId, task.task_id)),
+                          navigate(
+                            taskTestPath(courseId, task.task_id, task.type),
+                          ),
                       },
                       {
                         label: "Edit schedule / XP",

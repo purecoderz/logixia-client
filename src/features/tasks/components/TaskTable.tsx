@@ -65,7 +65,8 @@ export function TaskTable({
               },
               {
                 label: "Test task",
-                onSelect: () => navigate(taskTestPath(courseId, task.id)),
+                onSelect: () =>
+                  navigate(taskTestPath(courseId, task.id, task.type)),
               },
               { label: "Delete task", onSelect: () => onDelete(task) },
             ]}

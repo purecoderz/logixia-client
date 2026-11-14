@@ -9,7 +9,12 @@ import { useLocation } from "react-router-dom";
 
 export const NAVIGATION_DURATION = 650;
 export type NavigationMotion =
-  "idle" | "student-exit" | "student-enter" | "public-return";
+  | "idle"
+  | "student-exit"
+  | "student-enter"
+  | "instructor-exit"
+  | "instructor-enter"
+  | "public-return";
 export const NavigationMotionContext = createContext<NavigationMotion>("idle");
 export const useNavigationMotion = () => useContext(NavigationMotionContext);
 
@@ -50,6 +55,17 @@ function isStudentPage(path: string, signedIn: boolean) {
   );
 }
 
+export function isInstructorWorkspace(path: string, search = "") {
+  if (!/^\/instructor\/courses\/[^/]+\/tasks\/[^/]+\/test$/.test(path)) {
+    return false;
+  }
+  return new URLSearchParams(search).get("type") === "code";
+}
+
+function isInstructorPage(path: string, search = "") {
+  return path.startsWith("/instructor") && !isInstructorWorkspace(path, search);
+}
+
 /** Owns route timing; layouts only respond to the current motion phase. */
 export function useNavigationTransition(signedIn: boolean) {
   const destination = useLocation();
@@ -74,6 +90,16 @@ export function useNavigationTransition(signedIn: boolean) {
       else if (isStudentWorkspace(from) && isStudentPage(to, signedIn))
         next = "student-enter";
       else if (
+        isInstructorWorkspace(to, destination.search) &&
+        isInstructorPage(from, displayed.current.search)
+      )
+        next = "instructor-exit";
+      else if (
+        isInstructorWorkspace(from, displayed.current.search) &&
+        isInstructorPage(to, destination.search)
+      )
+        next = "instructor-enter";
+      else if (
         (from === "/playground" || from.startsWith("/auth/")) &&
         isPublicPage(to, signedIn)
       )
@@ -85,7 +111,7 @@ export function useNavigationTransition(signedIn: boolean) {
       setDisplayedLocation(destination);
     };
     // Enter the workspace now; its existing navigation leaves over the editor.
-    if (next === "student-exit") commit();
+    if (next === "student-exit" || next === "instructor-exit") commit();
     if (next === "idle") {
       commit();
       return;

@@ -25,4 +25,6 @@ export const newCohortTaskPath = (
 export const taskTestPath = (
   courseId: number | string,
   taskId: number | string,
-) => `/instructor/courses/${courseId}/tasks/${taskId}/test`;
+  type?: "code" | "quiz",
+) =>
+  `/instructor/courses/${courseId}/tasks/${taskId}/test${type ? `?type=${type}` : ""}`;

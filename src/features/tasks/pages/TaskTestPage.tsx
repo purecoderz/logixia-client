@@ -11,14 +11,13 @@ import {
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/features/auth/context/AuthContext";
-import { InstructorLayout } from "@/layouts/InstructorLayout/InstructorLayout";
+import { ListPageSkeleton } from "@/components/ui/ListPageSkeleton";
 import { useCourseOutline } from "@/features/courses/hooks/useCourseOutline";
 import { CodeWorkspace } from "@/features/workspace/Workspace";
 import { MarkdownRenderer } from "@/components/ui/Markdown";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { FormError } from "@/components/ui/FormError";
 import { ErrorState } from "@/components/ui/ErrorState";
-import { Spinner } from "@/components/ui/Spinner";
 import { ApiError, friendlyMessage } from "@/lib/apiError";
 import { TaskService } from "../services/taskService";
 import { TASKS_PATH, taskEditorPath } from "../paths";
@@ -46,14 +45,7 @@ export default function TaskTestPage() {
       </div>
     );
   if (outline.isPending || task.isPending)
-    return (
-      <div
-        className="flex min-h-screen items-center justify-center bg-canvas text-body"
-        role="status"
-      >
-        <Spinner /> Loading task…
-      </div>
-    );
+    return <ListPageSkeleton label="Loading task" />;
   if (
     !courseId ||
     !taskId ||
@@ -69,15 +61,7 @@ export default function TaskTestPage() {
         homeTo={TASKS_PATH}
       />
     );
-  const content = (
-    <TestTask key={taskId} courseId={courseId} task={task.data} />
-  );
-  // Code workspaces remain full-screen dark; MCQ quiz tests render inside InstructorLayout.
-  return task.data.type === "quiz" ? (
-    <InstructorLayout>{content}</InstructorLayout>
-  ) : (
-    content
-  );
+  return <TestTask key={taskId} courseId={courseId} task={task.data} />;
 }
 
 function TestTask({

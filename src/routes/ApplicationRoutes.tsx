@@ -34,6 +34,7 @@ import { ComingSoonPage } from "@/features/system/pages/ComingSoonPage";
 import { NotFoundPage } from "@/features/system/pages/NotFoundPage";
 import { ThemeProvider } from "@/features/theme/ThemeProvider";
 import AllTasksPage from "@/features/tasks/pages/AllTasksPage";
+import TaskTestPage from "@/features/tasks/pages/TaskTestPage";
 import { AssignmentsPage } from "@/features/assignments/pages/AssignmentsPage";
 import { LegacyStudentTaskRedirect } from "@/features/assignments/pages/LegacyStudentTaskRedirect";
 import { PlaygroundPage } from "@/features/workspace/pages/Playground";
@@ -62,9 +63,6 @@ const CohortTaskEditorPage = lazy(
 );
 const TaskEditorPage = lazy(
   () => import("@/features/tasks/pages/TaskEditorPage"),
-);
-const TaskTestPage = lazy(
-  () => import("@/features/tasks/pages/TaskTestPage"),
 );
 const AssignmentGroundPage = lazy(() =>
   import("@/features/assignments/pages/AssignmentGroundPage").then((m) => ({
@@ -139,13 +137,12 @@ export function ApplicationRoutes({
         />
       </Route>
 
-      {/* Instructor test mode is intentionally outside InstructorLayout. */}
       <Route element={<InstructorProtectedRoute />}>
-        <Route
-          path="/instructor/courses/:courseId/tasks/:taskId/test"
-          element={<TaskTestPage />}
-        />
         <Route path="/instructor" element={<InstructorLayout />}>
+          <Route
+            path="courses/:courseId/tasks/:taskId/test"
+            element={<TaskTestPage />}
+          />
           <Route index element={<InstructorDashboardPage />} />
           <Route path="cohorts" element={<InstructorCohortsPage />} />
           <Route path="cohorts/new" element={<CreateCohortPage />} />

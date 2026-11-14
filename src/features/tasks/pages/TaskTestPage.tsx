@@ -5,17 +5,16 @@ import {
   ArrowLeft,
   FlaskConical,
   HelpCircle,
+  Loader2,
   RotateCcw,
 } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/features/auth/context/AuthContext";
-import { ThemeProvider } from "@/features/theme/ThemeProvider";
-import { ThemeToggle } from "@/features/theme/ThemeToggle";
+import { InstructorLayout } from "@/layouts/InstructorLayout/InstructorLayout";
 import { useCourseOutline } from "@/features/courses/hooks/useCourseOutline";
 import { CodeWorkspace } from "@/features/workspace/Workspace";
 import { MarkdownRenderer } from "@/components/ui/Markdown";
-import { Button } from "@/components/ui/Button";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { FormError } from "@/components/ui/FormError";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -73,9 +72,9 @@ export default function TaskTestPage() {
   const content = (
     <TestTask key={taskId} courseId={courseId} task={task.data} />
   );
-  // Code workspaces remain dark; only the standalone MCQ test uses the saved app theme.
+  // Code workspaces remain full-screen dark; MCQ quiz tests render inside InstructorLayout.
   return task.data.type === "quiz" ? (
-    <ThemeProvider>{content}</ThemeProvider>
+    <InstructorLayout>{content}</InstructorLayout>
   ) : (
     content
   );
@@ -123,58 +122,42 @@ function TestTask({
   if (task.type === "code")
     return (
       <CodeWorkspace
-        title={`Test · ${task.title}`}
+        title={task.title}
         layout="split"
         storageKey={`instructor-task-test:${profile?.id}:${task.id}`}
         starterFiles={task.starter_files}
         onBack={() => navigate(back)}
-        toolbar={
-          <div className="flex items-center gap-2 border-b border-[#30363d] bg-[#161b22] px-3 py-2 text-xs text-[#8b949e]">
-            <FlaskConical className="size-4 text-[#58a6ff]" aria-hidden />
-            <strong className="font-semibold text-[#f0f6fc]">
-              Instructor test workspace
-            </strong>
-            <span className="hidden sm:inline">
-              Isolated from student drafts and official submissions
-            </span>
-          </div>
-        }
-        asideTitle="Test task"
+        asideTitle={task.title}
         aside={
           <div className="space-y-4 p-4">
-            <h1 className="text-lg font-semibold text-foreground">
-              {task.title}
-            </h1>
-            {explanation}
             <MarkdownRenderer content={task.instructions} />
-            <p className="text-xs text-muted">
-              Use main.py as the entry point. Run code in the terminal, then
-              test your solution against the task’s saved checks.
-            </p>
             <ButtonLink variant="ghost" to={taskEditorPath(courseId, task.id)}>
               Edit task
             </ButtonLink>
-            {error && <FormError message={error} />}{" "}
+            {error && <FormError message={error} />}
             {result && <TaskTestResults result={result} />}
           </div>
         }
-        asideFooter={({ getFiles }) => (
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-xs text-muted">Tests run on the backend.</p>
-            <Button
-              disabled={busy}
-              aria-busy={busy}
-              onClick={() => void test({ files: getFiles() })}
-            >
-              {busy ? (
-                <>
-                  <Spinner tone="dark" /> Testing…
-                </>
-              ) : (
-                "Test solution"
-              )}
-            </Button>
-          </div>
+        asideFooter={({ nodes, getFiles }) => (
+          <button
+            type="button"
+            disabled={busy || nodes.length === 0}
+            aria-busy={busy}
+            onClick={() => void test({ files: getFiles() })}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-[#238636] px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-[#2ea043] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#58a6ff] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {busy ? (
+              <>
+                <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                Testing…
+              </>
+            ) : (
+              <>
+                <FlaskConical className="size-3.5" aria-hidden />
+                Test solution
+              </>
+            )}
+          </button>
         )}
       />
     );
@@ -242,10 +225,10 @@ function TestTask({
   };
 
   return (
-    <main
+    <div
       data-student-shell
       data-student-content
-      className="flex h-dvh flex-col overflow-hidden bg-canvas px-4 py-4 text-body sm:px-6 lg:px-8"
+      className="flex min-h-0 flex-1 flex-col text-body"
     >
       <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col gap-4 animate-fade-in text-body">
         {/* ── Fixed Top Section: Back navigation & Quiz Header (do NOT scroll) ── */}
@@ -273,7 +256,6 @@ function TestTask({
               <ButtonLink variant="ghost" to={taskEditorPath(courseId, task.id)}>
                 Edit quiz
               </ButtonLink>
-              <ThemeToggle />
             </div>
           </header>
 
@@ -440,6 +422,6 @@ function TestTask({
           )}
         </footer>
       </div>
-    </main>
+    </div>
   );
 }

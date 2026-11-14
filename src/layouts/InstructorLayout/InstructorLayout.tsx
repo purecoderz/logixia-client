@@ -3,7 +3,7 @@ import "@/features/theme/learning-shell.css";
 import { SidebarCollapseHandle } from "@/components/ui/SidebarCollapseHandle";
 import { InstructorThemeProvider } from "@/features/theme/ThemeProvider";
 import { useInstructorSidebarPreference } from "@/hooks/useInstructorSidebarPreference";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { BreadcrumbProvider } from "@/components/ui/BreadCrumbs";
 import { InstructorSidebar } from "./Sidebar/InstructorSidebar";
@@ -11,7 +11,7 @@ import { InstructorTopbar } from "./InstructorTopbar";
 import { InstructorAssistant } from "@/features/instructorAssistant/components/InstructorAssistant";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
-export function InstructorLayout() {
+export function InstructorLayout({ children }: { children?: ReactNode }) {
   const [drawer, setDrawer] = useState(false);
   const [assistantOpen, setAssistantOpen] = useState(false);
   const [collapsed, setCollapsed] = useInstructorSidebarPreference();
@@ -70,7 +70,7 @@ export function InstructorLayout() {
             <div className="flex min-h-0 min-w-0 flex-1">
               <main className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-none bg-canvas">
                 <div className="min-w-0 w-full max-w-full px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-                  <Outlet />
+                  {children ?? <Outlet />}
                 </div>
               </main>
               <InstructorAssistant

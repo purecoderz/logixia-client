@@ -42,6 +42,7 @@ import { AlertModal } from "@/components/ui/AlertModal";
 export interface WorkspaceContext {
   nodes: FsNode[];
   getFiles: () => Record<string, string>; // path -> content, for every file
+  appendTerminalLines: (lines: TerminalLine[]) => void;
 }
 
 type Slot = ReactNode | ((ctx: WorkspaceContext) => ReactNode);
@@ -77,6 +78,7 @@ interface CodeWorkspaceProps {
   currentLine?: number | null;
   onTerminalLines?: (lines: TerminalLine[]) => void;
   onRunFile?: (path: string, content: string) => boolean | void;
+  runDisabled?: boolean;
 }
 
 function IconButton({
@@ -202,6 +204,7 @@ function WorkspaceContent({
   sendActive,
   onTerminalLines,
   onRunFile,
+  runDisabled = false,
   currentLine,
   renderPointerSurface,
 }: CodeWorkspaceProps) {
@@ -247,6 +250,7 @@ function WorkspaceContent({
           .filter((n) => n.type === "file")
           .map((n) => [getPath(nodes, n), n.content ?? ""]),
       ),
+    appendTerminalLines: terminal.appendLines,
   };
   const resolve = (slot: Slot | undefined) =>
     typeof slot === "function" ? slot(ctx) : slot;
@@ -554,6 +558,7 @@ function WorkspaceContent({
         onSubmit={terminal.submit}
         onNavigate={terminal.navigate}
         isRunning={terminal.isRunning}
+        runDisabled={runDisabled}
         onStop={terminal.stop}
         prompts={terminal.prompt}
         onRun={() => {

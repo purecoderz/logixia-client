@@ -19,6 +19,7 @@ import {
   type AppNotification,
   type NotificationType,
 } from "../services/notificationService";
+import { useNotificationSound } from "../hooks/useNotificationSound";
 
 function typeIcon(type: NotificationType) {
   switch (type) {
@@ -79,6 +80,7 @@ function NotificationBellPopover() {
 
   const items = data?.items ?? [];
   const unreadCount = data?.unread_count ?? 0;
+  useNotificationSound(items, unreadCount, Boolean(data));
 
   function handleSelect(item: AppNotification, close: () => void) {
     if (!item.is_read) {

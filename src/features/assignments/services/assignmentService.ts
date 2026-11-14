@@ -4,6 +4,18 @@ import { apiFetch } from "../../../lib/http";
 // What the API returns
 export type SubmissionStatus = "in_progress" | "submitted" | "completed";
 
+export interface SubmissionTestCheck {
+  name: string;
+  passed: boolean;
+  message: string | null;
+}
+
+export interface SubmissionResult {
+  passed: boolean;
+  tests: SubmissionTestCheck[];
+  submission_status: SubmissionStatus | string;
+}
+
 export interface RawAssignment {
   id: number;
   title: string;
@@ -67,7 +79,7 @@ export const AssignmentService = {
   submit: async (
     assignmentId: string,
     files: Record<string, string>,
-  ): Promise<void> => {
+  ): Promise<SubmissionResult> => {
     const response = await apiFetch(
       `/cohort-tasks/${encodeURIComponent(assignmentId)}/submit`,
       {
@@ -77,6 +89,7 @@ export const AssignmentService = {
       },
     );
     if (!response.ok) throw await apiErrorFrom(response);
+    return response.json() as Promise<SubmissionResult>;
   },
 
   submitQuiz: async (
@@ -98,13 +111,14 @@ export const AssignmentService = {
   practiceRun: async (
     assignmentId: string,
     files: Record<string, string>,
-  ): Promise<void> => {
+  ): Promise<SubmissionResult | undefined> => {
     const response = await apiFetch(`/tasks/${assignmentId}/practice`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ files }),
     });
     if (!response.ok) throw await apiErrorFrom(response);
+    return response.json().catch(() => undefined);
   },
 
   getTask: async (id: string): Promise<AssignmentTask> => {

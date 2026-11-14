@@ -8,13 +8,64 @@ import { ThemeBoundary } from "../../theme/ThemeProvider";
 import { useEffect, useState } from "react";
 import { AlertCircle, Check, CheckCircle2, FlaskConical, Loader2, RotateCcw } from "lucide-react";
 
-import { AssignmentService } from "../services/assignmentService";
+import {
+  AssignmentService,
+  type SubmissionResult,
+} from "../services/assignmentService";
 
 import { useNavigate, useParams } from "react-router-dom";
 import { TaskInstructions } from "../components/TaskInstructions";
 import { CodeWorkspace } from "@/features/workspace/Workspace";
+import type { TerminalLine } from "@/components/SmartTerminal/TerminalView";
+import { friendlyMessage } from "@/lib/apiError";
 
 type SubmitState = "idle" | "submitting" | "submitted" | "error" | "practiced";
+
+const SUBMIT_STEPS = [
+  "Sending code…",
+  "Validating syntax…",
+  "Running checks…",
+  "Finalizing submission…",
+];
+
+function formatSubmissionLines(
+  result: SubmissionResult,
+  isPractice: boolean,
+): TerminalLine[] {
+  const tests = Array.isArray(result.tests) ? result.tests : [];
+  const passedCount = tests.filter((t) => t.passed).length;
+  const lines: TerminalLine[] = [
+    { kind: "system", text: "" },
+    {
+      kind: "system",
+      text: isPractice
+        ? "─── Practice Check Results ───"
+        : "─── Submission Results ───",
+    },
+  ];
+
+  for (const test of tests) {
+    if (test.passed) {
+      lines.push({ kind: "command", text: `  ✓ ${test.name}` });
+    } else {
+      lines.push({ kind: "stderr", text: `  ✗ ${test.name}` });
+      if (test.message) {
+        for (const msgLine of test.message.split("\n")) {
+          lines.push({ kind: "stderr", text: `    ${msgLine}` });
+        }
+      }
+    }
+  }
+
+  lines.push({
+    kind: result.passed ? "command" : "stderr",
+    text: result.passed
+      ? `Result: ${passedCount}/${tests.length} checks passed${result.submission_status ? ` (${result.submission_status})` : ""}`
+      : `Result: ${passedCount}/${tests.length} checks passed — fix the failed check(s) above and try again.`,
+  });
+
+  return lines;
+}
 
 export function AssignmentGroundPage() {
   const { id } = useParams<{ id: string }>();
@@ -42,6 +93,19 @@ export function AssignmentGround({
   const task = assignment.task;
   const [confirmReset, setConfirmReset] = useState(false);
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
+  const [submitStep, setSubmitStep] = useState(0);
+  const [lastPassed, setLastPassed] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (submitState !== "submitting") return;
+    setSubmitStep(0);
+    const id = window.setInterval(() => {
+      setSubmitStep((step) =>
+        step < SUBMIT_STEPS.length - 1 ? step + 1 : step,
+      );
+    }, 900);
+    return () => window.clearInterval(id);
+  }, [submitState]);
 
   useEffect(() => {
     if (task && task.type === "quiz") {
@@ -54,17 +118,29 @@ export function AssignmentGround({
     task?.status === "completed" || task?.status === "submitted";
   const isExpiredOrDone = isMissed || isPreviouslyCompleted;
 
-  const submit = async (files: Record<string, string>) => {
+  const submit = async (
+    files: Record<string, string>,
+    appendTerminalLines: (lines: TerminalLine[]) => void,
+  ) => {
     setSubmitState("submitting");
+    setLastPassed(null);
     try {
-      if (isExpiredOrDone) {
-        await AssignmentService.practiceRun(assignmentId, files);
-        setSubmitState("practiced");
-      } else {
-        await AssignmentService.submit(assignmentId, files);
-        setSubmitState("submitted");
+      const result = isExpiredOrDone
+        ? await AssignmentService.practiceRun(assignmentId, files)
+        : await AssignmentService.submit(assignmentId, files);
+
+      if (result) {
+        appendTerminalLines(formatSubmissionLines(result, isExpiredOrDone));
+        setLastPassed(result.passed);
       }
-    } catch {
+      setSubmitState(isExpiredOrDone ? "practiced" : "submitted");
+    } catch (err) {
+      appendTerminalLines([
+        {
+          kind: "stderr",
+          text: `Submission failed: ${friendlyMessage(err, "Please try again.")}`,
+        },
+      ]);
       setSubmitState("error");
     }
   };
@@ -137,22 +213,30 @@ export function AssignmentGround({
 
   // ── Footer status text ───────────────────────────────────────────────────
   const footerText =
-    isPracticed
-      ? "Practice run complete — keep experimenting!"
-      : submitState === "submitted"
-        ? "Submitted. You can resubmit until the due date."
-        : submitState === "error"
-          ? "Couldn't submit. Try again."
-          : isPracticeMode
-            ? "Practice runs don't count towards your grade."
-            : "Submit when ready.";
+    submitState === "submitting"
+      ? SUBMIT_STEPS[submitStep]
+      : isPracticed
+        ? lastPassed === false
+          ? "Some checks failed — see terminal."
+          : "Practice run complete — keep experimenting!"
+        : submitState === "submitted"
+          ? lastPassed === false
+            ? "Submitted with failing checks — see terminal."
+            : "All checks passed!"
+          : submitState === "error"
+            ? "Couldn't submit. Try again."
+            : isPracticeMode
+              ? "Practice runs don't count towards your grade."
+              : "Submit when ready.";
 
   const footerColor =
-    isPracticed || submitState === "submitted"
-      ? "text-success"
-      : submitState === "error"
+    submitState === "submitting"
+      ? "text-accent"
+      : submitState === "error" || lastPassed === false
         ? "text-danger"
-        : "text-muted";
+        : isPracticed || submitState === "submitted"
+          ? "text-success"
+          : "text-muted";
 
   return (
     <>
@@ -163,6 +247,7 @@ export function AssignmentGround({
         storageKey={`assignment:${userId}:${assignmentId}`}
         title={task.title}
         starterFiles={assignment.initialFiles}
+        runDisabled={submitState === "submitting"}
         toolbar={
           <div className="flex flex-wrap items-center gap-3">
             <button
@@ -186,18 +271,19 @@ export function AssignmentGround({
             />
           </div>
         }
-        asideFooter={({ nodes, getFiles }) => (
+        asideFooter={({ nodes, getFiles, appendTerminalLines }) => (
           <div className="flex items-center gap-2.5">
             <p
               role="status"
-              className={`hidden truncate text-xs xl:inline ${footerColor}`}
+              aria-live="polite"
+              className={`truncate text-xs ${submitState === "submitting" ? "inline" : "hidden xl:inline"} ${footerColor}`}
             >
               {footerText}
             </p>
 
             <button
               type="button"
-              onClick={() => submit(getFiles())}
+              onClick={() => void submit(getFiles(), appendTerminalLines)}
               disabled={submitState === "submitting" || nodes.length === 0}
               className={`inline-flex shrink-0 items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#58a6ff] disabled:cursor-not-allowed disabled:opacity-50 ${
                 isPracticeMode

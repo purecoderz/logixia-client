@@ -1,4 +1,5 @@
 import { ThemeToggle } from "../../theme/ThemeToggle";
+import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 // components/TopBar.tsx
 import { ArrowLeft, Download, Play } from "lucide-react";
 
@@ -35,6 +36,7 @@ export function TopBar({ title, onBack, onExport, onRun }: TopBarProps) {
 
       {/* Right */}
       <div className="flex items-center gap-2">
+        <NotificationBell />
         <ThemeToggle />
         {onRun && (
           <button

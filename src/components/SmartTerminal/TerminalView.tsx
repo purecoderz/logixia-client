@@ -19,6 +19,7 @@ type TerminalViewProps = {
   onInputChange: (value: string) => void;
   onSubmit: () => void;
   isRunning?: boolean;
+  runDisabled?: boolean;
   onRun?: () => void;
   onStop?: () => void;
   onNavigate: (direction: "up" | "down") => void;
@@ -33,6 +34,7 @@ export function TerminalView({
   onInputChange,
   onSubmit,
   isRunning = false,
+  runDisabled = false,
   onRun,
   onStop,
   prompts,
@@ -115,8 +117,9 @@ export function TerminalView({
           ) : (
             <button
               onClick={onRun}
+              disabled={runDisabled}
               title="Run"
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-sans bg-[#238636] text-white hover:bg-[#2ea043] transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-sans bg-[#238636] text-white hover:bg-[#2ea043] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Play size={11} fill="currentColor" />
               Run

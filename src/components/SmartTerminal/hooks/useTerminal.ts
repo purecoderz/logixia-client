@@ -232,6 +232,8 @@ export function useTerminal(
   };
 
   const clear = () => setLines([]);
+  const appendLines = (newLines: TerminalLine[]) =>
+    setLines((prev) => [...prev, ...newLines]);
 
   return {
     lines,
@@ -245,6 +247,7 @@ export function useTerminal(
     runFile,
     complete,
     clear,
+    appendLines,
     ready,
   };
 }

@@ -82,7 +82,8 @@ export const AuthForm: React.FC<AuthFormProps> = ({
         setIsSubmitting(false);
       }
     } else {
-      if (!email || !password || !fullName || !username) {
+      const trimmedFullName = fullName.trim();
+      if (!email || !password || !trimmedFullName || !username) {
         setErrorMessage("Make sure all fields are filled");
         return;
       }
@@ -101,7 +102,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
           email,
           password,
           username,
-          fullname: fullName,
+          fullname: trimmedFullName,
         });
         setSuccessMessage(response.message);
         onToggleAuth();
@@ -206,9 +207,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
                   <input
                     type="text"
                     value={fullName}
-                    onChange={(e) =>
-                      setFullName(e.target.value.toLowerCase().trim())
-                    }
+                    onChange={(e) => setFullName(e.target.value)}
                     placeholder="e.g. Chuka Nnamdi"
                     required={!isLogin}
                     className="w-full px-4 py-3 rounded-xl bg-surface border border-line text-foreground text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all placeholder:text-muted"

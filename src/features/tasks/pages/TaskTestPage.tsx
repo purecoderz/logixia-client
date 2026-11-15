@@ -93,7 +93,7 @@ function TestTask({
     setError(null);
     setResult(null);
     try {
-      setResult(await TaskService.test(String(task.id), submission));
+      setResult(await TaskService.test(courseId, String(task.id), submission));
     } catch (err) {
       setError(
         friendlyMessage(err, "Couldn’t test the task. Please try again."),

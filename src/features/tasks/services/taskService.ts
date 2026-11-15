@@ -13,14 +13,18 @@ export const TaskService = {
   },
 
   async test(
-    id: string,
+    courseId: string,
+    taskId: string,
     submission: TaskTestSubmission,
   ): Promise<TaskTestResult> {
-    const response = await apiFetch(`/tasks/${encodeURIComponent(id)}/test`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(submission),
-    });
+    const response = await apiFetch(
+      `/instructor/courses/${encodeURIComponent(courseId)}/tasks/${encodeURIComponent(taskId)}/test`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(submission),
+      },
+    );
     if (!response.ok) throw await apiErrorFrom(response);
     const result: TaskTestResult = await response.json();
     if (

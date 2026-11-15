@@ -336,7 +336,13 @@ export const AuthForm: React.FC<AuthFormProps> = ({
             )}
 
             {isLogin && (
-              <div className="flex justify-end">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <Link
+                  to={`/verify${email.trim() ? `?email=${encodeURIComponent(email.trim())}` : ""}`}
+                  className="text-xs font-mono text-muted hover:text-accent transition-colors"
+                >
+                  Resend verification email
+                </Link>
                 <Link
                   to={`/auth/forgot-password${audience === "instructor" ? "?audience=instructor" : ""}`}
                   className="text-xs font-mono text-muted hover:text-accent transition-colors"
@@ -360,6 +366,18 @@ export const AuthForm: React.FC<AuthFormProps> = ({
                   : "Create Free Account ->"}
             </button>
           </form>
+
+          {!isLogin && (
+            <p className="mt-5 text-center text-xs text-muted">
+              Didn&apos;t receive a verification email?{" "}
+              <Link
+                to={`/verify${email.trim() ? `?email=${encodeURIComponent(email.trim())}` : ""}`}
+                className="font-semibold text-accent hover:underline"
+              >
+                Resend verification link
+              </Link>
+            </p>
+          )}
 
           {isLogin && audience === "learner" && (
             <p className="mt-5 text-center text-xs text-muted">

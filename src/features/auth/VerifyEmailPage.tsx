@@ -7,7 +7,7 @@ import { ThemeToggle } from "@/features/theme/ThemeToggle";
 import { Spinner } from "@/components/ui/Spinner";
 import authservices, { type MessageResponse } from "@/services/authservice";
 
-type VerifyStatus = "verifying" | "verified" | "error";
+type VerifyStatus = "verifying" | "verified" | "resend" | "error";
 
 // Deduplicate one-time verification calls per token (e.g., under React StrictMode).
 const verifyRequests = new Map<string, Promise<MessageResponse>>();
@@ -23,27 +23,36 @@ function verifyOnce(token: string): Promise<MessageResponse> {
 export function VerifyEmailPage() {
   const [params] = useSearchParams();
   const token = params.get("token")?.trim() ?? "";
+  const hasTokenParam = params.has("token");
+  const initialEmail = params.get("email")?.trim() ?? "";
 
   const [status, setStatus] = useState<VerifyStatus>(() =>
-    token ? "verifying" : "error",
+    token ? "verifying" : hasTokenParam ? "error" : "resend",
   );
   const [message, setMessage] = useState<string>(() =>
     token
       ? "Verifying your account…"
-      : "This verification link is missing its token. Request a new verification email below.",
+      : hasTokenParam
+        ? "This verification link is missing its token. Request a new verification email below."
+        : "",
   );
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(initialEmail);
   const [resending, setResending] = useState(false);
   const [resendMessage, setResendMessage] = useState<string | null>(null);
   const [resendError, setResendError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!token) {
-      setStatus("error");
-      setMessage(
-        "This verification link is missing its token. Request a new verification email below.",
-      );
+      if (hasTokenParam) {
+        setStatus("error");
+        setMessage(
+          "This verification link is missing its token. Request a new verification email below.",
+        );
+      } else {
+        setStatus("resend");
+        setMessage("");
+      }
       return;
     }
 
@@ -70,7 +79,7 @@ export function VerifyEmailPage() {
     return () => {
       cancelled = true;
     };
-  }, [token]);
+  }, [token, hasTokenParam]);
 
   async function handleResend(event: FormEvent) {
     event.preventDefault();
@@ -157,15 +166,17 @@ export function VerifyEmailPage() {
             </div>
           )}
 
-          {status === "error" && (
+          {(status === "error" || status === "resend") && (
             <div className="space-y-6">
-              <div
-                role="alert"
-                className="flex items-start gap-3 rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-danger"
-              >
-                <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden />
-                <span>{message}</span>
-              </div>
+              {status === "error" && (
+                <div
+                  role="alert"
+                  className="flex items-start gap-3 rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-danger"
+                >
+                  <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden />
+                  <span>{message}</span>
+                </div>
+              )}
 
               <form onSubmit={handleResend} className="space-y-4">
                 <div>

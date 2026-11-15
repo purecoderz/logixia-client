@@ -11,6 +11,20 @@ export type EngineEvent =
   | { type: "error"; text: string };
 
 export function createPythonEngine(onEvent: (event: EngineEvent) => void) {
+  if (typeof SharedArrayBuffer === "undefined") {
+    queueMicrotask(() =>
+      onEvent({
+        type: "error",
+        text: "Python runtime unavailable: SharedArrayBuffer requires Cross-Origin Isolation headers.",
+      }),
+    );
+    return {
+      run() {},
+      stop() {},
+      sendInput() {},
+    };
+  }
+
   const worker = new Worker(new URL("./pyodide.worker.ts", import.meta.url), {
     type: "module",
   });
@@ -18,6 +32,11 @@ export function createPythonEngine(onEvent: (event: EngineEvent) => void) {
   const sab = new SharedArrayBuffer(4 + 1024); // 4 bytes flag + 1KB text
 
   worker.onmessage = (e: MessageEvent<EngineEvent>) => onEvent(e.data);
+  worker.onerror = (e: ErrorEvent) =>
+    onEvent({
+      type: "error",
+      text: `Python worker error: ${e.message || "Failed to start worker."}`,
+    });
   worker.postMessage({ type: "init", sab });
 
   return {

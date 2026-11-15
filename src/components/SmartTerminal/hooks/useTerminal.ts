@@ -157,6 +157,7 @@ export function useTerminal(
           break;
         case "error":
           clearRunTimer();
+          pendingRef.current = null;
           push({ kind: "stderr", text: event.text });
           setPrompt(null);
           setIsRunning(false);

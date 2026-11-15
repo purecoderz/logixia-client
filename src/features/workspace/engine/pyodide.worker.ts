@@ -5,27 +5,28 @@ let flag: Int32Array;
 let data: Uint8Array;
 
 async function init() {
-  pyodide = await loadPyodide({
-    indexURL: "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/",
-  });
+  try {
+    pyodide = await loadPyodide({
+      indexURL: "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/",
+    });
 
-  pyodide.setStdout({
-    batched: (text) => self.postMessage({ type: "stdout", text }),
-  });
-  pyodide.setStderr({
-    batched: (text) => self.postMessage({ type: "stderr", text }),
-  });
+    pyodide.setStdout({
+      batched: (text) => self.postMessage({ type: "stdout", text }),
+    });
+    pyodide.setStderr({
+      batched: (text) => self.postMessage({ type: "stderr", text }),
+    });
 
-  pyodide.globals.set("_js_input", (prompt: string) => {
-    Atomics.store(flag, 0, 0);
-    self.postMessage({ type: "input-request", prompt });
-    Atomics.wait(flag, 0, 0); // freeze here until the app sets flag > 0
+    pyodide.globals.set("_js_input", (prompt: string) => {
+      Atomics.store(flag, 0, 0);
+      self.postMessage({ type: "input-request", prompt });
+      Atomics.wait(flag, 0, 0); // freeze here until the app sets flag > 0
 
-    const length = Atomics.load(flag, 0) - 1; // flag = 1 + byte length
-    return new TextDecoder().decode(data.slice(0, length));
-  });
+      const length = Atomics.load(flag, 0) - 1; // flag = 1 + byte length
+      return new TextDecoder().decode(data.slice(0, length));
+    });
 
-  pyodide.runPython(`
+    pyodide.runPython(`
 import builtins, sys
 
 def _input(prompt=""):
@@ -35,7 +36,13 @@ def _input(prompt=""):
 builtins.input = _input
 `);
 
-  self.postMessage({ type: "ready" });
+    self.postMessage({ type: "ready" });
+  } catch (err) {
+    self.postMessage({
+      type: "error",
+      text: `Failed to load Python runtime: ${err instanceof Error ? err.message : String(err)}`,
+    });
+  }
 }
 
 self.onmessage = async (e) => {

@@ -14,7 +14,7 @@ export function TaskTestResults({ result }: { result: TaskTestResult }) {
       </p>
       <p className="text-xs text-muted">Results reflect the last test run.</p>
       <ul className="space-y-2">
-        {result.checks.map((check, index) => (
+        {result.tests.map((check, index) => (
           <li key={index} className="text-sm">
             <p className={check.passed ? "text-success" : "text-danger"}>
               {check.passed ? "Passed" : "Failed"} · {check.name}

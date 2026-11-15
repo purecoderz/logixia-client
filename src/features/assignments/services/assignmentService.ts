@@ -153,12 +153,17 @@ export const AssignmentService = {
     if (!isFileMap(data.starter_files)) {
       throw new Error("The task response is invalid.");
     }
+    const student_code =
+      isFileMap(data.student_code) && Object.keys(data.student_code).length > 0
+        ? data.student_code
+        : null;
     return {
       ...data,
       type: "code",
       due_date,
       xp,
       status,
+      student_code,
     };
   },
 };
@@ -171,7 +176,7 @@ export interface AssignmentCodeTask {
   due_date: string;
   xp: number;
   status?: string | null;
-  student_code?: unknown;
+  student_code?: Record<string, string> | null;
   starter_files: Record<string, string>;
 }
 

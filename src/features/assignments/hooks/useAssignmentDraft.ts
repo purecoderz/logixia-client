@@ -21,7 +21,12 @@ export function useAssignment(assignmentId: string) {
         if (cancelled) return;
         
         if (assignment.type === "code") {
-          setInitialFiles(assignment.starter_files);
+          const previousCode = assignment.student_code;
+          setInitialFiles(
+            previousCode && Object.keys(previousCode).length > 0
+              ? { ...previousCode }
+              : { ...assignment.starter_files },
+          );
         }
         setTask(assignment);
       } catch (error) {

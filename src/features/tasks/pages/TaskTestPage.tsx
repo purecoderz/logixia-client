@@ -14,16 +14,16 @@ import { useAuth } from "@/features/auth/context/AuthContext";
 import { QuizSkeleton, WorkspaceSkeleton } from "@/components/ui/TaskSkeletons";
 import { useCourseOutline } from "@/features/courses/hooks/useCourseOutline";
 import { CodeWorkspace } from "@/features/workspace/Workspace";
+import { formatCheckResultsLines } from "@/features/workspace/utils/formatCheckResults";
+import type { TerminalLine } from "@/components/SmartTerminal/TerminalView";
 import { MarkdownRenderer } from "@/components/ui/Markdown";
 import { ButtonLink } from "@/components/ui/ButtonLink";
-import { FormError } from "@/components/ui/FormError";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { ApiError, friendlyMessage } from "@/lib/apiError";
 import { TaskService } from "../services/taskService";
 import { TASKS_PATH, taskEditorPath } from "../paths";
 import type { TaskDocument } from "../taskForm";
 import type { TaskTestResult, TaskTestSubmission } from "../taskTest";
-import { TaskTestResults } from "../components/TaskTestResults";
 
 export default function TaskTestPage() {
   const { courseId, taskId } = useParams();
@@ -86,18 +86,51 @@ function TestTask({
   const [busy, setBusy] = useState(false);
   const running = useRef(false);
   const back = `${TASKS_PATH}?course=${encodeURIComponent(courseId)}`;
-  async function test(submission: TaskTestSubmission) {
+  async function test(
+    submission: TaskTestSubmission,
+    appendTerminalLines?: (lines: TerminalLine[]) => void,
+  ) {
     if (running.current) return;
     running.current = true;
     setBusy(true);
     setError(null);
     setResult(null);
+    appendTerminalLines?.([
+      { kind: "system", text: "" },
+      { kind: "system", text: "Running task checks…" },
+    ]);
     try {
-      setResult(await TaskService.test(courseId, String(task.id), submission));
-    } catch (err) {
-      setError(
-        friendlyMessage(err, "Couldn’t test the task. Please try again."),
+      const res = await TaskService.test(
+        courseId,
+        String(task.id),
+        submission,
       );
+      setResult(res);
+      if (appendTerminalLines) {
+        const lines = formatCheckResultsLines({
+          title: "Task Test Results",
+          passed: res.passed,
+          checks: res.tests,
+        });
+        if (res.stdout) {
+          lines.push({ kind: "stdout", text: res.stdout });
+        }
+        if (res.stderr) {
+          lines.push({ kind: "stderr", text: res.stderr });
+        }
+        appendTerminalLines(lines);
+      }
+    } catch (err) {
+      const msg = friendlyMessage(
+        err,
+        "Couldn’t test the task. Please try again.",
+      );
+      setError(msg);
+      appendTerminalLines?.([
+        { kind: "system", text: "" },
+        { kind: "system", text: "─── Task Test Error ───" },
+        { kind: "stderr", text: msg },
+      ]);
     } finally {
       running.current = false;
       setBusy(false);
@@ -117,6 +150,7 @@ function TestTask({
         storageKey={`instructor-task-test:${profile?.id}:${task.id}`}
         starterFiles={task.starter_files}
         onBack={() => navigate(back)}
+        runDisabled={busy}
         asideTitle={task.title}
         aside={
           <div className="space-y-4 p-4">
@@ -124,30 +158,52 @@ function TestTask({
             <ButtonLink variant="ghost" to={taskEditorPath(courseId, task.id)}>
               Edit task
             </ButtonLink>
-            {error && <FormError message={error} />}
-            {result && <TaskTestResults result={result} />}
           </div>
         }
-        asideFooter={({ nodes, getFiles }) => (
-          <button
-            type="button"
-            disabled={busy || nodes.length === 0}
-            aria-busy={busy}
-            onClick={() => void test({ files: getFiles() })}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-[#238636] px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-[#2ea043] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#58a6ff] disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {busy ? (
-              <>
-                <Loader2 className="size-3.5 animate-spin" aria-hidden />
-                Testing…
-              </>
-            ) : (
-              <>
-                <FlaskConical className="size-3.5" aria-hidden />
-                Test solution
-              </>
+        asideFooter={({ nodes, getFiles, appendTerminalLines }) => (
+          <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              type="button"
+              disabled={busy || nodes.length === 0}
+              aria-busy={busy}
+              onClick={() =>
+                void test({ files: getFiles() }, appendTerminalLines)
+              }
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-[#238636] px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-[#2ea043] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#58a6ff] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {busy ? (
+                <>
+                  <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                  Testing…
+                </>
+              ) : (
+                <>
+                  <FlaskConical className="size-3.5" aria-hidden />
+                  Test solution
+                </>
+              )}
+            </button>
+            {busy && (
+              <span className="text-xs text-[#58a6ff]" role="status">
+                Testing solution…
+              </span>
             )}
-          </button>
+            {!busy && error && (
+              <span className="text-xs text-[#f85149]" role="status">
+                Test failed — see terminal.
+              </span>
+            )}
+            {!busy && !error && result && (
+              <span
+                className={`text-xs ${result.passed ? "text-[#3fb950]" : "text-[#d29922]"}`}
+                role="status"
+              >
+                {result.passed
+                  ? "All checks passed!"
+                  : "Some checks failed — see terminal."}
+              </span>
+            )}
+          </div>
         )}
       />
     );

@@ -26,21 +26,45 @@ export const TaskService = {
       },
     );
     if (!response.ok) throw await apiErrorFrom(response);
-    const result: TaskTestResult = await response.json();
+    const raw: {
+      passed?: unknown;
+      tests?: unknown;
+      checks?: unknown;
+      stdout?: unknown;
+      stderr?: unknown;
+    } = await response.json();
+    const rawChecks = Array.isArray(raw.tests)
+      ? raw.tests
+      : Array.isArray(raw.checks)
+        ? raw.checks
+        : null;
     if (
-      typeof result.passed !== "boolean" ||
-      !Array.isArray(result.checks) ||
-      result.checks.some(
+      typeof raw.passed !== "boolean" ||
+      !rawChecks ||
+      rawChecks.some(
         (check) =>
-          typeof check.name !== "string" ||
-          typeof check.passed !== "boolean" ||
-          (check.message !== undefined && typeof check.message !== "string"),
+          typeof check !== "object" ||
+          check === null ||
+          typeof (check as { name?: unknown }).name !== "string" ||
+          typeof (check as { passed?: unknown }).passed !== "boolean" ||
+          ((check as { message?: unknown }).message !== undefined &&
+            (check as { message?: unknown }).message !== null &&
+            typeof (check as { message?: unknown }).message !== "string"),
       ) ||
-      (result.stdout !== undefined && typeof result.stdout !== "string") ||
-      (result.stderr !== undefined && typeof result.stderr !== "string")
+      (raw.stdout !== undefined &&
+        raw.stdout !== null &&
+        typeof raw.stdout !== "string") ||
+      (raw.stderr !== undefined &&
+        raw.stderr !== null &&
+        typeof raw.stderr !== "string")
     )
       throw new Error("Invalid task test response");
-    return result;
+    return {
+      passed: raw.passed,
+      tests: rawChecks as TaskTestResult["tests"],
+      stdout: raw.stdout ?? undefined,
+      stderr: raw.stderr ?? undefined,
+    };
   },
 
   async get(id: string): Promise<TaskDocument> {

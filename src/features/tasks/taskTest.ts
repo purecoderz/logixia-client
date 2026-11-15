@@ -1,9 +1,16 @@
 export type TaskTestSubmission =
   | { files: Record<string, string> }
   | { answers: { question_id: string; choice_id: string }[] };
+
+export interface TaskTestCheck {
+  name: string;
+  passed: boolean;
+  message?: string | null;
+}
+
 export interface TaskTestResult {
   passed: boolean;
-  checks: { name: string; passed: boolean; message?: string }[];
-  stdout?: string;
-  stderr?: string;
+  tests: TaskTestCheck[];
+  stdout?: string | null;
+  stderr?: string | null;
 }

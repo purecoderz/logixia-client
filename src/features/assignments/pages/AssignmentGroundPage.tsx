@@ -16,6 +16,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { TaskInstructions } from "../components/TaskInstructions";
 import { CodeWorkspace } from "@/features/workspace/Workspace";
+import { formatCheckResultsLines } from "@/features/workspace/utils/formatCheckResults";
 import type { TerminalLine } from "@/components/SmartTerminal/TerminalView";
 import { friendlyMessage } from "@/lib/apiError";
 
@@ -34,37 +35,14 @@ function formatSubmissionLines(
 ): TerminalLine[] {
   const tests = Array.isArray(result.tests) ? result.tests : [];
   const passedCount = tests.filter((t) => t.passed).length;
-  const lines: TerminalLine[] = [
-    { kind: "system", text: "" },
-    {
-      kind: "system",
-      text: isPractice
-        ? "─── Practice Check Results ───"
-        : "─── Submission Results ───",
-    },
-  ];
-
-  for (const test of tests) {
-    if (test.passed) {
-      lines.push({ kind: "command", text: `  ✓ ${test.name}` });
-    } else {
-      lines.push({ kind: "stderr", text: `  ✗ ${test.name}` });
-      if (test.message) {
-        for (const msgLine of test.message.split("\n")) {
-          lines.push({ kind: "stderr", text: `    ${msgLine}` });
-        }
-      }
-    }
-  }
-
-  lines.push({
-    kind: result.passed ? "command" : "stderr",
-    text: result.passed
+  return formatCheckResultsLines({
+    title: isPractice ? "Practice Check Results" : "Submission Results",
+    passed: result.passed,
+    checks: tests,
+    summaryText: result.passed
       ? `Result: ${passedCount}/${tests.length} checks passed${result.submission_status ? ` (${result.submission_status})` : ""}`
-      : `Result: ${passedCount}/${tests.length} checks passed — fix the failed check(s) above and try again.`,
+      : undefined,
   });
-
-  return lines;
 }
 
 export function AssignmentGroundPage() {

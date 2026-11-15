@@ -112,7 +112,7 @@ export const AssignmentService = {
     assignmentId: string,
     files: Record<string, string>,
   ): Promise<SubmissionResult | undefined> => {
-    const response = await apiFetch(`/tasks/${assignmentId}/practice`, {
+    const response = await apiFetch(`/cohort-tasks/${assignmentId}/test_task`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ files }),

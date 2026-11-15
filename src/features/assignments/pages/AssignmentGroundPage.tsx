@@ -73,6 +73,16 @@ export function AssignmentGround({
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [submitStep, setSubmitStep] = useState(0);
   const [lastPassed, setLastPassed] = useState<boolean | null>(null);
+  const [completedNow, setCompletedNow] = useState(false);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
+
+  useEffect(() => {
+    if (cooldownSeconds <= 0) return;
+    const id = window.setInterval(() => {
+      setCooldownSeconds((prev) => (prev > 1 ? prev - 1 : 0));
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [cooldownSeconds]);
 
   useEffect(() => {
     if (submitState !== "submitting") return;
@@ -93,13 +103,16 @@ export function AssignmentGround({
 
   const isMissed = task?.status === "missed";
   const isPreviouslyCompleted =
-    task?.status === "completed" || task?.status === "submitted";
+    task?.status === "completed" ||
+    task?.status === "submitted" ||
+    completedNow;
   const isExpiredOrDone = isMissed || isPreviouslyCompleted;
 
   const submit = async (
     files: Record<string, string>,
     appendTerminalLines: (lines: TerminalLine[]) => void,
   ) => {
+    if (submitState === "submitting" || cooldownSeconds > 0) return;
     setSubmitState("submitting");
     setLastPassed(null);
     try {
@@ -110,6 +123,9 @@ export function AssignmentGround({
       if (result) {
         appendTerminalLines(formatSubmissionLines(result, isExpiredOrDone));
         setLastPassed(result.passed);
+        if (!isExpiredOrDone && result.passed) {
+          setCompletedNow(true);
+        }
       }
       setSubmitState(isExpiredOrDone ? "practiced" : "submitted");
     } catch (err) {
@@ -120,6 +136,8 @@ export function AssignmentGround({
         },
       ]);
       setSubmitState("error");
+    } finally {
+      setCooldownSeconds(5);
     }
   };
 
@@ -170,24 +188,31 @@ export function AssignmentGround({
   const btnIcon =
     submitState === "submitting" ? (
       <Loader2 className="size-4 animate-spin" aria-hidden />
-    ) : submitState === "submitted" || isPracticed ? (
+    ) : isPracticed ? (
       <Check className="size-4" aria-hidden />
     ) : isPracticeMode ? (
       <FlaskConical className="size-4" aria-hidden />
+    ) : submitState === "submitted" ? (
+      <Check className="size-4" aria-hidden />
     ) : null;
 
-  const btnLabel =
+  const baseBtnLabel =
     submitState === "submitting"
       ? isPracticeMode
         ? "Running…"
         : "Submitting…"
       : isPracticed
         ? "Run again"
-        : submitState === "submitted"
-          ? "Resubmit"
-          : isPracticeMode
-            ? "Run & check"
+        : isPracticeMode
+          ? "Run & check"
+          : submitState === "submitted"
+            ? "Resubmit"
             : "Submit";
+
+  const btnLabel =
+    cooldownSeconds > 0 && submitState !== "submitting"
+      ? `${baseBtnLabel} (${cooldownSeconds}s)`
+      : baseBtnLabel;
 
   // ── Footer status text ───────────────────────────────────────────────────
   const footerText =
@@ -262,7 +287,11 @@ export function AssignmentGround({
             <button
               type="button"
               onClick={() => void submit(getFiles(), appendTerminalLines)}
-              disabled={submitState === "submitting" || nodes.length === 0}
+              disabled={
+                submitState === "submitting" ||
+                cooldownSeconds > 0 ||
+                nodes.length === 0
+              }
               className={`inline-flex shrink-0 items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#58a6ff] disabled:cursor-not-allowed disabled:opacity-50 ${
                 isPracticeMode
                   ? "bg-[#1f6feb] hover:bg-[#388bfd]"

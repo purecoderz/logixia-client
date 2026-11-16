@@ -13,9 +13,9 @@ export function CohortSwitcher() {
     return (
       <div
         role="alert"
-        className="hidden shrink-0 items-center gap-2 text-xs text-danger sm:flex"
+        className="flex shrink-0 items-center gap-1.5 text-xs text-danger sm:gap-2"
       >
-        <span title={copy.text}>
+        <span title={copy.text} className="max-w-[110px] truncate sm:max-w-none">
           {copy.kind === "auth" ? "Sign in again" : "Cohorts unavailable"}
         </span>
         {copy.retryable && (
@@ -32,7 +32,7 @@ export function CohortSwitcher() {
   }
 
   return (
-    <div className="relative hidden shrink-0 sm:block">
+    <div className="relative shrink-0">
       <Select
         aria-label="Select cohort"
         value={String(activeId)}
@@ -48,7 +48,7 @@ export function CohortSwitcher() {
         searchable
         searchPlaceholder="Search cohorts…"
         options={cohorts.map((c) => ({ value: String(c.id), label: c.name }))}
-        className="max-w-[200px]"
+        className="max-w-[135px] sm:max-w-[200px]"
       />
     </div>
   );

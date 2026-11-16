@@ -66,7 +66,7 @@ export function Topbar() {
           />
         </div>
 
-        <div className="ml-auto flex shrink-0 items-center gap-2 md:gap-3">
+        <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2 md:gap-3">
           {profile && <CohortSwitcher />}
           {profile && (
             <Link

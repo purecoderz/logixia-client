@@ -105,7 +105,7 @@ export function EmbeddedTaskView({
         task.status === "submitted");
 
     return (
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-3 sm:p-6 md:p-8">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-3 sm:p-4 lg:p-6">
         <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col gap-3">
           <QuizRenderer
             key={`quiz:${task.id}`}

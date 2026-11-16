@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   AlertCircle,
   ArrowLeft,
@@ -69,6 +69,13 @@ export default function QuizRenderer({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const scrollRegionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRegionRef.current) {
+      scrollRegionRef.current.scrollTop = 0;
+    }
+  }, [currentIndex]);
 
   // Status flags
   const isDeadlinePassed = Boolean(
@@ -192,17 +199,17 @@ export default function QuizRenderer({
     : null;
 
   return (
-    <div className="w-full max-w-3xl mx-auto flex flex-1 min-h-0 flex-col gap-4 animate-fade-in text-body">
+    <div className="w-full max-w-3xl mx-auto flex flex-1 min-h-0 flex-col gap-2.5 sm:gap-3 animate-fade-in text-body">
       {/* ── Fixed Top Section: Back navigation & Quiz Header (do NOT scroll) ── */}
-      <div className="shrink-0 flex flex-col gap-3">
+      <div className="shrink-0 flex flex-col gap-2">
         {onBack && (
           <div className="flex items-center justify-between">
             <button
               type="button"
               onClick={onBack}
-              className="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-muted hover:text-foreground transition-colors"
             >
-              <ArrowLeft className="size-4" aria-hidden />
+              <ArrowLeft className="size-3.5 sm:size-4" aria-hidden />
               {backLabel}
             </button>
 
@@ -220,7 +227,7 @@ export default function QuizRenderer({
         )}
 
         {/* Quiz Header Banner */}
-        <section className="student-card flex flex-col gap-3 rounded-xl border border-line bg-surface p-4 sm:p-5">
+        <section className="student-card flex flex-col gap-2 rounded-xl border border-line bg-surface p-3 sm:p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/15 px-2.5 py-0.5 text-xs font-semibold text-accent">
@@ -305,30 +312,31 @@ export default function QuizRenderer({
 
       {/* ── Scrollable Questions Section: ONLY this part scrolls ── */}
       <div
+        ref={scrollRegionRef}
         data-quiz-scroll-region
-        className="flex-1 min-h-0 overflow-y-auto pr-1 flex flex-col gap-4"
+        className="flex-1 min-h-0 overflow-y-auto pr-1 flex flex-col gap-3"
       >
         {/* Question Card */}
-        <article className="student-card rounded-xl border border-line bg-surface p-5 sm:p-6 space-y-4 transition-colors">
+        <article className="student-card rounded-xl border border-line bg-surface p-3.5 sm:p-4 lg:p-5 space-y-3 transition-colors">
           <div className="space-y-1">
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
               Question {currentIndex + 1}
             </span>
-            <div className="text-base font-semibold leading-snug text-foreground sm:text-lg">
+            <div className="text-sm font-semibold leading-snug text-foreground sm:text-base">
               <MarkdownRenderer content={question.prompt} />
             </div>
           </div>
 
           {/* Dynamic Options List */}
           <div
-            className="space-y-2.5"
+            className="space-y-2"
             role="radiogroup"
             aria-label={question.prompt}
           >
             {question.choices.map((choice) => (
               <label
                 key={choice.id}
-                className={`flex items-center gap-3.5 p-4 rounded-xl border transition-all ${
+                className={`flex items-center gap-3 p-2.5 sm:p-3 rounded-xl border transition-all ${
                   hasAnsweredCurrent || isSubmitting
                     ? "cursor-default"
                     : "cursor-pointer"
@@ -452,7 +460,7 @@ export default function QuizRenderer({
       {/* Navigation stays visible while the question content scrolls. */}
       <footer
         data-quiz-navigation
-        className="flex shrink-0 items-center justify-between gap-3 border-t border-line bg-canvas pb-1 pt-3"
+        className="flex shrink-0 items-center justify-between gap-3 border-t border-line bg-canvas pb-0.5 pt-2"
       >
           <button
             type="button"

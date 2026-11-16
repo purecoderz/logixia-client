@@ -18,6 +18,51 @@ interface Props {
   content: string;
 }
 
+interface MdastNode {
+  type: string;
+  value?: string;
+  children?: MdastNode[];
+}
+
+/**
+ * Treat single newlines inside paragraphs as hard line breaks (<br />),
+ * without affecting code blocks, lists, tables, or headings.
+ */
+function remarkSingleLineBreaks() {
+  return (tree: MdastNode) => {
+    const visit = (node: MdastNode) => {
+      if (!node.children) return;
+
+      if (node.type === "paragraph") {
+        const next: MdastNode[] = [];
+        for (const child of node.children) {
+          if (child.type === "text" && child.value?.includes("\n")) {
+            const parts = child.value.split("\n");
+            parts.forEach((part, index) => {
+              if (part.length > 0) {
+                next.push({ type: "text", value: part });
+              }
+              if (index < parts.length - 1) {
+                next.push({ type: "break" });
+              }
+            });
+          } else {
+            next.push(child);
+          }
+        }
+        node.children = next;
+        return;
+      }
+
+      for (const child of node.children) {
+        visit(child);
+      }
+    };
+
+    visit(tree);
+  };
+}
+
 const PreContext = createContext(false);
 
 interface CodeProps extends ComponentPropsWithoutRef<"code"> {
@@ -109,7 +154,7 @@ export function MarkdownRenderer({ content }: Props) {
       prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0"
     >
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkSingleLineBreaks]}
         components={{
           img: MarkdownImage as any,
 

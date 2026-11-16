@@ -95,7 +95,7 @@ export const AssignmentService = {
   submitQuiz: async (
     assignmentId: string,
     answers: Record<string, string>,
-  ): Promise<void> => {
+  ): Promise<unknown> => {
     const submissionAnswers = quizSubmissionAnswers(answers);
     const response = await apiFetch(
       `/cohort-tasks/${assignmentId}/quiz/submit`,
@@ -106,6 +106,7 @@ export const AssignmentService = {
       },
     );
     if (!response.ok) throw await apiErrorFrom(response);
+    return response.json().catch(() => undefined);
   },
 
   practiceRun: async (

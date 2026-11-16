@@ -1,8 +1,8 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, GraduationCap, ClipboardList, Terminal, Menu } from "lucide-react";
+import { Home, Compass, ClipboardList, Terminal, Menu } from "lucide-react";
 
 // Pages where the bar should get out of the way (editor needs the space)
-const HIDDEN_ON = ["/playground", "/lessons"];
+const HIDDEN_ON = ["/playground"];
 
 export function useShowBottomNav() {
   const { pathname } = useLocation();
@@ -11,7 +11,7 @@ export function useShowBottomNav() {
 
 const tabs = [
   { to: "/", label: "Home", icon: Home, end: true },
-  { to: "/student/cohorts", label: "Cohorts", icon: GraduationCap },
+  { to: "/lessons", label: "Path", icon: Compass },
   { to: "/tasks", label: "Tasks", icon: ClipboardList },
   { to: "/playground", label: "Playground", icon: Terminal },
 ];

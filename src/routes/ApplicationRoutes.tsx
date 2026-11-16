@@ -44,6 +44,8 @@ import { PlaygroundPage } from "@/features/workspace/pages/Playground";
 import { InstructorLayout } from "@/layouts/InstructorLayout/InstructorLayout";
 import { PublicLayout } from "@/layouts/PublicLayout/PublicLayout";
 import StudentLayout from "@/layouts/StudentLayout/StudentLayouts";
+import { LearningPathPage } from "@/features/learning-path/pages/LearningPathPage";
+import { LessonPlayerPage } from "@/features/learning-path/pages/LessonPlayerPage";
 
 // Lazy-load only heavy editor, workspace, live-room, and arcade pages so
 // regular navigation never flashes a loading screen.
@@ -119,12 +121,13 @@ export function ApplicationRoutes({
         <Route path="/cohort/:id" element={<CohortDetails />} />
       </Route>
 
-      {/* Live rooms are full-screen and do not use either dashboard shell. */}
+      {/* Full-screen pages that do not use either dashboard shell. */}
       <Route element={<UserProtectedRoute />}>
         <Route path="/live/room" element={<LiveRoomPage />} />
         <Route path="/live/room/:id" element={<LiveRoomPage />} />
         <Route path="/sessions/watch" element={<SessionPlayerPage />} />
         <Route path="/sessions/:sessionId/watch" element={<SessionPlayerPage />} />
+        <Route path="/lessons/:lessonId" element={<LessonPlayerPage />} />
         <Route path="/assignments" element={<LegacyStudentTaskRedirect />} />
         <Route
           path="/assignments/:id"
@@ -203,10 +206,7 @@ export function ApplicationRoutes({
           <Route path="/student/cohorts" element={<StudentCohortsPage />} />
           <Route path="/student/cohort/:id" element={<CohortDetails />} />
           <Route path="/live-stream" element={<StudentSessionsPage />} />
-          <Route
-            path="/lessons"
-            element={<ComingSoonPage title="Learning path" />}
-          />
+          <Route path="/lessons" element={<LearningPathPage />} />
           <Route path="/tasks" element={<AssignmentsPage />} />
           <Route path="/tasks/:id" element={<AssignmentGroundPage />} />
           <Route path="/tasks/:id/quiz" element={<QuizGroundPage />} />

@@ -23,6 +23,14 @@ export interface QuizQuestion {
   explanation?: string;
 }
 
+export interface QuizSubmitResult {
+  passed?: boolean;
+  score?: number;
+  total?: number;
+  correct_answers?: Record<string, string>;
+  message?: string;
+}
+
 export interface QuizData {
   title: string;
   type: "quiz";
@@ -32,13 +40,16 @@ export interface QuizData {
   status?: string | null;
   due_date?: string;
   student_code?: unknown;
+  selected_answers?: Record<string, string> | null;
 }
 
 export interface QuizRendererProps {
   quiz: QuizData;
   onBack?: () => void;
   backLabel?: string;
-  onSubmitAnswers?: (answers: Record<string, string>) => Promise<void> | void;
+  onSubmitAnswers?: (
+    answers: Record<string, string>,
+  ) => Promise<QuizSubmitResult | unknown | void> | void;
 }
 
 export default function QuizRenderer({
@@ -48,10 +59,16 @@ export default function QuizRenderer({
   onSubmitAnswers,
 }: QuizRendererProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({});
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>(
+    () => (quiz.selected_answers ? { ...quiz.selected_answers } : {}),
+  );
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitResult, setSubmitResult] = useState<QuizSubmitResult | null>(
+    null,
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
 
   // Status flags
   const isDeadlinePassed = Boolean(
@@ -96,6 +113,9 @@ export default function QuizRenderer({
     setSelectedAnswers({});
     setCurrentIndex(0);
     setSubmitError(null);
+    setIsSubmitted(false);
+    setSubmitResult(null);
+    setFeedbackModalOpen(false);
   };
 
   const handleSubmit = async () => {
@@ -104,9 +124,17 @@ export default function QuizRenderer({
 
     setIsSubmitting(true);
     setSubmitError(null);
+    setFeedbackModalOpen(false);
     try {
-      if (onSubmitAnswers) {
-        await onSubmitAnswers(selectedAnswers);
+      const res = onSubmitAnswers
+        ? await onSubmitAnswers(selectedAnswers)
+        : undefined;
+      if (res && typeof res === "object") {
+        const graded = res as QuizSubmitResult;
+        setSubmitResult(graded);
+        if (graded.passed === false) {
+          setFeedbackModalOpen(true);
+        }
       }
       setIsSubmitted(true);
     } catch (err) {
@@ -115,6 +143,7 @@ export default function QuizRenderer({
           ? err.message
           : "Couldn't submit quiz. Please try again.",
       );
+      setFeedbackModalOpen(true);
     } finally {
       setIsSubmitting(false);
     }
@@ -130,15 +159,19 @@ export default function QuizRenderer({
         : "border-line bg-surface hover:bg-hover text-foreground";
     }
 
+    const correctChoiceId =
+      question.correct_choice_id ??
+      submitResult?.correct_answers?.[question.id];
+
     // After student picks: immediately tell them if they are correct or not
-    const hasAnswerKey = Boolean(question.correct_choice_id);
+    const hasAnswerKey = Boolean(correctChoiceId);
     if (!hasAnswerKey) {
       return isSelected
         ? "border-accent bg-accent/15 text-accent font-semibold"
         : "border-line bg-surface text-muted opacity-60";
     }
 
-    const isCorrect = choiceId === question.correct_choice_id;
+    const isCorrect = choiceId === correctChoiceId;
 
     if (isCorrect) {
       return "border-success bg-success/15 text-success font-semibold";
@@ -384,10 +417,26 @@ export default function QuizRenderer({
 
         {/* Official Submission Confirmation Banner (just submitted) */}
         {isSubmitted && (
-          <div className="flex items-center gap-3 rounded-xl border border-success/30 bg-success/10 p-4 text-sm text-success animate-fade-in shrink-0">
-            <CheckCircle2 className="size-5 shrink-0" aria-hidden />
+          <div
+            className={`flex items-center gap-3 rounded-xl border p-4 text-sm animate-fade-in shrink-0 ${
+              submitResult?.passed === false
+                ? "border-danger/30 bg-danger/10 text-danger"
+                : "border-success/30 bg-success/10 text-success"
+            }`}
+          >
+            {submitResult?.passed === false ? (
+              <AlertCircle className="size-5 shrink-0" aria-hidden />
+            ) : (
+              <CheckCircle2 className="size-5 shrink-0" aria-hidden />
+            )}
             <p className="font-medium">
-              Quiz completed! Your answers have been submitted.
+              {submitResult?.message ??
+                (submitResult?.passed === false
+                  ? "Some answers were incorrect. Review your choices and try again."
+                  : submitResult?.score !== undefined &&
+                      submitResult?.total !== undefined
+                    ? `Quiz completed! You scored ${submitResult.score}/${submitResult.total}.`
+                    : "Quiz completed! Your answers have been submitted.")}
             </p>
           </div>
         )}
@@ -485,6 +534,64 @@ export default function QuizRenderer({
             </button>
           )}
       </footer>
+
+      {feedbackModalOpen && (submitError || submitResult?.passed === false) && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-xs"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="quiz-feedback-title"
+          onClick={() => setFeedbackModalOpen(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl border border-danger/40 bg-surface p-6 shadow-2xl animate-fade-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start gap-3">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-danger/15 text-danger">
+                <AlertCircle className="size-5" aria-hidden />
+              </span>
+              <div className="min-w-0">
+                <h2
+                  id="quiz-feedback-title"
+                  className="text-base font-semibold text-foreground"
+                >
+                  {submitError ? "Quiz not passed" : "Keep practicing"}
+                </h2>
+                {submitResult?.score !== undefined &&
+                  submitResult?.total !== undefined && (
+                    <p className="mt-1 font-mono text-xs font-semibold text-danger">
+                      Score: {submitResult.score} / {submitResult.total}
+                    </p>
+                  )}
+                <p className="mt-2 text-sm leading-relaxed text-muted">
+                  {submitError ??
+                    submitResult?.message ??
+                    "Some answers were incorrect. Review your choices and try again."}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-6 flex flex-wrap justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={() => setFeedbackModalOpen(false)}
+                className="rounded-lg border border-line bg-canvas px-3.5 py-2 text-xs font-medium text-foreground transition-colors hover:bg-hover"
+              >
+                Review answers
+              </button>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-[#238636] px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#2ea043]"
+              >
+                <RotateCcw className="size-3.5" aria-hidden />
+                Try again
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

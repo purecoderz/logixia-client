@@ -1,5 +1,4 @@
 import {
-  ArrowLeft,
   ArrowRight,
   Check,
   CheckCircle2,
@@ -101,116 +100,101 @@ export function DailyChallengePage() {
   if (isSolving) {
     if (isCodeChallenge && remote) {
       return (
-        <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-3">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <button
-              type="button"
-              onClick={closeChallenge}
-              className="inline-flex items-center gap-2 text-sm font-medium text-muted transition-colors hover:text-foreground"
-            >
-              <ArrowLeft className="size-4" aria-hidden />
-              Back to Daily Challenge
-            </button>
-            <div className="flex items-center gap-2">
-              <span
-                className={`rounded-full border px-2.5 py-0.5 font-mono text-xs font-semibold ${meta.badgeClass}`}
-              >
-                {meta.label}
-              </span>
-              <span className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-semibold text-accent">
-                <Sparkles size={12} aria-hidden />+{remote.xp} XP
-              </span>
-            </div>
-          </div>
-
-          <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-line bg-surface">
-            <CodeWorkspace
-              embedded
-              storageMode="memory"
-              layout="split"
-              title={remote.title}
-              storageKey={`daily-challenge:${remote.id}`}
-              starterFiles={pickInitialTaskFiles(
-                remote.student_code ?? remote.attempt?.student_code,
-                remote.starter_files ?? { "main.py": "" },
-              )}
-              runDisabled={submitMutation.isPending}
-              asideTitle="Challenge"
-              aside={<TaskInstructions instructions={remote.prompt} />}
-              asideFooter={({ nodes, getFiles, appendTerminalLines }) => (
-                <div className="flex items-center gap-2">
-                  {codeResult === "passed" && (
-                    <span className="text-xs font-semibold text-success">
-                      +{remote.xp} XP
-                    </span>
-                  )}
-                  {codeResult === "failed" && (
-                    <span className="text-xs font-semibold text-danger">
-                      Try again
-                    </span>
-                  )}
-                  <button
-                    type="button"
-                    disabled={
-                      submitMutation.isPending ||
-                      completedToday ||
-                      nodes.length === 0
-                    }
-                    onClick={async () => {
-                      try {
-                        const res = await submitMutation.mutateAsync({
-                          challenge_id: remote.id,
-                          student_code: getFiles(),
-                        });
-                        const passed = Boolean(res?.is_correct);
-                        setCodeResult(passed ? "passed" : "failed");
-                        if (Array.isArray(res?.tests) && res.tests.length > 0) {
-                          appendTerminalLines(
-                            formatCheckResultsLines({
-                              title: "Daily Challenge Results",
-                              passed,
-                              checks: res.tests,
-                            }),
-                          );
-                        } else {
-                          appendTerminalLines([
-                            { kind: "system", text: "" },
-                            {
-                              kind: passed ? "command" : "stderr",
-                              text: passed
-                                ? `✓ Challenge passed! +${res?.xp_earned ?? remote.xp} XP`
-                                : res?.explanation ||
-                                  "✗ Not quite right — check your output and try again.",
-                            },
-                          ]);
-                        }
-                      } catch (err) {
-                        setCodeResult("failed");
+        <div className="fixed inset-0 z-50 bg-canvas text-body">
+          <CodeWorkspace
+            storageMode="memory"
+            layout="split"
+            title={remote.title}
+            storageKey={`daily-challenge:${remote.id}`}
+            onBack={closeChallenge}
+            starterFiles={pickInitialTaskFiles(
+              remote.student_code ?? remote.attempt?.student_code,
+              remote.starter_files ?? { "main.py": "" },
+            )}
+            runDisabled={submitMutation.isPending}
+            toolbar={
+              <div className="flex flex-wrap items-center gap-2">
+                <span
+                  className={`rounded-full border px-2.5 py-0.5 font-mono text-xs font-semibold ${meta.badgeClass}`}
+                >
+                  {meta.label}
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-semibold text-accent">
+                  <Sparkles size={12} aria-hidden />+{remote.xp} XP
+                </span>
+              </div>
+            }
+            asideTitle={remote.title}
+            aside={<TaskInstructions instructions={remote.prompt} />}
+            asideFooter={({ nodes, getFiles, appendTerminalLines }) => (
+              <div className="flex items-center gap-2">
+                {codeResult === "passed" && (
+                  <span className="text-xs font-semibold text-success">
+                    +{remote.xp} XP
+                  </span>
+                )}
+                {codeResult === "failed" && (
+                  <span className="text-xs font-semibold text-danger">
+                    Try again
+                  </span>
+                )}
+                <button
+                  type="button"
+                  disabled={
+                    submitMutation.isPending ||
+                    completedToday ||
+                    nodes.length === 0
+                  }
+                  onClick={async () => {
+                    try {
+                      const res = await submitMutation.mutateAsync({
+                        challenge_id: remote.id,
+                        student_code: getFiles(),
+                      });
+                      const passed = Boolean(res?.is_correct);
+                      setCodeResult(passed ? "passed" : "failed");
+                      if (Array.isArray(res?.tests) && res.tests.length > 0) {
+                        appendTerminalLines(
+                          formatCheckResultsLines({
+                            title: "Daily Challenge Results",
+                            passed,
+                            checks: res.tests,
+                          }),
+                        );
+                      } else {
                         appendTerminalLines([
+                          { kind: "system", text: "" },
                           {
-                            kind: "stderr",
-                            text: `Submission failed: ${friendlyMessage(err, "Please try again.")}`,
+                            kind: passed ? "command" : "stderr",
+                            text: passed
+                              ? `✓ Challenge passed! +${res?.xp_earned ?? remote.xp} XP`
+                              : res?.explanation ||
+                                "✗ Not quite right — check your output and try again.",
                           },
                         ]);
                       }
-                    }}
-                    className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-accent px-3 text-xs font-semibold text-on-accent hover:bg-accent-hover disabled:opacity-50"
-                  >
-                    {submitMutation.isPending ? (
-                      <Loader2
-                        size={13}
-                        className="animate-spin"
-                        aria-hidden
-                      />
-                    ) : (
-                      <Check size={13} aria-hidden />
-                    )}
-                    {completedToday ? "Completed" : "Submit"}
-                  </button>
-                </div>
-              )}
-            />
-          </div>
+                    } catch (err) {
+                      setCodeResult("failed");
+                      appendTerminalLines([
+                        {
+                          kind: "stderr",
+                          text: `Submission failed: ${friendlyMessage(err, "Please try again.")}`,
+                        },
+                      ]);
+                    }
+                  }}
+                  className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-accent px-3 text-xs font-semibold text-on-accent hover:bg-accent-hover disabled:opacity-50"
+                >
+                  {submitMutation.isPending ? (
+                    <Loader2 size={13} className="animate-spin" aria-hidden />
+                  ) : (
+                    <Check size={13} aria-hidden />
+                  )}
+                  {completedToday ? "Completed" : "Submit"}
+                </button>
+              </div>
+            )}
+          />
         </div>
       );
     }

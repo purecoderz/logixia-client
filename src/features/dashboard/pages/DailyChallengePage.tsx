@@ -16,9 +16,13 @@ import QuizRenderer, {
   type QuizData,
 } from "@/features/assignments/components/QuizeRender";
 import { TaskInstructions } from "@/features/assignments/components/TaskInstructions";
+import { pickInitialTaskFiles } from "@/features/assignments/services/assignmentService";
 import { CodeWorkspace } from "@/features/workspace/Workspace";
+import { formatCheckResultsLines } from "@/features/workspace/utils/formatCheckResults";
+import { friendlyMessage } from "@/lib/apiError";
 import { StreakBoardCard } from "../components/student/StreakBoardCard";
 import {
+  getChallengeType,
   useSubmitDailyChallenge,
   useTodayDailyChallenge,
 } from "../services/dailyChallengeService";
@@ -41,23 +45,31 @@ export function DailyChallengePage() {
 
   const remote = todayQuery.data ?? null;
   const activeTitle = remote?.title ?? "";
-  const activeCategory = remote?.category ?? "";
+  const activeCategory = remote?.category?.trim() || "";
   const activeXp = remote?.xp ?? 0;
   const completedToday = Boolean(remote?.completed);
-  const isCodeChallenge = remote?.challenge_type === "code";
+  const isCodeChallenge = remote ? getChallengeType(remote) === "code" : false;
 
   const quizData: QuizData | null = useMemo(() => {
-    if (!remote || remote.challenge_type !== "quiz") return null;
+    if (!remote || getChallengeType(remote) !== "quiz") return null;
+    const categoryLabel = remote.category?.trim();
     return {
       title: remote.title,
       type: "quiz",
       instructions: `${meta.description}. Complete today's challenge to earn +${remote.xp} XP and extend your streak.`,
       xp: remote.xp,
       status: remote.completed ? "completed" : "in_progress",
+      selected_answers: remote.selected_choice_id
+        ? { [String(remote.id)]: remote.selected_choice_id }
+        : remote.attempt?.selected_choice_id
+          ? { [String(remote.id)]: remote.attempt.selected_choice_id }
+          : undefined,
       questions: [
         {
           id: String(remote.id),
-          prompt: `### ${remote.title} (${remote.category})\n\n${remote.prompt}`,
+          prompt: categoryLabel
+            ? `### ${remote.title} (${categoryLabel})\n\n${remote.prompt}`
+            : `### ${remote.title}\n\n${remote.prompt}`,
           choices: remote.choices ?? [],
           correct_choice_id: remote.correct_choice_id ?? "",
           explanation: remote.explanation ?? undefined,
@@ -114,15 +126,18 @@ export function DailyChallengePage() {
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-line bg-surface">
             <CodeWorkspace
               embedded
+              storageMode="memory"
               layout="split"
               title={remote.title}
               storageKey={`daily-challenge:${remote.id}`}
-              starterFiles={remote.starter_files ?? { "main.py": "" }}
+              starterFiles={pickInitialTaskFiles(
+                remote.student_code ?? remote.attempt?.student_code,
+                remote.starter_files ?? { "main.py": "" },
+              )}
+              runDisabled={submitMutation.isPending}
               asideTitle="Challenge"
-              aside={
-                <TaskInstructions instructions={remote.prompt} />
-              }
-              asideFooter={({ getFiles }) => (
+              aside={<TaskInstructions instructions={remote.prompt} />}
+              asideFooter={({ nodes, getFiles, appendTerminalLines }) => (
                 <div className="flex items-center gap-2">
                   {codeResult === "passed" && (
                     <span className="text-xs font-semibold text-success">
@@ -136,13 +151,48 @@ export function DailyChallengePage() {
                   )}
                   <button
                     type="button"
-                    disabled={submitMutation.isPending || completedToday}
+                    disabled={
+                      submitMutation.isPending ||
+                      completedToday ||
+                      nodes.length === 0
+                    }
                     onClick={async () => {
-                      const res = await submitMutation.mutateAsync({
-                        challenge_id: remote.id,
-                        student_code: getFiles(),
-                      });
-                      setCodeResult(res?.is_correct ? "passed" : "failed");
+                      try {
+                        const res = await submitMutation.mutateAsync({
+                          challenge_id: remote.id,
+                          student_code: getFiles(),
+                        });
+                        const passed = Boolean(res?.is_correct);
+                        setCodeResult(passed ? "passed" : "failed");
+                        if (Array.isArray(res?.tests) && res.tests.length > 0) {
+                          appendTerminalLines(
+                            formatCheckResultsLines({
+                              title: "Daily Challenge Results",
+                              passed,
+                              checks: res.tests,
+                            }),
+                          );
+                        } else {
+                          appendTerminalLines([
+                            { kind: "system", text: "" },
+                            {
+                              kind: passed ? "command" : "stderr",
+                              text: passed
+                                ? `✓ Challenge passed! +${res?.xp_earned ?? remote.xp} XP`
+                                : res?.explanation ||
+                                  "✗ Not quite right — check your output and try again.",
+                            },
+                          ]);
+                        }
+                      } catch (err) {
+                        setCodeResult("failed");
+                        appendTerminalLines([
+                          {
+                            kind: "stderr",
+                            text: `Submission failed: ${friendlyMessage(err, "Please try again.")}`,
+                          },
+                        ]);
+                      }
                     }}
                     className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-accent px-3 text-xs font-semibold text-on-accent hover:bg-accent-hover disabled:opacity-50"
                   >
@@ -232,9 +282,11 @@ export function DailyChallengePage() {
                 )}
                 {isCodeChallenge ? "Coding Challenge" : "Daily Quiz"}
               </span>
-              <span className="rounded-full border border-line bg-input px-2.5 py-0.5 text-xs font-medium text-muted">
-                {activeCategory}
-              </span>
+              {activeCategory && (
+                <span className="rounded-full border border-line bg-input px-2.5 py-0.5 text-xs font-medium text-muted">
+                  {activeCategory}
+                </span>
+              )}
               <span className="inline-flex items-center gap-1 rounded-full bg-warning/15 px-2.5 py-0.5 text-xs font-semibold text-warning">
                 <Sparkles size={12} aria-hidden />+{activeXp} XP
               </span>

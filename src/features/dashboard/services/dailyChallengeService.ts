@@ -12,18 +12,38 @@ export interface BackendDailyChallenge {
   id: number;
   challenge_date: string;
   difficulty: ChallengeDifficulty;
-  challenge_type: "quiz" | "code";
-  category: string;
+  type?: "quiz" | "code";
+  challenge_type?: "quiz" | "code";
+  category?: string | null;
   title: string;
   prompt: string;
   choices?: DailyChallengeChoice[] | null;
   correct_choice_id?: string | null;
   starter_files?: Record<string, string> | null;
+  student_code?: Record<string, string> | null;
+  attempt?: {
+    student_code?: Record<string, string> | null;
+    selected_choice_id?: string | null;
+  } | null;
   tests?: unknown;
   explanation?: string | null;
   xp: number;
   completed?: boolean;
   selected_choice_id?: string | null;
+}
+
+export function getChallengeType(
+  challenge: Pick<BackendDailyChallenge, "type" | "challenge_type" | "starter_files">,
+): "quiz" | "code" {
+  if (challenge.type === "code" || challenge.challenge_type === "code") {
+    return "code";
+  }
+  if (challenge.type === "quiz" || challenge.challenge_type === "quiz") {
+    return "quiz";
+  }
+  return challenge.starter_files && Object.keys(challenge.starter_files).length > 0
+    ? "code"
+    : "quiz";
 }
 
 export interface DailyChallengeSubmitPayload {
@@ -39,6 +59,7 @@ export interface DailyChallengeSubmitResult {
   xp_earned: number;
   current_streak: number;
   longest_streak: number;
+  tests?: { name: string; passed: boolean; message?: string | null }[];
 }
 
 export interface DailyChallengeActivityDay {
@@ -72,7 +93,14 @@ export const DailyChallengeService = {
     // Fall back to local store while backend endpoint is not yet deployed.
     if (response.status === 404) return null;
     if (!response.ok) throw await apiErrorFrom(response);
-    return response.json();
+    const data: BackendDailyChallenge | null = await response.json();
+    if (!data) return null;
+    const resolvedType = getChallengeType(data);
+    return {
+      ...data,
+      type: resolvedType,
+      challenge_type: resolvedType,
+    };
   },
 
   async submit(

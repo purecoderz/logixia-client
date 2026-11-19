@@ -9,6 +9,7 @@ import {
 import { Link } from "react-router-dom";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import {
+  getChallengeType,
   useDailyChallengeActivity,
   useTodayDailyChallenge,
 } from "../../services/dailyChallengeService";
@@ -27,14 +28,15 @@ export function DailyChallengeCard() {
   const remote = todayQuery.data ?? null;
   if (!remote) return null;
 
+  const meta = DIFFICULTY_META[difficulty];
+  const isCode = getChallengeType(remote) === "code";
   const isSolved = Boolean(remote.completed);
   const activeTitle = remote.title;
-  const activeCategory = remote.category;
+  const activeCategory =
+    remote.category?.trim() || (isCode ? "Coding" : "Quiz");
   const activeXp = remote.xp;
   const streakCount =
     activityQuery.data?.current_streak ?? profile?.current_streak ?? 0;
-
-  const meta = DIFFICULTY_META[difficulty];
 
   return (
     <DashboardCard

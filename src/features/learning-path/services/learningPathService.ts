@@ -1,5 +1,8 @@
 import type { QuizSubmitResult } from "@/features/assignments/components/QuizeRender";
-import type { SubmissionResult } from "@/features/assignments/services/assignmentService";
+import {
+  hasNonEmptyFileMap,
+  type SubmissionResult,
+} from "@/features/assignments/services/assignmentService";
 import { apiErrorFrom } from "@/lib/apiError";
 import { apiFetch } from "@/lib/http";
 import type {
@@ -106,7 +109,9 @@ export const LearningPathService = {
         instructions: task.instructions ?? null,
         starter_files: task.starter_files ?? null,
         questions: Array.isArray(task.questions) ? task.questions : [],
-        student_code: task.student_code ?? null,
+        student_code: hasNonEmptyFileMap(task.student_code)
+          ? task.student_code
+          : null,
         selected_answers: task.selected_answers ?? null,
       }),
     );

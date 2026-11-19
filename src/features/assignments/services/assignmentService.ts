@@ -154,10 +154,9 @@ export const AssignmentService = {
     if (!isFileMap(data.starter_files)) {
       throw new Error("The task response is invalid.");
     }
-    const student_code =
-      isFileMap(data.student_code) && Object.keys(data.student_code).length > 0
-        ? data.student_code
-        : null;
+    const student_code = hasNonEmptyFileMap(data.student_code)
+      ? data.student_code
+      : null;
     return {
       ...data,
       type: "code",
@@ -229,6 +228,25 @@ export const AssignmentDraftService = {
     await requireSuccess(response);
   },
 };
+
+export function hasNonEmptyFileMap(
+  value: unknown,
+): value is Record<string, string> {
+  return (
+    isFileMap(value) &&
+    Object.keys(value).length > 0 &&
+    Object.values(value).some((content) => content.trim().length > 0)
+  );
+}
+
+export function pickInitialTaskFiles(
+  studentCode: Record<string, string> | null | undefined,
+  starterFiles: Record<string, string> | null | undefined,
+): Record<string, string> {
+  if (hasNonEmptyFileMap(studentCode)) return { ...studentCode };
+  if (isFileMap(starterFiles)) return { ...starterFiles };
+  return {};
+}
 
 export function isFileMap(value: unknown): value is Record<string, string> {
   return (

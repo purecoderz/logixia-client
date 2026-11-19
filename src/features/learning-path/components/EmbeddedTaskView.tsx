@@ -6,6 +6,7 @@ import type { TerminalLine } from "@/components/SmartTerminal/TerminalView";
 import { WorkspaceSkeleton } from "@/components/ui/TaskSkeletons";
 import QuizRenderer from "@/features/assignments/components/QuizeRender";
 import { TaskInstructions } from "@/features/assignments/components/TaskInstructions";
+import { pickInitialTaskFiles } from "@/features/assignments/services/assignmentService";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { CodeWorkspace } from "@/features/workspace/Workspace";
 import { formatCheckResultsLines } from "@/features/workspace/utils/formatCheckResults";
@@ -164,10 +165,10 @@ export function EmbeddedTaskView({
   const isPracticeMode = isMissed || isPreviouslyCompleted;
   const isPracticed = submitState === "practiced";
 
-  const initialFiles =
-    task.student_code && Object.keys(task.student_code).length > 0
-      ? task.student_code
-      : (task.starter_files ?? {});
+  const initialFiles = pickInitialTaskFiles(
+    task.student_code,
+    task.starter_files,
+  );
 
   const submit = async (
     files: Record<string, string>,

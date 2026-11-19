@@ -1,11 +1,7 @@
 import { useMemo } from "react";
 import { Flame, Trophy } from "lucide-react";
-import { useAuth } from "@/features/auth/context/AuthContext";
 import type { Assignment } from "@/features/assignments/services/assignmentService";
-import {
-  getTodayDateKey,
-  useDailyChallenge,
-} from "../../services/dailyChallengeStore";
+import { getTodayDateKey } from "../../services/dailyChallengeStore";
 import { useDailyChallengeActivity } from "../../services/dailyChallengeService";
 import { DashboardCard } from "./DashboardCard";
 
@@ -34,13 +30,7 @@ function getLevel(count: number): number {
   return 4;
 }
 
-export function StreakBoardCard({
-  assignments = [],
-}: {
-  assignments?: Assignment[];
-}) {
-  const { profile } = useAuth();
-  const { completedDates } = useDailyChallenge();
+export function StreakBoardCard(_props: { assignments?: Assignment[] }) {
   const { data: backendActivity } = useDailyChallengeActivity(WEEKS_TO_SHOW);
 
   const {
@@ -53,44 +43,9 @@ export function StreakBoardCard({
     const countsByDate = new Map<string, number>();
 
     if (backendActivity) {
-      // Backend daily-challenge activity is the source of truth when available.
       for (const item of backendActivity.activity) {
         if (item.is_correct || item.xp_earned > 0) {
           countsByDate.set(item.date, (countsByDate.get(item.date) ?? 0) + 1);
-        }
-      }
-    } else {
-      // Fallback: user profile streak + local daily challenges + cohort tasks.
-      if (
-        profile?.last_streak_date &&
-        typeof profile.current_streak === "number" &&
-        profile.current_streak > 0
-      ) {
-        const anchor = new Date(profile.last_streak_date);
-        if (!Number.isNaN(anchor.getTime())) {
-          for (let i = 0; i < profile.current_streak; i++) {
-            const d = new Date(anchor);
-            d.setDate(anchor.getDate() - i);
-            const key = toDateKey(d);
-            countsByDate.set(key, Math.max(countsByDate.get(key) ?? 0, 1));
-          }
-        }
-      }
-
-      for (const dateKey of completedDates) {
-        countsByDate.set(dateKey, (countsByDate.get(dateKey) ?? 0) + 1);
-      }
-
-      for (const task of assignments) {
-        if (task.uiStatus === "done" || task.status === "completed") {
-          const rawDate = task.due_date || task.start_date;
-          if (rawDate) {
-            const parsed = new Date(rawDate);
-            if (!Number.isNaN(parsed.getTime())) {
-              const key = toDateKey(parsed);
-              countsByDate.set(key, (countsByDate.get(key) ?? 0) + 1);
-            }
-          }
         }
       }
     }
@@ -181,18 +136,9 @@ export function StreakBoardCard({
       checkCursor.setDate(checkCursor.getDate() - 1);
     }
 
-    const resolvedCurrent =
-      typeof backendActivity?.current_streak === "number"
-        ? backendActivity.current_streak
-        : typeof profile?.current_streak === "number"
-          ? Math.max(profile.current_streak, curStreak)
-          : curStreak;
+    const resolvedCurrent = backendActivity?.current_streak ?? curStreak;
     const resolvedBest =
-      typeof backendActivity?.longest_streak === "number"
-        ? backendActivity.longest_streak
-        : typeof profile?.longest_streak === "number"
-          ? Math.max(profile.longest_streak, maxStreak, resolvedCurrent)
-          : Math.max(maxStreak, resolvedCurrent);
+      backendActivity?.longest_streak ?? Math.max(maxStreak, resolvedCurrent);
 
     return {
       weeks: weeksList,
@@ -201,13 +147,9 @@ export function StreakBoardCard({
       bestStreak: resolvedBest,
       totalActiveDays: countsByDate.size,
     };
-  }, [
-    assignments,
-    completedDates,
-    profile?.current_streak,
-    profile?.last_streak_date,
-    profile?.longest_streak,
-  ]);
+  }, [backendActivity]);
+
+  if (!backendActivity) return null;
 
   return (
     <DashboardCard

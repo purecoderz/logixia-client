@@ -15,17 +15,13 @@ import { useDailyChallenge } from "@/features/dashboard/services/dailyChallengeS
 
 export function Topbar() {
   const { profile, logout } = useAuth();
-  const { difficulty, isSolved: localSolved, completedDaysCount } =
-    useDailyChallenge();
+  const { difficulty } = useDailyChallenge();
   const activityQuery = useDailyChallengeActivity();
   const todayQuery = useTodayDailyChallenge(difficulty);
 
   const streakCount =
-    activityQuery.data?.current_streak ??
-    Math.max(profile?.current_streak ?? 0, completedDaysCount);
-  const completedToday = todayQuery.data
-    ? Boolean(todayQuery.data.completed)
-    : localSolved;
+    activityQuery.data?.current_streak ?? profile?.current_streak ?? 0;
+  const completedToday = Boolean(todayQuery.data?.completed);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);

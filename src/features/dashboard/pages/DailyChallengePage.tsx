@@ -23,7 +23,6 @@ import {
   useTodayDailyChallenge,
 } from "../services/dailyChallengeService";
 import {
-  DAILY_CHALLENGE_BANK,
   DIFFICULTY_META,
   useDailyChallenge,
 } from "../services/dailyChallengeStore";
@@ -32,7 +31,7 @@ export function DailyChallengePage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const isSolving = searchParams.get("solve") === "1";
 
-  const { difficulty, question, isSolved, submitChoice } = useDailyChallenge();
+  const { difficulty } = useDailyChallenge();
   const todayQuery = useTodayDailyChallenge(difficulty);
   const submitMutation = useSubmitDailyChallenge();
   const [codeResult, setCodeResult] = useState<"idle" | "passed" | "failed">(
@@ -41,57 +40,51 @@ export function DailyChallengePage() {
   const meta = DIFFICULTY_META[difficulty];
 
   const remote = todayQuery.data ?? null;
-  const activeTitle = remote ? remote.title : question.title;
-  const activeCategory = remote ? remote.category : question.category;
-  const activeXp = remote ? remote.xp : question.xp;
-  const completedToday = remote ? Boolean(remote.completed) : isSolved;
+  const activeTitle = remote?.title ?? "";
+  const activeCategory = remote?.category ?? "";
+  const activeXp = remote?.xp ?? 0;
+  const completedToday = Boolean(remote?.completed);
   const isCodeChallenge = remote?.challenge_type === "code";
 
-  const quizData: QuizData = useMemo(() => {
-    if (remote && remote.challenge_type === "quiz") {
-      return {
-        title: remote.title,
-        type: "quiz",
-        instructions: `${meta.description}. Complete today's challenge to earn +${remote.xp} XP and extend your streak.`,
-        xp: remote.xp,
-        status: remote.completed ? "completed" : "in_progress",
-        questions: [
-          {
-            id: String(remote.id),
-            prompt: `### ${remote.title} (${remote.category})\n\n${remote.prompt}`,
-            choices: remote.choices ?? [],
-            correct_choice_id: remote.correct_choice_id ?? "",
-            explanation: remote.explanation ?? undefined,
-          },
-        ],
-      };
-    }
-
-    const pool = DAILY_CHALLENGE_BANK.filter(
-      (q) => q.difficulty === difficulty,
-    );
-    const ordered = [question, ...pool.filter((q) => q.id !== question.id)];
-
+  const quizData: QuizData | null = useMemo(() => {
+    if (!remote || remote.challenge_type !== "quiz") return null;
     return {
-      title: question.title,
+      title: remote.title,
       type: "quiz",
-      instructions: `${meta.description}. Complete today's challenge to earn +${question.xp} XP and extend your streak.`,
-      xp: question.xp,
-      status: isSolved ? "completed" : "in_progress",
-      questions: ordered.map((item) => ({
-        id: item.id,
-        prompt: item.codeSnippet
-          ? `### ${item.title} (${item.category})\n\n${item.prompt}\n\n\`\`\`\n${item.codeSnippet}\n\`\`\``
-          : `### ${item.title} (${item.category})\n\n${item.prompt}`,
-        choices: item.choices,
-        correct_choice_id: item.correctChoiceId,
-        explanation: item.explanation,
-      })),
+      instructions: `${meta.description}. Complete today's challenge to earn +${remote.xp} XP and extend your streak.`,
+      xp: remote.xp,
+      status: remote.completed ? "completed" : "in_progress",
+      questions: [
+        {
+          id: String(remote.id),
+          prompt: `### ${remote.title} (${remote.category})\n\n${remote.prompt}`,
+          choices: remote.choices ?? [],
+          correct_choice_id: remote.correct_choice_id ?? "",
+          explanation: remote.explanation ?? undefined,
+        },
+      ],
     };
-  }, [difficulty, isSolved, meta, question, remote]);
+  }, [meta, remote]);
 
   const openChallenge = () => setSearchParams({ solve: "1" });
   const closeChallenge = () => setSearchParams({});
+
+  if (todayQuery.isPending) {
+    return (
+      <div className="flex items-center justify-center gap-2 py-16 text-sm text-muted">
+        <Loader2 className="size-4 animate-spin" aria-hidden />
+        <span>Loading daily challenge…</span>
+      </div>
+    );
+  }
+
+  if (!remote) {
+    return (
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
+        <StreakBoardCard />
+      </div>
+    );
+  }
 
   if (isSolving) {
     if (isCodeChallenge && remote) {
@@ -172,26 +165,21 @@ export function DailyChallengePage() {
       );
     }
 
+    if (!quizData) return null;
+
     return (
       <QuizRenderer
-        key={`${difficulty}-${remote?.id ?? "local"}`}
+        key={`${difficulty}-${remote.id}`}
         quiz={quizData}
         backLabel="Back to Daily Challenge"
         onBack={closeChallenge}
         onSubmitAnswers={(answers) => {
-          if (remote) {
-            const picked = answers[String(remote.id)];
-            if (picked) {
-              void submitMutation.mutateAsync({
-                challenge_id: remote.id,
-                selected_choice_id: picked,
-              });
-            }
-            return;
-          }
-          const picked = answers[question.id];
+          const picked = answers[String(remote.id)];
           if (picked) {
-            submitChoice(picked);
+            return submitMutation.mutateAsync({
+              challenge_id: remote.id,
+              selected_choice_id: picked,
+            });
           }
         }}
       />

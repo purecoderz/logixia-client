@@ -20,19 +20,19 @@ import { DashboardCard } from "./DashboardCard";
 
 export function DailyChallengeCard() {
   const { profile } = useAuth();
-  const { difficulty, question, isSolved: localSolved, completedDaysCount } =
-    useDailyChallenge();
+  const { difficulty } = useDailyChallenge();
   const todayQuery = useTodayDailyChallenge(difficulty);
   const activityQuery = useDailyChallengeActivity();
 
   const remote = todayQuery.data ?? null;
-  const isSolved = remote ? Boolean(remote.completed) : localSolved;
-  const activeTitle = remote ? remote.title : question.title;
-  const activeCategory = remote ? remote.category : question.category;
-  const activeXp = remote ? remote.xp : question.xp;
+  if (!remote) return null;
+
+  const isSolved = Boolean(remote.completed);
+  const activeTitle = remote.title;
+  const activeCategory = remote.category;
+  const activeXp = remote.xp;
   const streakCount =
-    activityQuery.data?.current_streak ??
-    Math.max(profile?.current_streak ?? 0, completedDaysCount);
+    activityQuery.data?.current_streak ?? profile?.current_streak ?? 0;
 
   const meta = DIFFICULTY_META[difficulty];
 

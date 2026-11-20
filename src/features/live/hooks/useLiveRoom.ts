@@ -3,6 +3,7 @@ import { useLivePointers } from "../pointers/useLivePointers";
 import { useCallback, useEffect, useRef, useState } from "react";
 import RoomServices, {
   type AttendanceReceipt,
+  type LiveTaskState,
   type ReeborgLiveState,
   type Sender,
 } from "../services/liveRoomService";
@@ -108,6 +109,7 @@ export function useLiveRoom(sessionId: number = 1) {
     level_id: "first-steps",
     run: null,
   });
+  const [liveTask, setLiveTask] = useState<LiveTaskState | null>(null);
 
   // keeps the latest id for the socket handler, which is created only once
   const myIdRef = useRef(myId);
@@ -137,6 +139,7 @@ export function useLiveRoom(sessionId: number = 1) {
             setMyRole(msg.data.me.role);
             setAttendance(msg.data.attendance ?? null);
             if (msg.data.reeborg) setReeborg(msg.data.reeborg);
+            if (msg.data.task) setLiveTask(msg.data.task);
             if (msg.data.roster) {
               setParticipants(
                 msg.data.roster.map((p) => ({
@@ -299,6 +302,10 @@ export function useLiveRoom(sessionId: number = 1) {
 
           case "reeborg_state":
             setReeborg(msg.data);
+            break;
+
+          case "task_state":
+            setLiveTask(msg.data.open ? msg.data : null);
             break;
         }
       },
@@ -476,6 +483,19 @@ export function useLiveRoom(sessionId: number = 1) {
     setReeborg(next);
     RoomServices.send("reeborg_state", next);
   }, []);
+  const sendTask = useCallback((next: LiveTaskState | null) => {
+    setLiveTask(next?.open ? next : null);
+    RoomServices.send(
+      "task_state",
+      next ?? {
+        open: false,
+        task_id: 0,
+        title: "",
+        type: "code",
+        instructions: "",
+      },
+    );
+  }, []);
 
   return {
     pointers,
@@ -518,6 +538,8 @@ export function useLiveRoom(sessionId: number = 1) {
     dismissAttendanceError,
     reeborg,
     sendReeborg,
+    liveTask,
+    sendTask,
   };
 }
 

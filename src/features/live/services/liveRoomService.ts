@@ -26,6 +26,21 @@ export interface ReeborgLiveState {
   run?: { code: string; seq: number } | null;
 }
 
+export interface LiveTaskQuestion {
+  id: string;
+  prompt: string;
+  choices: { id: string; text: string }[];
+}
+
+export interface LiveTaskState {
+  open: boolean;
+  task_id: number;
+  title: string;
+  type: "code" | "quiz";
+  instructions: string;
+  questions?: LiveTaskQuestion[];
+}
+
 export type ServerMessage =
   | { type: "pointer_move" | "pointer_click"; from: Sender; data: PointerPosition }
   | { type: "pointer_hide"; from?: Sender; data: {user_id?:string} }
@@ -44,6 +59,7 @@ export type ServerMessage =
         pointers?: (PointerPosition & {user_id:string})[];
         attendance?: AttendanceReceipt | null;
         reeborg?: ReeborgLiveState | null;
+        task?: LiveTaskState | null;
       };
     }
   | {
@@ -68,7 +84,8 @@ export type ServerMessage =
   | { type: "lower_hand"; from: Sender; data: {} }
   | { type: "attendance_taken"; from?: Sender; data: AttendanceReceipt }
   | { type: "attendance_error"; data: { message: string } }
-  | { type: "reeborg_state"; from?: Sender; data: ReeborgLiveState };
+  | { type: "reeborg_state"; from?: Sender; data: ReeborgLiveState }
+  | { type: "task_state"; from?: Sender; data: LiveTaskState };
 
 type Handlers = {
   onMessage: (msg: ServerMessage) => void;

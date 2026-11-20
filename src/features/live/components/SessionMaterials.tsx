@@ -5,6 +5,7 @@ import { BookOpen, Clock3, X } from "lucide-react";
 import { MarkdownRenderer } from "@/components/ui/Markdown";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useAuth } from "@/features/auth/context/AuthContext";
+import { isInstructorRole } from "@/features/auth/InstructorProtectedRoute";
 import { useActiveCohort } from "@/features/cohorts/hooks/useActiveCohort";
 import { InstructorSessionService, sessionKeys } from "../services/instructorSessionService";
 import { StudentSessionService } from "../services/studentSessionService";
@@ -84,8 +85,8 @@ export function SessionElapsedTimer({ sessionId }: { sessionId: number }) {
 
 function useSessionDetail(sessionId: number) {
   const { profile } = useAuth();
-  const isInstructor = profile?.role === "instructor";
-  const { activeCohort } = useActiveCohort();
+  const isInstructor = isInstructorRole(profile?.role);
+  const { activeCohort } = useActiveCohort(!isInstructor);
   const cohortId = activeCohort?.id;
   const validSession = Number.isSafeInteger(sessionId) && sessionId > 0;
 

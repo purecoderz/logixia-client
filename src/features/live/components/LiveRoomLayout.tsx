@@ -26,6 +26,10 @@ import { FloatingTerminal } from "../components/classroom/FloatingTerminal";
 import { CodeWorkspace } from "@/features/workspace/Workspace";
 import { Drawer } from "@/features/workspace/components/ui/Drawer";
 import { LiveReeborgPanel } from "@/features/arcade/botMaze/LiveReeborgPanel";
+import {
+  LiveTaskPickerButton,
+  LiveTaskQuestionPanel,
+} from "./LiveTaskPicker";
 
 function explainClose(code: string | null, reason: string): string {
   if (reason === "Not a member") return "You're not part of this class.";
@@ -67,6 +71,7 @@ export function LiveRoomLayout({ room, sessionId, controls, dialogs }: { room:Li
     true,
   );
   const reeborgOpen = room.reeborg.open;
+  const taskOpen = Boolean(room.liveTask?.open) && !reeborgOpen;
 
   // Built once, shown in the sidebar on desktop and in the drawer on mobile
   const roomPanels = (
@@ -127,15 +132,22 @@ export function LiveRoomLayout({ room, sessionId, controls, dialogs }: { room:Li
 
           <AudioStatusButton status={audio.status} onClick={audio.fix} />
           {room.isTeacher && (
+            <LiveTaskPickerButton room={room} sessionId={sessionId} />
+          )}
+          {room.isTeacher && (
             <button
               type="button"
-              onClick={() =>
+              onClick={() => {
+                const nextOpen = !reeborgOpen;
+                if (nextOpen && room.liveTask?.open) {
+                  room.sendTask(null);
+                }
                 room.sendReeborg({
-                  open: !reeborgOpen,
+                  open: nextOpen,
                   level_id: room.reeborg.level_id,
                   run: null,
-                })
-              }
+                });
+              }}
               aria-pressed={reeborgOpen}
               aria-label={
                 reeborgOpen ? "Close Reeborg mode" : "Open Reeborg mode"
@@ -253,8 +265,15 @@ export function LiveRoomLayout({ room, sessionId, controls, dialogs }: { room:Li
               currentLine={room.currentLine}
               storageKey={`session:${sessionId}`}
               title="Live classroom"
-              layout={reeborgOpen ? "split" : undefined}
-              asideTitle={reeborgOpen ? "Reeborg World" : undefined}
+              layout={reeborgOpen || taskOpen ? "split" : undefined}
+              asideLabel={taskOpen ? "Question" : undefined}
+              asideTitle={
+                reeborgOpen
+                  ? "Reeborg World"
+                  : taskOpen
+                    ? room.liveTask?.title
+                    : undefined
+              }
               aside={
                 reeborgOpen ? (
                   <LiveReeborgPanel
@@ -268,6 +287,12 @@ export function LiveRoomLayout({ room, sessionId, controls, dialogs }: { room:Li
                       })
                     }
                     runRequest={room.reeborg.run ?? null}
+                  />
+                ) : taskOpen && room.liveTask ? (
+                  <LiveTaskQuestionPanel
+                    task={room.liveTask}
+                    canClose={room.isTeacher}
+                    onClose={() => room.sendTask(null)}
                   />
                 ) : undefined
               }

@@ -106,11 +106,7 @@ export function CohortTaskDrawer({
     setError(null);
     try {
       if (editing) {
-        const { xp, ...dates } = schedulePayload(defaults);
-        await onUpdate(editing.id, {
-          ...dates,
-          ...(editing.can_edit_xp ? { xp } : {}),
-        });
+        await onUpdate(editing.id, schedulePayload(defaults));
       } else
         await onAssign(
           selected.map((task) => ({
@@ -197,7 +193,6 @@ export function CohortTaskDrawer({
                       prefix="edit-task"
                       fields={defaults}
                       onChange={setDefaults}
-                      locked={!editing.can_edit_xp}
                     />
                     <p className="text-xs leading-6 text-muted">
                       This changes the cohort assignment, not the original task

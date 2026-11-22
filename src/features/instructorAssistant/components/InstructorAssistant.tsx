@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Eraser, Send, Sparkles, X } from "lucide-react";
+import { MarkdownRenderer } from "@/components/ui/Markdown";
 import { useInstructorAssistant } from "../hooks/useInstructorAssistant";
 
 const suggestions = [
@@ -118,11 +119,15 @@ export function InstructorAssistant({
               key={item.id}
               className={`flex ${item.role === "user" ? "justify-end" : "justify-start"}`}
             >
-              <div
-                className={`max-w-[88%] whitespace-pre-wrap rounded-2xl px-3.5 py-2.5 text-sm leading-6 ${item.role === "user" ? "rounded-br-md bg-accent text-on-accent" : "rounded-bl-md border border-line bg-input text-body"}`}
-              >
-                {item.content}
-              </div>
+              {item.role === "user" ? (
+                <div className="max-w-[88%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-accent px-3.5 py-2.5 text-sm leading-6 text-on-accent">
+                  {item.content}
+                </div>
+              ) : (
+                <div className="min-w-0 max-w-[88%] overflow-x-auto rounded-2xl rounded-bl-md border border-line bg-input px-3.5 py-2.5 text-sm leading-6 text-body">
+                  <MarkdownRenderer content={item.content} />
+                </div>
+              )}
             </div>
           ))}
 

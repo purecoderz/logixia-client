@@ -2,9 +2,12 @@ import { githubLight } from "@uiw/codemirror-theme-github";
 import { useTheme } from "../../features/theme/ThemeProvider";
 import { lightEditorTheme } from "./lightEditorTheme";
 // CodeEditor.tsx
-import { useEffect, useMemo, useRef } from "react";
-import CodeMirror, { type ReactCodeMirrorRef } from "@uiw/react-codemirror";
-import { EditorView } from "@codemirror/view";
+import { useCallback, useLayoutEffect, useMemo, useRef } from "react";
+import CodeMirror, {
+  ExternalChange,
+  type ReactCodeMirrorRef,
+} from "@uiw/react-codemirror";
+import { EditorView, type ViewUpdate } from "@codemirror/view";
 import { Prec } from "@codemirror/state";
 import { dracula } from "@uiw/codemirror-theme-dracula";
 import { LANGUAGE_EXTENSIONS, type SupportedLanguage } from "./utils/languages";
@@ -146,6 +149,38 @@ interface CodeEditorProps {
   isLive?: boolean;
 }
 
+function computeMinimalChange(prev: string, next: string) {
+  let start = 0;
+  const minLen = Math.min(prev.length, next.length);
+  while (start < minLen && prev.charCodeAt(start) === next.charCodeAt(start)) {
+    start++;
+  }
+  let prevEnd = prev.length;
+  let nextEnd = next.length;
+  while (
+    prevEnd > start &&
+    nextEnd > start &&
+    prev.charCodeAt(prevEnd - 1) === next.charCodeAt(nextEnd - 1)
+  ) {
+    prevEnd--;
+    nextEnd--;
+  }
+  return { from: start, to: prevEnd, insert: next.slice(start, nextEnd) };
+}
+
+function lineStartOffset(text: string, lineNumber: number): number {
+  if (lineNumber <= 1) return 0;
+  let line = 1;
+  for (let i = 0; i < text.length; i++) {
+    if (text.charCodeAt(i) === 10) {
+      line++;
+      if (line === lineNumber) return i + 1;
+    }
+  }
+  const lastNl = text.lastIndexOf("\n");
+  return lastNl === -1 ? 0 : lastNl + 1;
+}
+
 export function CodeEditor({
   value,
   onChange,
@@ -172,8 +207,31 @@ export function CodeEditor({
     [isMobile, language, intelligence, currentEditorTheme],
   );
 
+  // Memoize basicSetup and callbacks so @uiw/react-codemirror does not
+  // reconfigure all extensions (causing a visible blink) on every keystroke.
+  const basicSetup = useMemo(
+    () => ({
+      lineNumbers: true,
+      foldGutter: !isMobile,
+      // CHANGED: followers see the highlight on mobile too
+      highlightActiveLine: !isMobile || readOnly,
+      highlightActiveLineGutter: !isMobile || readOnly,
+    }),
+    [isMobile, readOnly],
+  );
+
   const cm = useRef<ReactCodeMirrorRef>(null);
   const recentEmits = useRef<Set<string>>(new Set());
+  const prevFollowLine = useRef<number | null | undefined>(undefined);
+  const latestRef = useRef({
+    readOnly,
+    isLive,
+    followLine,
+    onChange,
+    onCursorLine,
+  });
+  latestRef.current = { readOnly, isLive, followLine, onChange, onCursorLine };
+
   const viewDoc = cm.current?.view?.state.doc.toString();
   // Ignore lagging React `value` renders that originated from our own fast typing,
   // so CodeMirror never replaces the doc and resets the cursor to line 1.
@@ -182,24 +240,84 @@ export function CodeEditor({
       ? viewDoc
       : value;
 
-  // Followers: move the cursor to the instructor's line and scroll to it.
-  // Re-runs on `value` too, so it still works when the document updates.
-  useEffect(() => {
-    if (!readOnly || !followLine) return;
+  // Apply external document updates as a minimal diff combined with follower
+  // line highlighting in a single transaction, avoiding full-doc replacement
+  // flicker and 1-frame scroll/selection jumps.
+  useLayoutEffect(() => {
     const view = cm.current?.view;
     if (!view) return;
 
-    const id = requestAnimationFrame(() => {
-      const total = view.state.doc.lines;
-      const line = view.state.doc.line(Math.min(followLine, total));
-      view.dispatch({
-        selection: { anchor: line.from }, // active line highlight follows the cursor
-        effects: EditorView.scrollIntoView(line.from, { y: "center" }),
-      });
-    });
+    const currentDoc = view.state.doc.toString();
+    const nextDoc = editorValue.replace(/\r\n?/g, "\n");
+    const docChanged = nextDoc !== currentDoc;
+    const lineChanged = followLine !== prevFollowLine.current;
+    prevFollowLine.current = followLine;
 
-    return () => cancelAnimationFrame(id);
-  }, [followLine, value, readOnly]);
+    if (!docChanged && !(readOnly && followLine && lineChanged)) return;
+
+    const changes = docChanged
+      ? computeMinimalChange(currentDoc, nextDoc)
+      : undefined;
+
+    if (readOnly && followLine) {
+      const anchor = lineStartOffset(nextDoc, followLine);
+      view.dispatch({
+        ...(changes ? { changes } : {}),
+        selection: { anchor },
+        effects: EditorView.scrollIntoView(anchor, {
+          y: lineChanged ? "center" : "nearest",
+        }),
+        ...(docChanged ? { annotations: [ExternalChange.of(true)] } : {}),
+      });
+      return;
+    }
+
+    if (changes) {
+      view.dispatch({
+        changes,
+        annotations: [ExternalChange.of(true)],
+      });
+    }
+  }, [editorValue, followLine, readOnly]);
+
+  const handleCreateEditor = useCallback((view: EditorView) => {
+    const { readOnly: ro, followLine: targetLine } = latestRef.current;
+    if (!ro || !targetLine) return;
+    prevFollowLine.current = targetLine;
+    const line = view.state.doc.line(
+      Math.min(targetLine, view.state.doc.lines),
+    );
+    view.dispatch({
+      selection: { anchor: line.from },
+      effects: EditorView.scrollIntoView(line.from, { y: "center" }),
+    });
+  }, []);
+
+  const handleChange = useCallback((val: string, viewUpdate: ViewUpdate) => {
+    const { readOnly: ro, isLive: live, onChange: emit } = latestRef.current;
+    if (ro) return;
+    recentEmits.current.add(val);
+    if (recentEmits.current.size > 30) {
+      const oldest = recentEmits.current.values().next().value;
+      if (oldest !== undefined) recentEmits.current.delete(oldest);
+    }
+    // Only compute line number if actively live streaming
+    const line = live
+      ? viewUpdate.state.doc.lineAt(viewUpdate.state.selection.main.head).number
+      : undefined;
+    emit(val, line);
+  }, []);
+
+  const handleUpdate = useCallback((update: ViewUpdate) => {
+    const { readOnly: ro, onCursorLine: emitLine } = latestRef.current;
+    if (!emitLine || ro) return;
+    // Document changes already share their line through onChange.
+    if (update.selectionSet && !update.docChanged) {
+      emitLine(
+        update.state.doc.lineAt(update.state.selection.main.head).number,
+      );
+    }
+  }, []);
 
   return (
     <CodeMirror
@@ -209,37 +327,11 @@ export function CodeEditor({
       className="h-full"
       readOnly={readOnly}
       editable={!(readOnly && isMobile)}
-      basicSetup={{
-        lineNumbers: true,
-        foldGutter: !isMobile,
-        // CHANGED: followers see the highlight on mobile too
-        highlightActiveLine: !isMobile || readOnly,
-        highlightActiveLineGutter: !isMobile || readOnly,
-      }}
+      basicSetup={basicSetup}
       extensions={extensions}
-      onChange={(val, viewUpdate) => {
-        if (readOnly) return;
-        recentEmits.current.add(val);
-        if (recentEmits.current.size > 30) {
-          const oldest = recentEmits.current.values().next().value;
-          if (oldest !== undefined) recentEmits.current.delete(oldest);
-        }
-        // Only compute line number if actively live streaming
-        const line = isLive
-          ? viewUpdate.state.doc.lineAt(viewUpdate.state.selection.main.head)
-              .number
-          : undefined;
-        onChange(val, line);
-      }}
-      onUpdate={(update) => {
-        if (!onCursorLine || readOnly) return;
-        // Document changes already share their line through onChange.
-        if (update.selectionSet && !update.docChanged) {
-          onCursorLine(
-            update.state.doc.lineAt(update.state.selection.main.head).number,
-          );
-        }
-      }}
+      onCreateEditor={handleCreateEditor}
+      onChange={handleChange}
+      onUpdate={handleUpdate}
     />
   );
 }

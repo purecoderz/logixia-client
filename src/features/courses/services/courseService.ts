@@ -297,7 +297,7 @@ export const CourseService = {
     send(lessonOrderPath(moduleId), "PUT", { ids }),
 
   async getLanguages(): Promise<Language[]> {
-    const response = await apiFetch("/languages");
+    const response = await apiFetch("/languages/");
     if (!response.ok) throw await apiErrorFrom(response);
     return response.json();
   },

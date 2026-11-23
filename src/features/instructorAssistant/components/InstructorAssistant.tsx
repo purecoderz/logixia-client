@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { Eraser, Send, Sparkles, X } from "lucide-react";
+import { Check, Copy, Eraser, Send, Sparkles, X } from "lucide-react";
 import { MarkdownRenderer } from "@/components/ui/Markdown";
 import { useInstructorAssistant } from "../hooks/useInstructorAssistant";
 
@@ -19,14 +19,33 @@ export function InstructorAssistant({
   onOpenChange: (open: boolean) => void;
 }) {
   const [input, setInput] = useState("");
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const inputId = useId();
   const endRef = useRef<HTMLDivElement>(null);
+  const copyTimerRef = useRef<number | null>(null);
   const { messages, pending, error, send, retry, clear } =
     useInstructorAssistant(pathname);
 
   useEffect(() => {
+    return () => {
+      if (copyTimerRef.current !== null) window.clearTimeout(copyTimerRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
     if (open) endRef.current?.scrollIntoView?.({ block: "end" });
   }, [messages, pending, open]);
+
+  async function copyResponse(id: string, content: string) {
+    try {
+      await navigator.clipboard?.writeText(content);
+      setCopiedId(id);
+      if (copyTimerRef.current !== null) window.clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = window.setTimeout(() => setCopiedId(null), 2000);
+    } catch {
+      // Clipboard access may be blocked in non-secure contexts
+    }
+  }
 
   function submit() {
     const prompt = input.trim();
@@ -124,8 +143,32 @@ export function InstructorAssistant({
                   {item.content}
                 </div>
               ) : (
-                <div className="min-w-0 max-w-[88%] overflow-x-auto rounded-2xl rounded-bl-md border border-line bg-input px-3.5 py-2.5 text-sm leading-6 text-body">
-                  <MarkdownRenderer content={item.content} />
+                <div className="flex min-w-0 max-w-[88%] flex-col items-start gap-1">
+                  <div className="w-full overflow-x-auto rounded-2xl rounded-bl-md border border-line bg-input px-3.5 py-2.5 text-sm leading-6 text-body">
+                    <MarkdownRenderer content={item.content} />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => void copyResponse(item.id, item.content)}
+                    aria-label={
+                      copiedId === item.id
+                        ? "Copied response"
+                        : "Copy response"
+                    }
+                    className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium text-muted transition-colors hover:bg-hover hover:text-foreground"
+                  >
+                    {copiedId === item.id ? (
+                      <>
+                        <Check size={13} aria-hidden="true" />
+                        <span>Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={13} aria-hidden="true" />
+                        <span>Copy</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               )}
             </div>

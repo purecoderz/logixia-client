@@ -16,7 +16,9 @@ import QuizRenderer, {
 } from "@/features/assignments/components/QuizeRender";
 import { TaskInstructions } from "@/features/assignments/components/TaskInstructions";
 import { pickInitialTaskFiles } from "@/features/assignments/services/assignmentService";
+import { useAuth } from "@/features/auth/context/AuthContext";
 import { CodeWorkspace } from "@/features/workspace/Workspace";
+import { clearWorkspaceStorage } from "@/features/workspace/hooks/useWorkspaceStorage";
 import { formatCheckResultsLines } from "@/features/workspace/utils/formatCheckResults";
 import { friendlyMessage } from "@/lib/apiError";
 import { StreakBoardCard } from "../components/student/StreakBoardCard";
@@ -31,6 +33,7 @@ import {
 } from "../services/dailyChallengeStore";
 
 export function DailyChallengePage() {
+  const { profile } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const isSolving = searchParams.get("solve") === "1";
 
@@ -99,13 +102,15 @@ export function DailyChallengePage() {
 
   if (isSolving) {
     if (isCodeChallenge && remote) {
+      const storageKey = `daily-challenge:${profile?.id ?? "guest"}:${remote.id}`;
       return (
         <div className="fixed inset-0 z-50 bg-canvas text-body">
           <CodeWorkspace
-            storageMode="memory"
+            key={storageKey}
+            storageMode="local"
             layout="split"
             title={remote.title}
-            storageKey={`daily-challenge:${remote.id}`}
+            storageKey={storageKey}
             onBack={closeChallenge}
             starterFiles={pickInitialTaskFiles(
               remote.student_code ?? remote.attempt?.student_code,
@@ -152,6 +157,7 @@ export function DailyChallengePage() {
                         student_code: getFiles(),
                       });
                       const passed = Boolean(res?.is_correct);
+                      if (passed) clearWorkspaceStorage(storageKey);
                       setCodeResult(passed ? "passed" : "failed");
                       if (Array.isArray(res?.tests) && res.tests.length > 0) {
                         appendTerminalLines(

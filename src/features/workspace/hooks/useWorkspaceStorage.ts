@@ -2,6 +2,21 @@ import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 
 export type WorkspaceStorage = "local" | "session" | "memory";
 
+export function clearWorkspaceStorage(
+  prefix: string,
+  mode: WorkspaceStorage = "local",
+) {
+  if (mode === "memory") return;
+  try {
+    const store = mode === "session" ? sessionStorage : localStorage;
+    store.removeItem(`${prefix}:nodes`);
+    store.removeItem(`${prefix}:active`);
+    store.removeItem(`${prefix}:tabs`);
+  } catch {
+    /* Ignore storage errors. */
+  }
+}
+
 /** Storage mode is fixed for the lifetime of a workspace instance. */
 export function useWorkspaceStorage<T>(
   key: string,

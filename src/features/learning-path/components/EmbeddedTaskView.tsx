@@ -9,6 +9,7 @@ import { TaskInstructions } from "@/features/assignments/components/TaskInstruct
 import { pickInitialTaskFiles } from "@/features/assignments/services/assignmentService";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { CodeWorkspace } from "@/features/workspace/Workspace";
+import { clearWorkspaceStorage } from "@/features/workspace/hooks/useWorkspaceStorage";
 import { formatCheckResultsLines } from "@/features/workspace/utils/formatCheckResults";
 import { friendlyMessage } from "@/lib/apiError";
 import { LearningPathService } from "../services/learningPathService";
@@ -165,6 +166,7 @@ export function EmbeddedTaskView({
   const isPracticeMode = isMissed || isPreviouslyCompleted;
   const isPracticed = submitState === "practiced";
 
+  const storageKey = `lesson-task:${profile.id}:${cohortId}:${id}`;
   const initialFiles = pickInitialTaskFiles(
     task.student_code,
     task.starter_files,
@@ -201,6 +203,7 @@ export function EmbeddedTaskView({
         );
         setLastPassed(result.passed);
         if (!isPracticeMode && result.passed) {
+          clearWorkspaceStorage(storageKey);
           setCompletedNow(true);
           void queryClient.invalidateQueries({ queryKey: ["learning-path"] });
         }
@@ -257,11 +260,11 @@ export function EmbeddedTaskView({
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <CodeWorkspace
-        key={`lesson-task:${profile.id}:${task.id}`}
+        key={storageKey}
         embedded
-        storageMode="memory"
+        storageMode="local"
         layout="split"
-        storageKey={`assignment:${profile.id}:${id}`}
+        storageKey={storageKey}
         title={task.title}
         starterFiles={initialFiles}
         runDisabled={submitState === "submitting"}

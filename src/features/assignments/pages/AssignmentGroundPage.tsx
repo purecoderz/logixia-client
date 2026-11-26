@@ -16,6 +16,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { TaskInstructions } from "../components/TaskInstructions";
 import { CodeWorkspace } from "@/features/workspace/Workspace";
+import { clearWorkspaceStorage } from "@/features/workspace/hooks/useWorkspaceStorage";
 import { formatCheckResultsLines } from "@/features/workspace/utils/formatCheckResults";
 import type { TerminalLine } from "@/components/SmartTerminal/TerminalView";
 import { friendlyMessage } from "@/lib/apiError";
@@ -69,6 +70,7 @@ export function AssignmentGround({
   const navigate = useNavigate();
   const assignment = useAssignment(assignmentId);
   const task = assignment.task;
+  const storageKey = `assignment:${userId}:${assignmentId}`;
   const [confirmReset, setConfirmReset] = useState(false);
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [submitStep, setSubmitStep] = useState(0);
@@ -124,6 +126,7 @@ export function AssignmentGround({
         appendTerminalLines(formatSubmissionLines(result, isExpiredOrDone));
         setLastPassed(result.passed);
         if (!isExpiredOrDone && result.passed) {
+          clearWorkspaceStorage(storageKey);
           setCompletedNow(true);
         }
       }
@@ -245,9 +248,9 @@ export function AssignmentGround({
     <>
       <CodeWorkspace
         key={assignment.generation}
-        storageMode="memory"
+        storageMode="local"
         layout="split"
-        storageKey={`assignment:${userId}:${assignmentId}`}
+        storageKey={storageKey}
         title={task.title}
         starterFiles={assignment.initialFiles}
         runDisabled={submitState === "submitting"}
@@ -262,6 +265,7 @@ export function AssignmentGround({
               <RotateCcw size={13} />
               Reset to starter files
             </button>
+            <span className="text-[11px] text-muted">Auto-saved locally</span>
             {statusBadge}
           </div>
         }
@@ -311,6 +315,7 @@ export function AssignmentGround({
         confirmLabel="Reset files"
         onCancel={() => setConfirmReset(false)}
         onConfirm={() => {
+          clearWorkspaceStorage(storageKey);
           assignment.reset();
           setSubmitState("idle");
           setConfirmReset(false);
